@@ -8,7 +8,7 @@ Erroneous data repair for Industry 4.0.
 Developed using Python3.8. Install the following modules:
 
 ```
-pip3 install numpy pandas matplotlib tensorflow plotly pyyaml dvc
+pip3 install numpy pandas matplotlib tensorflow sklearn plotly pyyaml dvc
 ```
 
 ## Usage
