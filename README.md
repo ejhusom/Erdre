@@ -1,3 +1,3 @@
 # Erdre
 
-Errenous data repair for Industry 4.0.
+Erroneous data repair for Industry 4.0.

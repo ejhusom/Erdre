@@ -72,3 +72,11 @@ temp*
 # vim
 Session.vim
 
+# python venv
+env/
+venv/
+
+# models dir
+models
+
+model_tuning/
