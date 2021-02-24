@@ -14,7 +14,6 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.signal import find_peaks
 import yaml
 
 from config import DATA_FEATURIZED_PATH, DATA_PATH
@@ -65,7 +64,7 @@ def featurize(filepaths):
         # feature is used to engineer a feature, but the raw feature itself
         # should not be a part of the input.
         for col in df.columns:
-            if col not in features:
+            if col not in features and col != target:
                 del df[col]
 
         # Save data

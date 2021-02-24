@@ -9,7 +9,6 @@ Date:
     2020-09-16
 
 """
-from kerastuner import HyperModel
 from tensorflow.keras import layers
 from tensorflow.keras import models
 

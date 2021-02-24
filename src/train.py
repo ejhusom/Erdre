@@ -13,8 +13,6 @@ Created:
 import sys
 import time
 
-from kerastuner import HyperParameters
-from kerastuner.tuners import Hyperband, RandomSearch
 import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.keras.utils import plot_model

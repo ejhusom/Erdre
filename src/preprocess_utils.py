@@ -20,7 +20,6 @@ import pickle
 import string
 import sys
 import time
-from scipy.fftpack import fft, ifft
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 
