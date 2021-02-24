@@ -20,9 +20,6 @@ ASSETS_PATH = Path("./assets")
 DATA_PATH = ASSETS_PATH / "data"
 """Path to data."""
 
-DATA_RESTRUCTURED_PATH = DATA_PATH / "restructured"
-"""Path to the data that is restructured from raw data."""
-
 DATA_FEATURIZED_PATH = DATA_PATH / "featurized"
 """Path to data that is cleaned and has added features."""
 

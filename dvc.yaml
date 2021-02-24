@@ -1,36 +1,21 @@
 stages:
 
 
-  restructure:
-    cmd: python3 src/restructure.py assets/data/raw/*.csv
+  profile:
+      cmd: python3 src/profile.py assets/data/raw/*.csv
     deps:
     - assets/data/raw
-    - src/restructure.py
-    outs:
-    - assets/data/restructured
+    - src/profile.py
 
   featurize:
-    cmd: python3 src/featurize.py assets/data/restructured/*.csv
+    cmd: python3 src/featurize.py assets/data/raw/*.csv
     deps:
-    - assets/data/restructured
+    - assets/data/raw
     - src/featurize.py
     outs:
     - assets/data/featurized
     params:
-    - featurize.delete
     - featurize.features
-    - featurize.remove
-    - featurize.breathing_min
-    - featurize.breathing_max
-    - featurize.heartrate_min
-    - featurize.heartrate_max
-    - featurize.scale
-    - featurize.range_window
-    - featurize.range_smoothing
-    - featurize.slope_shift
-    - featurize.slope_smoothing
-    - featurize.slope_abs
-    - featurize.diff_targets
 
   split:
     cmd: python3 src/split.py assets/data/featurized/*.csv
@@ -61,7 +46,6 @@ stages:
     - assets/data/sequentialized
     params:
     - sequentialize.hist_size
-    - sequentialize.use_elements
     - sequentialize.target_mean_window
 
   combine:
@@ -78,7 +62,6 @@ stages:
     - assets/data/combined
     - src/train.py
     - src/model.py
-    - src/autoencoder.py
     outs:
     - assets/models
     params:
@@ -87,7 +70,6 @@ stages:
     - train.batch_size
     - train.kernel_size
     - train.weigh_samples
-    - train.autoencode
 
   evaluate:
     cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
@@ -99,4 +81,3 @@ stages:
     - assets/metrics/metrics.json:
         cache: false
     params:
-    - evaluate.smooth_targets
