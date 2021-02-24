@@ -60,12 +60,12 @@ scale:
 
 sequentialize:
   # History window sample size
-  hist_size: 10
-  target_size: 2
+  hist_size: 50
+  target_size: 50
 
 train:
   net: cnn
-  n_epochs: 2
+  n_epochs: 20
   batch_size: 128
   kernel_size: 2
 

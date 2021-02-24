@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate deep learning model to estimate power from breathing data.
+"""Evaluate deep learning model.
 
 Author:   
     Erik Johannes Husom
@@ -21,7 +21,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 from tensorflow.keras import models
 import yaml
 
-from autoencoder import Autoencoder
 from config import METRICS_FILE_PATH, PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH
 
 
@@ -38,47 +37,32 @@ def evaluate(model_filepath, test_filepath):
 
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["evaluate"]
-    smooth_targets = params["smooth_targets"]
     params_train = yaml.safe_load(open("params.yaml"))["train"]
-    autoencode = params_train["autoencode"]
 
     test = np.load(test_filepath)
 
     X_test = test["X"]
     y_test = test["y"]
 
-    if autoencode:
-        encoder = models.load_model("assets/models/encoder.h5")
-        X_test = encoder.predict(X_test)
-
     model = models.load_model(model_filepath)
 
     y_pred = model.predict(X_test)
 
-    if smooth_targets > 1:
-        y_pred = pd.Series(y_pred.reshape(-1)).rolling(smooth_targets).mean()
-        y_pred.fillna(0, inplace=True)
-        y_pred = np.array(y_pred)
-
     mse = mean_squared_error(y_test, y_pred)
     #r2 = r2_score(y_test, y_pred)
-    #mse = 10000
 
     print("MSE: {}".format(mse))
     #print("R2: {}".format(r2))
 
     plot_prediction(y_test, y_pred, inputs=X_test, info="(MSE: {})".format(mse))
+    plot_individual_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
         json.dump(dict(mse=mse), f)
 
 
-def plot_prediction(y_true, y_pred, inputs=None, info="", backend="plotly"):
+def plot_prediction(y_true, y_pred, inputs=None, info=""):
     """Plot the prediction compared to the true targets.
-
-    A matplotlib version of the plot is saved, while a plotly version by
-    default is shown. To show the plot with matplotlib instead, the 'backend'
-    parameter has to be changed to 'matplotlib'.
 
     Args:
         y_true (array): True targets.
@@ -87,102 +71,114 @@ def plot_prediction(y_true, y_pred, inputs=None, info="", backend="plotly"):
         inputs (array): Inputs corresponding to the targets passed. If
             provided, the inputs will be plotted together with the targets.
         info (str): Information to include in the title string.
-        backend (str): Whether to use matplotlib or plotly as plot backend.
-            Default='plotly'.
 
     """
 
     PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    fig, ax1 = plt.subplots()
+    x = np.linspace(0, y_true.shape[0]-1, y_true.shape[0])
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    config = dict({'scrollZoom': True})
 
-    ax1.set_xlabel("time step")
-    ax1.set_ylabel("power (W)")
+    fig.add_trace(
+            go.Scatter(x=x, y=y_true[:,-1].reshape(-1), name="true"),
+            secondary_y=False,
+    )
 
-    ax1.plot(y_true, label="true")
-    ax1.plot(y_pred, label="pred")
+    fig.add_trace(
+            go.Scatter(x=x, y=y_pred[:,-1].reshape(-1), name="pred"),
+            secondary_y=False,
+    )
 
     if inputs is not None:
         input_columns = pd.read_csv(DATA_PATH / "input_columns.csv")
-
+        
         if len(inputs.shape) == 3:
             n_features = inputs.shape[-1]
         elif len(inputs.shape) == 2:
-            # If data is flattened, the number of input features are equal
-            # to the length of input columns minus the  power column
             n_features = len(input_columns) - 1
 
-        ax2 = ax1.twinx()
-        ax2.set_ylabel("scaled units")
-
         for i in range(n_features):
-            # Plot the features of the last time step in each sequence. The
-            # if/else block makes sure the indexing is done correctly based on
-            # whether the data is sequentialized or not.
+
             if len(inputs.shape) == 3:
-                ax2.plot(inputs[:, -1, i], label=input_columns.iloc[i+1,1])
+                fig.add_trace(
+                        go.Scatter(
+                            x=x, y=inputs[:, -1, i],
+                            name=input_columns.iloc[i+1, 1]
+                        ),
+                        secondary_y=True,
+                )
             elif len(inputs.shape) == 2:
-                ax2.plot(inputs[:, i-n_features], label=input_columns.iloc[i+1,1])
-         
+                fig.add_trace(
+                        go.Scatter(
+                            x=x, y=inputs[:, i-n_features],
+                            name=input_columns.iloc[i+1, 1]
+                        ),
+                        secondary_y=True,
+                )
 
-    fig.legend()
+    fig.update_layout(title_text="True vs pred " + info)
+    fig.update_xaxes(title_text="time step")
+    fig.update_yaxes(title_text="target variable", secondary_y=False)
+    fig.update_yaxes(title_text="scaled units", secondary_y=True)
 
-    plt.title("True vs pred " + info, wrap=True)
-    plt.savefig(PREDICTION_PLOT_PATH)
+    fig.write_html(str(PLOTS_PATH / "prediction.html"))
+    # fig.show(config=config)
 
-    if backend == "matplotlib":
-        plt.show()
-    else:
+def plot_individual_predictions(y_true, y_pred):
+    """
+    Plot the prediction compared to the true targets.
+    
+    """
 
-        x = np.linspace(0, len(y_true)-1, len(y_true))
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-        config = dict({'scrollZoom': True})
+    target_size = y_true.shape[-1]
+    pred_curve_step = target_size
 
+    pred_curve_idcs = np.arange(0, y_true.shape[0], pred_curve_step)
+    # y_indeces = np.arange(0, y_true.shape[0]-1, 1)
+    y_indeces = np.linspace(0, y_true.shape[0]-1, y_true.shape[0])
+
+    n_pred_curves = len(pred_curve_idcs)
+
+    # plt.figure()
+    # plt.gca().set_prop_cycle(plt.cycler(
+    #     'color', plt.cm.jet(np.linspace(0, 1, n_pred_curves))
+    # ))
+    fig = go.Figure()
+
+    y_true_df = pd.DataFrame(y_true[:,0])
+
+    # plt.plot(y_true_df, label="true", linewidth = 0.5)
+    fig.add_trace(
+            go.Scatter(x=y_indeces, y=y_true[:,0].reshape(-1), name="true")
+    )
+
+    predictions = []
+
+    for i in pred_curve_idcs:
+        indeces = y_indeces[i:i + target_size]
+        
+        if len(indeces) < target_size:
+            break
+
+        y_pred_df = pd.DataFrame(y_pred[i,:], index=indeces)
+        
+        predictions.append(y_pred_df)
+
+        # plt.plot(y_pred_df, alpha=0.6, linewidth = 0.4)
         fig.add_trace(
-                go.Scatter(x=x, y=y_true.reshape(-1), name="true"),
-                secondary_y=False,
+                go.Scatter(x=indeces, y=y_pred[i,:].reshape(-1),
+                    showlegend=False,
+                    # line=dict(color='green'),
+                    mode="lines")
         )
 
-        fig.add_trace(
-                go.Scatter(x=x, y=y_pred.reshape(-1), name="pred"),
-                secondary_y=False,
-        )
+    PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-        if inputs is not None:
-            input_columns = pd.read_csv(DATA_PATH / "input_columns.csv")
-            
-            if len(inputs.shape) == 3:
-                n_features = inputs.shape[-1]
-            elif len(inputs.shape) == 2:
-                n_features = len(input_columns) - 1
-
-            for i in range(n_features):
-
-                if len(inputs.shape) == 3:
-                    fig.add_trace(
-                            go.Scatter(
-                                x=x, y=inputs[:, -1, i],
-                                name=input_columns.iloc[i+1, 1]
-                            ),
-                            secondary_y=True,
-                    )
-                elif len(inputs.shape) == 2:
-                    fig.add_trace(
-                            go.Scatter(
-                                x=x, y=inputs[:, i-n_features],
-                                name=input_columns.iloc[i+1, 1]
-                            ),
-                            secondary_y=True,
-                    )
-
-        fig.update_layout(title_text="True vs pred " + info)
-        fig.update_xaxes(title_text="time step")
-        fig.update_yaxes(title_text="power (W)", secondary_y=False)
-        fig.update_yaxes(title_text="scaled units", secondary_y=True)
-
-        fig.write_html(str(PLOTS_PATH / "prediction.html"))
-        # fig.show(config=config)
-
+    # plt.title("Predictions", wrap=True)
+    # plt.savefig(str(PLOTS_PATH / "prediction_individuals.png"))
+    plt.show()
+    fig.write_html(str(PLOTS_PATH / "prediction_individuals.html"))
 
 if __name__ == "__main__":
 

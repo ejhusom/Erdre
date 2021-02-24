@@ -71,13 +71,12 @@ stages:
     - train.batch_size
     - train.kernel_size
 
-  # evaluate:
-  #   cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
-  #   deps:
-  #   - assets/data/combined/test.npz
-  #   - assets/models/model.h5
-  #   - src/evaluate.py
-  #   metrics:
-  #   - assets/metrics/metrics.json:
-  #       cache: false
-  #   params:
+  evaluate:
+    cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
+    deps:
+    - assets/data/combined/test.npz
+    - assets/models/model.h5
+    - src/evaluate.py
+    metrics:
+    - assets/metrics/metrics.json:
+        cache: false
