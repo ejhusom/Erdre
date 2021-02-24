@@ -35,8 +35,7 @@ def sequentialize(filepaths):
     net = yaml.safe_load(open("params.yaml"))["train"]["net"]
 
     hist_size = params["hist_size"]
-    use_elements = params["use_elements"]
-    target_mean_window = params["target_mean_window"]
+    target_size = params["target_size"]
 
     for filepath in filepaths:
 
@@ -45,15 +44,11 @@ def sequentialize(filepaths):
         X = infile["X"]
         y = infile["y"]
 
-        if use_elements > 1:
-            X = X[::use_elements]
-            y = y[::use_elements]
-
         # Combine y and X to get correct format for sequentializing
         data = np.hstack((y, X))
 
         # Split into sequences
-        X, y = split_sequences(data, hist_size, target_mean_window)
+        X, y = split_sequences(data, hist_size, target_size=target_size)
 
         if net == "dnn":
             X = flatten_sequentialized(X)

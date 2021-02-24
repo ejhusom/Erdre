@@ -5,18 +5,17 @@ Author:
     Erik Johannes Husom
 
 Date:
-    2020-10-29
+    2021-02-24
 
 """
 import os
 import sys
 
 import numpy as np
+import pandas as pd
 import yaml
 
 from config import DATA_SPLIT_PATH
-
-# from config import DATA_SPLIT_TRAIN_PATH, DATA_SPLIT_TEST_PATH
 from preprocess_utils import read_csv
 
 
@@ -33,11 +32,9 @@ def split(filepaths):
 
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
-        raise NotImplementedError("Cannot handle only one workout file.")
+        raise NotImplementedError("Cannot handle only one input file.")
 
     DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
-    # DATA_SPLIT_TRAIN_PATH.mkdir(parents=True, exist_ok=True)
-    # DATA_SPLIT_TEST_PATH.mkdir(parents=True, exist_ok=True)
 
     params = yaml.safe_load(open("params.yaml"))["split"]
 
@@ -47,14 +44,10 @@ def split(filepaths):
     training_files = filepaths[:file_split]
     test_files = filepaths[file_split:]
 
-    for f in test_files:
-        if "-rest-" in f:
-            training_files.append(f)
-            test_files.remove(f)
 
     for filepath in filepaths:
 
-        df, index = read_csv(filepath)
+        df = pd.read_csv(filepath, index_col=0)
 
         if filepath in training_files:
             df.to_csv(

@@ -17,6 +17,7 @@ import os
 import sys
 
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import yaml
 
@@ -58,7 +59,7 @@ def scale(filepaths):
 
     for filepath in filepaths:
 
-        df, index = read_csv(filepath)
+        df = pd.read_csv(filepath, index_col=0)
         
         # Convert to numpy
         data = df.to_numpy()

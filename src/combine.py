@@ -16,7 +16,7 @@ import numpy as np
 from config import DATA_COMBINED_PATH
 
 def combine(filepaths):
-    """Combine data from multiple workouts into one dataset.
+    """Combine data from multiple input files into one dataset.
 
     Args:
         filepaths (list of str): A list of paths to files containing

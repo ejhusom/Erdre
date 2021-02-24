@@ -20,10 +20,9 @@ import numpy as np
 from tensorflow.keras.utils import plot_model
 import yaml
 
-from autoencoder import Autoencoder
 from config import MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
 from config import PLOTS_PATH
-from model import DeepPowerHyperModel, cnn, dnn, lstm, cnndnn
+from model import cnn, dnn, lstm, cnndnn
 
 def train(filepath):
     """Train model to estimate power.
@@ -38,7 +37,6 @@ def train(filepath):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["train"]
     net = params["net"]
-    autoencode = params["autoencode"]
 
     # Load training set
     train = np.load(filepath)
@@ -47,99 +45,28 @@ def train(filepath):
     y_train = train["y"]
 
 
-    if autoencode:
-        test = np.load("assets/data/combined/test.npz")
-        X_test = test["X"]
-
-        autoencoder = Autoencoder(X_train, X_test)
-        autoencoder.train()
-        autoencoder.test()
-        X_train, X_test = autoencoder.encode_inputs()
-        # X_train, X_test = autoencoder.denoise_inputs()
-        autoencoder.encoder.save(MODELS_PATH / "encoder.h5")
-        net = "dnn"
-
     n_features = X_train.shape[-1]
 
-    # Create sample weights
-    sample_weights = np.ones_like(y_train)
-
-    if params["weigh_samples"]:
-        sample_weights[y_train > params["weight_thresh"]] = params["weight"]
-
     hist_size = X_train.shape[-2]
-
-    """
-    hypermodel = DeepPowerHyperModel(hist_size, n_features)
-
-    # hp = HyperParameters()
-    # hp.Choice("num_layers", values=[1, 2])
-    # hp.Fixed("kernel_size", value=4)
-    # hp.Fixed("kernel_size_0", value=4)
-
-    tuner = Hyperband(
-            hypermodel,
-            # hyperparameters=hp,
-            # tune_new_entries=True,
-            objective="val_loss",
-            # max_trials=10,
-            # min_epochs=20,
-            max_epochs=50,
-            executions_per_trial=2,
-            directory="model_tuning",
-            project_name="DeepPower"
-    )
-
-    tuner.search_space_summary()
-
-    tuner.search(
-        X_train, y_train, 
-        epochs=params["n_epochs"], 
-        batch_size=params["batch_size"],
-        validation_split=0.2,
-        sample_weight=sample_weights
-    )
-
-    tuner.results_summary()
-    # best_hyperparameters = tuner.get_best_hyperparameters(1)[0]
-
-    # model = tuner.hypermodel.build(best_hyperparameters)
-
-    # print(model.summary())
-
-    # history = model.fit(
-    #     X_train, y_train, 
-    #     epochs=params["n_epochs"], 
-    #     batch_size=params["batch_size"],
-    #     validation_split=0.2,
-    #     sample_weight=sample_weights
-    # )
-
-    model = tuner.get_best_models()[0]
-
-    print(model.summary())
-
-    model.save(MODELS_FILE_PATH)
-    """
+    target_size = y_train.shape[-1]
 
     # Build model
     if net == "cnn":
         hist_size = X_train.shape[-2]
-        model = cnn(hist_size, n_features,
+        model = cnn(hist_size, n_features, output_length=target_size,
                 kernel_size=params["kernel_size"]
         )
     elif net == "dnn":
-        model = dnn(n_features)
+        pass
     elif net == "lstm":
-        hist_size = X_train.shape[-2]
-        model = lstm(hist_size, n_features)
+        pass
     elif net == "cnndnn":
         pass
 
     print(model.summary())
 
-
     # Save a plot of the model
+    PLOTS_PATH.mkdir(parents=True, exist_ok=True)
     plot_model(
         model,
         to_file=PLOTS_PATH / 'model.png',
@@ -154,10 +81,10 @@ def train(filepath):
         X_train, y_train, 
         epochs=params["n_epochs"], 
         batch_size=params["batch_size"],
-        validation_split=0.2,
-        sample_weight=sample_weights
+        validation_split=0.2
     )
 
+    MODELS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
     model.save(MODELS_FILE_PATH)
 
     TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)

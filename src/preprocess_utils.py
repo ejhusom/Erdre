@@ -97,7 +97,7 @@ def move_column(df, column_name, new_idx):
     return df[reordered_columns]
 
 
-def split_sequences(sequences, hist_size, target_mean_window=1, n_steps_out=1):
+def split_sequences(sequences, hist_size, target_size=1):
     """Split data sequence into samples with matching input and targets.
 
     Args:
@@ -105,11 +105,8 @@ def split_sequences(sequences, hist_size, target_mean_window=1, n_steps_out=1):
             targets in the first column.
         hist_size (int): Number of time steps to include in each sample, i.e.
             how much history should be matched with a given target.
-        target_mean_window (int): Target value will be set as a mean value over
-            a window (ending on the current time step) with a size specified
-            with this parameter. Default=1, i.e. only one value is used as
-            target.
-        n_steps_out (int): Number of output steps.
+        target_size (int): Size of target window. Default=1, i.e. only one
+            value is used as target.
 
     Returns:
         X (array): The input samples.
@@ -122,23 +119,19 @@ def split_sequences(sequences, hist_size, target_mean_window=1, n_steps_out=1):
 
         # find the end of this pattern
         end_ix = i + hist_size
-        out_end_ix = end_ix + n_steps_out
 
         # find start of target window
-        target_start_ix = out_end_ix - target_mean_window
+        target_start_ix = end_ix - target_size
 
         # check if we are beyond the dataset
-        if out_end_ix > len(sequences):
+        if end_ix > len(sequences):
             break
        
         # Select all cols from sequences except target col, which leaves inputs
         seq_x = sequences[i:end_ix, 1:]
 
         # Extract targets from sequences
-        if target_mean_window > 1:
-            seq_y = [np.mean(sequences[target_start_ix: out_end_ix, 0])]
-        else:
-            seq_y = sequences[end_ix:out_end_ix, 0]
+        seq_y = sequences[target_start_ix: end_ix, 0]
 
         X.append(seq_x)
         y.append(seq_y)

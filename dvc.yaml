@@ -2,10 +2,10 @@ stages:
 
 
   profile:
-      cmd: python3 src/profile.py assets/data/raw/*.csv
+    cmd: python3 src/profiling.py assets/data/raw/*.csv
     deps:
     - assets/data/raw
-    - src/profile.py
+    - src/profiling.py
 
   featurize:
     cmd: python3 src/featurize.py assets/data/raw/*.csv
@@ -16,6 +16,7 @@ stages:
     - assets/data/featurized
     params:
     - featurize.features
+    - featurize.target
 
   split:
     cmd: python3 src/split.py assets/data/featurized/*.csv
@@ -46,7 +47,7 @@ stages:
     - assets/data/sequentialized
     params:
     - sequentialize.hist_size
-    - sequentialize.target_mean_window
+    - sequentialize.target_size
 
   combine:
     cmd: python3 src/combine.py assets/data/sequentialized/*.npz
@@ -69,15 +70,14 @@ stages:
     - train.n_epochs
     - train.batch_size
     - train.kernel_size
-    - train.weigh_samples
 
-  evaluate:
-    cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
-    deps:
-    - assets/data/combined/test.npz
-    - assets/models/model.h5
-    - src/evaluate.py
-    metrics:
-    - assets/metrics/metrics.json:
-        cache: false
-    params:
+  # evaluate:
+  #   cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
+  #   deps:
+  #   - assets/data/combined/test.npz
+  #   - assets/models/model.h5
+  #   - src/evaluate.py
+  #   metrics:
+  #   - assets/metrics/metrics.json:
+  #       cache: false
+  #   params:

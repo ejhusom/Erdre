@@ -1,0 +1,170 @@
+profile:
+  cmd: python3 src/profiling.py assets/data/raw/*.csv
+  deps:
+  - path: assets/data/raw
+    md5: 05da40bbde71692b0d9e85a5deb18999.dir
+    size: 11172868
+    nfiles: 18
+  - path: src/profiling.py
+    md5: d41d8cd98f00b204e9800998ecf8427e
+    size: 0
+featurize:
+  cmd: python3 src/featurize.py assets/data/raw/*.csv
+  deps:
+  - path: assets/data/raw
+    md5: 05da40bbde71692b0d9e85a5deb18999.dir
+    size: 11172868
+    nfiles: 18
+  - path: src/featurize.py
+    md5: 58818015622defe431fb6ab6e8f73bf9
+    size: 2769
+  params:
+    params.yaml:
+      featurize.features:
+      - X1_ActualPosition
+      - X1_ActualVelocity
+      - X1_ActualAcceleration
+      - X1_CommandPosition
+      - X1_CommandVelocity
+      - X1_CommandAcceleration
+      - X1_CurrentFeedback
+      - X1_DCBusVoltage
+      - X1_OutputCurrent
+      - X1_OutputVoltage
+      - X1_OutputPower
+      - Y1_ActualPosition
+      - Y1_ActualVelocity
+      - Y1_ActualAcceleration
+      - Y1_CommandPosition
+      - Y1_CommandVelocity
+      - Y1_CommandAcceleration
+      - Y1_CurrentFeedback
+      - Y1_DCBusVoltage
+      - Y1_OutputCurrent
+      - Y1_OutputVoltage
+      - Y1_OutputPower
+      - Z1_ActualPosition
+      - Z1_ActualVelocity
+      - Z1_ActualAcceleration
+      - Z1_CommandPosition
+      - Z1_CommandVelocity
+      - Z1_CommandAcceleration
+      - Z1_CurrentFeedback
+      - Z1_DCBusVoltage
+      - Z1_OutputCurrent
+      - Z1_OutputVoltage
+      - S1_ActualPosition
+      - S1_ActualVelocity
+      - S1_ActualAcceleration
+      - S1_CommandPosition
+      - S1_CommandVelocity
+      - S1_CommandAcceleration
+      - S1_CurrentFeedback
+      - S1_DCBusVoltage
+      - S1_OutputCurrent
+      - S1_OutputVoltage
+      - S1_OutputPower
+      - S1_SystemInertia
+      - M1_CURRENT_PROGRAM_NUMBER
+      - M1_sequence_number
+      - M1_CURRENT_FEEDRATE
+      featurize.target: X1_ActualPosition
+  outs:
+  - path: assets/data/featurized
+    md5: cdacea6c0d0e663af01cd0f117f70d06.dir
+    size: 6933481
+    nfiles: 18
+split:
+  cmd: python3 src/split.py assets/data/featurized/*.csv
+  deps:
+  - path: assets/data/featurized
+    md5: cdacea6c0d0e663af01cd0f117f70d06.dir
+    size: 6933481
+    nfiles: 18
+  - path: src/split.py
+    md5: 208cc9248bbc2a9cbdec1d0674238657
+    size: 1592
+  params:
+    params.yaml:
+      split.train_split: 0.5
+  outs:
+  - path: assets/data/split
+    md5: dfa8e3cb1fc38b70f3f01f9598a05d38.dir
+    size: 6739816
+    nfiles: 18
+scale:
+  cmd: python3 src/scale.py assets/data/split/*.csv
+  deps:
+  - path: assets/data/split
+    md5: dfa8e3cb1fc38b70f3f01f9598a05d38.dir
+    size: 6739816
+    nfiles: 18
+  - path: src/scale.py
+    md5: a4eb452ad378bc0b63b5fb43287c0f7d
+    size: 2727
+  params:
+    params.yaml:
+      scale.method: standard
+  outs:
+  - path: assets/data/scaled
+    md5: 0c58f46145fe7ee0439602e79495de9f.dir
+    size: 9516356
+    nfiles: 18
+sequentialize:
+  cmd: python3 src/sequentialize.py assets/data/scaled/*.npz
+  deps:
+  - path: assets/data/scaled
+    md5: 0c58f46145fe7ee0439602e79495de9f.dir
+    size: 9516356
+    nfiles: 18
+  - path: src/sequentialize.py
+    md5: 39a68ad9f8c667dae964bbdd17ff70c5
+    size: 1714
+  params:
+    params.yaml:
+      sequentialize.hist_size: 10
+      sequentialize.target_size: 2
+  outs:
+  - path: assets/data/sequentialized
+    md5: 032a866c3304278f505cd093dcf6c6ef.dir
+    size: 92867124
+    nfiles: 18
+combine:
+  cmd: python3 src/combine.py assets/data/sequentialized/*.npz
+  deps:
+  - path: assets/data/sequentialized
+    md5: 032a866c3304278f505cd093dcf6c6ef.dir
+    size: 92867124
+    nfiles: 18
+  - path: src/combine.py
+    md5: f1ed875c0e292442effa04a2f3cf5cb7
+    size: 1434
+  outs:
+  - path: assets/data/combined
+    md5: dd29b9f790646e3c0b6ec2e9cdee22e6.dir
+    size: 92859284
+    nfiles: 2
+train:
+  cmd: python3 src/train.py assets/data/combined/train.npz
+  deps:
+  - path: assets/data/combined
+    md5: dd29b9f790646e3c0b6ec2e9cdee22e6.dir
+    size: 92859284
+    nfiles: 2
+  - path: src/model.py
+    md5: dbaaa93f6ddf16e0bd88d6d6b651871e
+    size: 5586
+  - path: src/train.py
+    md5: 3ce77988de618b0ee2da8923647a4b7c
+    size: 2510
+  params:
+    params.yaml:
+      train.batch_size: 128
+      train.kernel_size: 2
+      train.n_epochs: 2
+      train.net: cnn
+  outs:
+  - path: assets/models
+    md5: 00b418e4f1acffc58083a2b9598ae3d3.dir
+    size: 1126744
+    nfiles: 1

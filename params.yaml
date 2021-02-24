@@ -50,25 +50,23 @@ featurize:
     - M1_sequence_number # line of G-code being executed
     - M1_CURRENT_FEEDRATE # instantaneous feed rate of spindle
     # - Machining_Process # the current machining stage being performed. Includes preparation, tracing up  and down the "S" curve involving different layers, and repositioning of the spindle as it moves through the air to a certain starting point should not be used as input the the neural network.
+  target: X1_ActualPosition
 
 split:
-  train_split: 0.7
+  train_split: 0.5
 
 scale:
   method: standard # choose between standard and minmax
 
 sequentialize:
   # History window sample size
-  hist_size: 90
-  target_mean_window: 1
+  hist_size: 10
+  target_size: 2
 
 train:
   net: cnn
-  n_epochs: 50
+  n_epochs: 2
   batch_size: 128
-  kernel_size: 6
-  weigh_samples: False
-  weight_thresh: 250
-  weight: 1.5
+  kernel_size: 2
 
 evaluate:
