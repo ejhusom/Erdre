@@ -29,7 +29,6 @@ featurize:
   params:
     params.yaml:
       featurize.features:
-      - X1_ActualPosition
       - X1_ActualVelocity
       - X1_ActualAcceleration
       - X1_CommandPosition

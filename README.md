@@ -11,6 +11,14 @@ Developed using Python3.8. Install the following modules:
 pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc
 ```
 
+## Add data
+
+The data files should be placed in the folder `assets/data/raw/`. The scripts
+look for `.csv`-files, so all `.csv`-files placed in this folder will be
+considered as a part of the data set. If one or several of the files are not in
+the expected format (and have the expected columns), the scripts will most
+likely return an error message.
+
 ## Usage
 
 ### Running experiments
