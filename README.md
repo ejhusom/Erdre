@@ -21,6 +21,14 @@ Run experiments by executing this command on the main directory:
 dvc repro
 ```
 
+To run single stages of the pipeline, run:
+
+```
+dvc repro profile     # will only run the profiling stage
+dvc repro featurize   # will only run the featurize stage
+```
+
+
 ### Adjusting parameters
 
 Adjust the parameters in `params.yaml` to customize the machine learning model.
