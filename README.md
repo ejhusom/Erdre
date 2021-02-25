@@ -24,13 +24,18 @@ The data folder should look something like this:
 ```
 
 assets/data/raw/
-├── experiment_01.csv
-├── experiment_02.csv
-├── experiment_03.csv
-├── ...
-├── experiment_17.csv
-├── experiment_18.csv
-└── README.md
+├── data/
+|   └── raw/
+|       ├── experiment_01.csv
+|       ├── experiment_02.csv
+|       ├── experiment_03.csv
+|       ├── ...
+|       ├── experiment_17.csv
+|       ├── experiment_18.csv
+|       └── README.md
+├── metrics/
+├── plots/
+└── profiling/
 ```
 
 
