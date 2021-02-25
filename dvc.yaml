@@ -1,11 +1,11 @@
 stages:
 
-
   profile:
-    cmd: python3 src/profiling.py assets/data/raw/*.csv
+    cmd: python3 src/profiling.py
     deps:
     - assets/data/raw
     - src/profiling.py
+    - src/myconfig.yaml
 
   featurize:
     cmd: python3 src/featurize.py assets/data/raw/*.csv
