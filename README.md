@@ -34,7 +34,6 @@ assets/data/raw/
 ```
 
 
-
 ## Usage
 
 ### Running experiments
@@ -83,11 +82,16 @@ folder `assets/plots/`, and show the following data:
   values. Only the first value of each target sequence is used in the plot, and
   all of this values are connected and plotted as a line. The features used in
   the model are also plotted.
+
+![Example of prediction.](img/prediction_example.png)
+
 - `prediction_individuals.html`: Individual predicted target sequences are
   plotted against the true values. The predicted sequences are shown in
   different colors to easily distinguish between them. Only a subset of the
   predicted target sequences are shown, in order to avoid overlapping and make
   the plot easier to interpret.
+
+![Example of individual predictions.](img/prediction_individuals_example.png)
 
 ## Available features
 
