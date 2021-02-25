@@ -65,7 +65,7 @@ dvc repro featurize   # will only run the featurize stage
 Adjust the parameters in `params.yaml` to customize the machine learning model.
 
 - `featurize.features`: List of the features you want to use as input to the
-  model. See [available features](available-features) below.
+  model. See [available features](#available-features) below.
 - `featurize.target`: What the target variable should be.
 - `split.train_split`: Fraction of data set to use for training.
 - `scale.method`: Which scaling method to use.
