@@ -55,6 +55,11 @@ dvc repro
 ```
 
 To run single stages of the pipeline, run:
+```
+dvc repro [STAGE NAME]
+```
+
+For example:
 
 ```
 dvc repro profile     # will only run the profiling stage
