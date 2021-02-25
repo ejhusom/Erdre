@@ -24,18 +24,19 @@ import yaml
 from config import DATA_SCALED_PATH
 from preprocess_utils import read_csv, scale_data
 
-def scale(filepaths):
+def scale(dir_path):
     """Scale training and test data.
 
     Args:
-        filepaths (list): List of files to scale. Files need to be have either
-            'train' or 'test' in the name to be recognized.
+        dir_path (str): Path to directory containing files.
 
     """
 
-    # If filepaths is a string (e.g. only one filepath), wrap this in a list
-    if isinstance(filepaths, str):
-        filepaths = [filepaths]
+    filepaths = []
+
+    for f in os.listdir(dir_path):
+        if f.endswith(".csv"):
+            filepaths.append(dir_path + "/" + f)
 
     DATA_SCALED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -108,4 +109,4 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    scale(sys.argv[1:])
+    scale(sys.argv[1])

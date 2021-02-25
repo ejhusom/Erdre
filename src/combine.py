@@ -9,26 +9,28 @@ Created:
     2020-10-29
 
 """
+import os
 import sys
 
 import numpy as np
 
 from config import DATA_COMBINED_PATH
 
-def combine(filepaths):
+def combine(dir_path):
     """Combine data from multiple input files into one dataset.
 
     Args:
-        filepaths (list of str): A list of paths to files containing
-            sequentialized data.
+        dir_path (str): Path to directory containing files.
 
     """
 
-    DATA_COMBINED_PATH.mkdir(parents=True, exist_ok=True)
+    filepaths = []
 
-    # If filepaths is a string (e.g. only one filepath), wrap this in a list
-    if isinstance(filepaths, str):
-        filepaths = [filepaths]
+    for f in os.listdir(dir_path):
+        if f.endswith(".npz"):
+            filepaths.append(dir_path + "/" + f)
+
+    DATA_COMBINED_PATH.mkdir(parents=True, exist_ok=True)
 
     train_inputs = []
     train_outputs = []
@@ -57,4 +59,4 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    combine(sys.argv[1:])
+    combine(sys.argv[1])

@@ -20,17 +20,19 @@ from config import DATA_FEATURIZED_PATH, DATA_PATH
 from preprocess_utils import move_column
 
 
-def featurize(filepaths):
+def featurize(dir_path):
     """Clean up inputs and add features to data set.
 
     Args:
-        filepaths (list of str): List of paths to files to process.
+        dir_path (str): Path to directory containing files.
 
     """
 
-    # If filepaths is a string (e.g. only one filepath), wrap this in a list
-    if isinstance(filepaths, str):
-        filepaths = [filepaths]
+    filepaths = []
+
+    for f in os.listdir(dir_path):
+        if f.endswith(".csv"):
+            filepaths.append(dir_path + "/" + f)
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -105,4 +107,5 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    featurize(sys.argv[1:])
+    # featurize(sys.argv[1:])
+    featurize(sys.argv[1])

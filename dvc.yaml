@@ -8,7 +8,7 @@ stages:
     - src/myconfig.yaml
 
   featurize:
-    cmd: python3 src/featurize.py assets/data/raw/*.csv
+    cmd: python3 src/featurize.py assets/data/raw/
     deps:
     - assets/data/raw
     - src/featurize.py
@@ -19,7 +19,7 @@ stages:
     - featurize.target
 
   split:
-    cmd: python3 src/split.py assets/data/featurized/*.csv
+    cmd: python3 src/split.py assets/data/featurized/
     deps:
     - assets/data/featurized
     - src/split.py
@@ -29,7 +29,7 @@ stages:
     - split.train_split
 
   scale:
-    cmd: python3 src/scale.py assets/data/split/*.csv
+    cmd: python3 src/scale.py assets/data/split/
     deps:
     - assets/data/split
     - src/scale.py
@@ -39,7 +39,7 @@ stages:
     - scale.method
 
   sequentialize:
-    cmd: python3 src/sequentialize.py assets/data/scaled/*.npz
+    cmd: python3 src/sequentialize.py assets/data/scaled/
     deps:
     - assets/data/scaled
     - src/sequentialize.py
@@ -50,7 +50,7 @@ stages:
     - sequentialize.target_size
 
   combine:
-    cmd: python3 src/combine.py assets/data/sequentialized/*.npz
+    cmd: python3 src/combine.py assets/data/sequentialized/
     deps:
     - assets/data/sequentialized
     - src/combine.py

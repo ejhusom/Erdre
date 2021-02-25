@@ -19,16 +19,21 @@ from config import DATA_SPLIT_PATH
 from preprocess_utils import read_csv
 
 
-def split(filepaths):
+def split(dir_path):
     """Split data into train and test set.
 
     Training files and test files are saved to different folders.
 
     Args:
-        filepaths (list of str): A list of paths to files containing
-            featurized data.
+        dir_path (str): Path to directory containing files.
 
     """
+
+    filepaths = []
+
+    for f in os.listdir(dir_path):
+        if f.endswith(".csv"):
+            filepaths.append(dir_path + "/" + f)
 
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
@@ -65,4 +70,4 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    split(sys.argv[1:])
+    split(sys.argv[1])

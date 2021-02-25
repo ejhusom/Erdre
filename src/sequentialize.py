@@ -23,11 +23,13 @@ from preprocess_utils import flatten_sequentialized, read_csv
 from preprocess_utils import split_sequences
 
 
-def sequentialize(filepaths):
+def sequentialize(dir_path):
 
-    # If filepaths is a string (e.g. only one filepath), wrap this in a list
-    if isinstance(filepaths, str):
-        filepaths = [filepaths]
+    filepaths = []
+
+    for f in os.listdir(dir_path):
+        if f.endswith(".npz"):
+            filepaths.append(dir_path + "/" + f)
 
     DATA_SEQUENTIALIZED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -70,4 +72,4 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    sequentialize(sys.argv[1:])
+    sequentialize(sys.argv[1])

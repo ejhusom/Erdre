@@ -17,15 +17,15 @@ profile:
     size: 3515377
     nfiles: 1
 featurize:
-  cmd: python3 src/featurize.py assets/data/raw/*.csv
+  cmd: python3 src/featurize.py assets/data/raw/
   deps:
   - path: assets/data/raw
     md5: f7db2df591d7d41ccb128bc6979cee0c.dir
     size: 11172931
     nfiles: 19
   - path: src/featurize.py
-    md5: 06855fc5648d47d2879bf45e75385b9d
-    size: 2751
+    md5: 1867074401caaf63f6ef211ff764a4f7
+    size: 2762
   params:
     params.yaml:
       featurize.features:
@@ -83,80 +83,80 @@ featurize:
     size: 6933481
     nfiles: 18
 split:
-  cmd: python3 src/split.py assets/data/featurized/*.csv
+  cmd: python3 src/split.py assets/data/featurized/
   deps:
   - path: assets/data/featurized
     md5: cdacea6c0d0e663af01cd0f117f70d06.dir
     size: 6933481
     nfiles: 18
   - path: src/split.py
-    md5: 208cc9248bbc2a9cbdec1d0674238657
-    size: 1592
+    md5: 00d9b0524c344405abfd54b2bb0a2171
+    size: 1688
   params:
     params.yaml:
       split.train_split: 0.5
   outs:
   - path: assets/data/split
-    md5: dfa8e3cb1fc38b70f3f01f9598a05d38.dir
+    md5: 2fd38dfc014b196c8105a6f51ba99cc5.dir
     size: 6739816
     nfiles: 18
 scale:
-  cmd: python3 src/scale.py assets/data/split/*.csv
+  cmd: python3 src/scale.py assets/data/split/
   deps:
   - path: assets/data/split
-    md5: dfa8e3cb1fc38b70f3f01f9598a05d38.dir
+    md5: 2fd38dfc014b196c8105a6f51ba99cc5.dir
     size: 6739816
     nfiles: 18
   - path: src/scale.py
-    md5: a4eb452ad378bc0b63b5fb43287c0f7d
-    size: 2727
+    md5: dfcca49b2d496adf3f7ae41678c15353
+    size: 2637
   params:
     params.yaml:
       scale.method: standard
   outs:
   - path: assets/data/scaled
-    md5: 0c58f46145fe7ee0439602e79495de9f.dir
+    md5: c757bf2a5a95874ee8c372554e1fcd30.dir
     size: 9516356
     nfiles: 18
 sequentialize:
-  cmd: python3 src/sequentialize.py assets/data/scaled/*.npz
+  cmd: python3 src/sequentialize.py assets/data/scaled/
   deps:
   - path: assets/data/scaled
-    md5: 0c58f46145fe7ee0439602e79495de9f.dir
+    md5: c757bf2a5a95874ee8c372554e1fcd30.dir
     size: 9516356
     nfiles: 18
   - path: src/sequentialize.py
-    md5: 39a68ad9f8c667dae964bbdd17ff70c5
-    size: 1714
+    md5: 8b5cc5b111ed28060160a3c0303f3b64
+    size: 1703
   params:
     params.yaml:
       sequentialize.hist_size: 50
       sequentialize.target_size: 50
   outs:
   - path: assets/data/sequentialized
-    md5: a329f692c99941ff67c18044a729f3b1.dir
+    md5: b95418988afc43aa751064eee7995f62.dir
     size: 458804020
     nfiles: 18
 combine:
-  cmd: python3 src/combine.py assets/data/sequentialized/*.npz
+  cmd: python3 src/combine.py assets/data/sequentialized/
   deps:
   - path: assets/data/sequentialized
-    md5: a329f692c99941ff67c18044a729f3b1.dir
+    md5: b95418988afc43aa751064eee7995f62.dir
     size: 458804020
     nfiles: 18
   - path: src/combine.py
-    md5: f1ed875c0e292442effa04a2f3cf5cb7
-    size: 1434
+    md5: d348ebfc8211a036fbba3468f162787f
+    size: 1391
   outs:
   - path: assets/data/combined
-    md5: 4939c299d15dcf4c0e49323c713bc426.dir
+    md5: 9df8c98038fbdcf2371edca5a585745e.dir
     size: 458796180
     nfiles: 2
 train:
   cmd: python3 src/train.py assets/data/combined/train.npz
   deps:
   - path: assets/data/combined
-    md5: 4939c299d15dcf4c0e49323c713bc426.dir
+    md5: 9df8c98038fbdcf2371edca5a585745e.dir
     size: 458796180
     nfiles: 2
   - path: src/model.py
@@ -173,22 +173,22 @@ train:
       train.net: cnn
   outs:
   - path: assets/models
-    md5: 0ab2a8f20cb0788a0c275a52109f522a.dir
+    md5: e49e59d924bcfa0feb1353385a8f0f5f.dir
     size: 5096704
     nfiles: 1
 evaluate:
   cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
   deps:
   - path: assets/data/combined/test.npz
-    md5: 86eeeac0a49d698a7ea587cc313d0d27
-    size: 308339290
+    md5: 413d70b3594cbaff9c3d3747aa12b811
+    size: 226390090
   - path: assets/models/model.h5
-    md5: cc65f8c2b0d5cbff4b4d3b13121a0932
+    md5: 8bf460cc7c74b3806439bf2d4d1e5369
     size: 5096704
   - path: src/evaluate.py
     md5: 7779ca8a5ed4b46ee843f944d9249108
     size: 5592
   outs:
   - path: assets/metrics/metrics.json
-    md5: 47c2d545e48a49bd2016efe29a531b50
-    size: 25
+    md5: 3815ef9de25c4cb4f89f303e0848d71e
+    size: 27
