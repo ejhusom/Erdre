@@ -19,6 +19,22 @@ considered as a part of the data set. If one or several of the files are not in
 the expected format (and have the expected columns), the scripts will most
 likely return an error message.
 
+The data folder should look something like this:
+
+```
+
+assets/data/raw/
+├── experiment_01.csv
+├── experiment_02.csv
+├── experiment_03.csv
+├── ...
+├── experiment_17.csv
+├── experiment_18.csv
+└── README.md
+```
+
+
+
 ## Usage
 
 ### Running experiments
