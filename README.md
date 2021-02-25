@@ -72,9 +72,26 @@ Adjust the parameters in `params.yaml` to customize the machine learning model.
 - `train.kernel_size`: Kernel size (only applicable when convolutional layers are
   used).
 
+
+## Evaluation
+
+When the trained model is evaluated, the program produces two plots that
+visualizes the predictions on the test set. These plots are placed on the
+folder `assets/plots/`, and show the following data:
+
+- `prediction.html`: The true target values compared to the predicted target
+  values. Only the first value of each target sequence is used in the plot, and
+  all of this values are connected and plotted as a line. The features used in
+  the model are also plotted.
+- `prediction_individuals.html`: Individual predicted target sequences are
+  plotted against the true values. The predicted sequences are shown in
+  different colors to easily distinguish between them. Only a subset of the
+  predicted target sequences are shown, in order to avoid overlapping and make
+  the plot easier to interpret.
+
 ## Available features
 
-Raw features:
+Raw featurcontaines:
 
 - `X1_ActualPosition`: actual x position of part (mm)
 - `X1_ActualVelocity`: actual x velocity of part (mm/s)
