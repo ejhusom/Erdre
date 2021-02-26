@@ -164,7 +164,7 @@ folder `assets/plots/`, and show the following data:
 
 ## Available features
 
-Raw featurcontaines:
+Raw features:
 
 - `X1_ActualPosition`: actual x position of part (mm)
 - `X1_ActualVelocity`: actual x velocity of part (mm/s)

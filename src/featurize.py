@@ -46,8 +46,7 @@ def featurize(dir_path):
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     if len(filepaths) == 0:
-        raise ValueError("Could not find any data files in 'assets/data/raw'.")
-
+        raise ValueError(f"Could not find any data files in {dir_path}.")
 
     features = params["features"]
     """Features to include in data set."""
