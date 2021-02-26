@@ -6,7 +6,7 @@ build*
 
 # data-files
 *.dat
-*.txt
+# *.txt
 *.csv
 
 # doconce:
