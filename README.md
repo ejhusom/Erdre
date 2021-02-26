@@ -107,6 +107,14 @@ Run experiments by executing this command on the main directory:
 dvc repro
 ```
 
+On some systems, `dvc` cannot be run as a standalone command, in which case you
+will need to run:
+
+```
+python3 -m dvc repro
+```
+
+
 To run single stages of the pipeline, run:
 ```
 dvc repro [STAGE NAME]
