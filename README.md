@@ -39,10 +39,9 @@ considered as a part of the data set. If one or several of the files are not in
 the expected format (and have the expected columns), the scripts will most
 likely return an error message.
 
-The data folder should look something like this:
+Example:
 
 ```
-
 assets/
 ├── data/
 |   └── raw/
@@ -57,6 +56,45 @@ assets/
 ├── plots/
 └── profiling/
 ```
+
+If you want to keep data in separate subfolders, make a subfolder in
+`Erdre/assets/data/raw` and enter the subfolder name as the parameter
+`featurize.raw_subfolder` in `params.yaml`.
+
+Example with a subfolder called `experiment1`:
+
+```
+assets/
+├── data/
+|   └── raw/
+|       ├── experiment1/
+|       |   ├── experiment_01.csv
+|       |   ├── experiment_02.csv
+|       |   ├── experiment_03.csv
+|       |   ├── ...
+|       |   ├── experiment_17.csv
+|       |   └── experiment_18.csv
+|       └─── README.md
+├── metrics/
+├── plots/
+└── profiling/
+```
+
+And then set the subfolder name in `params.yaml`:
+
+```
+...
+
+featurize:
+  raw_subfolder: experiment1
+  features:
+    - ...
+    - ...
+
+...
+
+```
+
 
 
 ## Usage
