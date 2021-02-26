@@ -28,6 +28,8 @@ As an alternative you can install the required modules by running:
 pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc
 ```
 
+To get a plot of the neural network architecture, the following software needs
+to be installed: [Graphviz](https://graphviz.org/about/).
 
 ## Add data
 
