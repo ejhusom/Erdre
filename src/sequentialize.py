@@ -39,6 +39,9 @@ def sequentialize(dir_path):
     hist_size = params["hist_size"]
     target_size = params["target_size"]
 
+    if target_size > hist_size:
+        raise ValueError("target_size cannot be larger than hist_size.")
+
     for filepath in filepaths:
 
         infile = np.load(filepath)
