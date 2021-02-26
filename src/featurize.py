@@ -36,6 +36,9 @@ def featurize(dir_path):
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
+    if len(filepaths) == 0:
+        raise ValueError("Could not find any data files in 'assets/data/raw'.")
+
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["featurize"]
 
@@ -49,6 +52,8 @@ def featurize(dir_path):
 
         # Read csv
         df = pd.read_csv(filepath)
+        
+
         df.dropna(inplace=True)
 
         # Move target column to the beginning of dataframe
