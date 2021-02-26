@@ -43,7 +43,7 @@ The data folder should look something like this:
 
 ```
 
-assets/data/raw/
+assets/
 ├── data/
 |   └── raw/
 |       ├── experiment_01.csv
@@ -87,7 +87,8 @@ dvc repro featurize   # will only run the featurize stage
 Adjust the parameters in `params.yaml` to customize the machine learning model.
 
 - `featurize.features`: List of the features you want to use as input to the
-  model. See [available features](#available-features) below.
+  model. By default these are the names of the columns in the data files. See
+  [available features](#available-features) below.
 - `featurize.target`: What the target variable should be.
 - `split.train_split`: Fraction of data set to use for training.
 - `scale.method`: Which scaling method to use.

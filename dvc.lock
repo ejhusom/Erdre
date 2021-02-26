@@ -20,15 +20,16 @@ featurize:
   cmd: python3 src/featurize.py assets/data/raw/
   deps:
   - path: assets/data/raw
-    md5: f7db2df591d7d41ccb128bc6979cee0c.dir
-    size: 11172931
-    nfiles: 19
+    md5: d7b396804b34637d23d7c7943377b6ba.dir
+    size: 11192529
+    nfiles: 21
   - path: src/featurize.py
-    md5: 1867074401caaf63f6ef211ff764a4f7
-    size: 2762
+    md5: 139657fcd2c7103b9d0b5b5ecfd7ce6a
+    size: 3067
   params:
     params.yaml:
       featurize.features:
+      - X1_ActualPosition
       - X1_ActualVelocity
       - X1_ActualAcceleration
       - X1_CommandPosition
@@ -75,6 +76,7 @@ featurize:
       - M1_CURRENT_PROGRAM_NUMBER
       - M1_sequence_number
       - M1_CURRENT_FEEDRATE
+      featurize.raw_subfolder: experiment1
       featurize.target: X1_ActualPosition
   outs:
   - path: assets/data/featurized

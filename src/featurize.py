@@ -28,6 +28,15 @@ def featurize(dir_path):
 
     """
 
+    # Load parameters
+    params = yaml.safe_load(open("params.yaml"))["featurize"]
+
+    raw_subfolder = params["raw_subfolder"]
+    """Subfolder of 'assets/data/raw', in where to look for data."""
+
+    if raw_subfolder != None:
+        dir_path += "/" + raw_subfolder
+
     filepaths = []
 
     for f in os.listdir(dir_path):
@@ -39,8 +48,6 @@ def featurize(dir_path):
     if len(filepaths) == 0:
         raise ValueError("Could not find any data files in 'assets/data/raw'.")
 
-    # Load parameters
-    params = yaml.safe_load(open("params.yaml"))["featurize"]
 
     features = params["features"]
     """Features to include in data set."""

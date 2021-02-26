@@ -1,6 +1,7 @@
 profile:
 
 featurize:
+  raw_subfolder: experiment1
   features:
     - X1_ActualPosition # actual x position of part (mm)
     - X1_ActualVelocity # actual x velocity of part (mm/s)
