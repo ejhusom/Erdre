@@ -58,9 +58,8 @@ def featurize(dir_path):
 
         # Read csv
         df = pd.read_csv(filepath)
-        
 
-        df.dropna(inplace=True)
+        # df.dropna(inplace=True)
 
         # Move target column to the beginning of dataframe
         df = move_column(df, column_name=target, new_idx=0)

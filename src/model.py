@@ -64,7 +64,7 @@ def cnn(input_x, input_y,
     # model.add(layers.Dense(32, activation="relu", name="dense_3"))
     model.add(layers.Dense(output_length, activation="linear",
         name="output_layer"))
-    model.compile(optimizer="adam", loss="mse", metrics=["mae", "mape"])
+    model.compile(optimizer="adam", loss="mse")
 
     return model
 
@@ -87,7 +87,7 @@ def dnn(input_x, n_steps_out=1, seed=2020):
     model.add(layers.Dense(128, activation='relu'))
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(n_steps_out, activation='linear'))
-    model.compile(optimizer='adam', loss='mae')
+    model.compile(optimizer='adam')
 
     return model
 

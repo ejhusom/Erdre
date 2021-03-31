@@ -31,17 +31,37 @@ def split(dir_path):
 
     filepaths = []
 
+    DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
+
+    params = yaml.safe_load(open("params.yaml"))["split"]
+
+
     for f in os.listdir(dir_path):
         if f.endswith(".csv"):
             filepaths.append(dir_path + "/" + f)
 
+
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
-        raise NotImplementedError("Cannot handle only one input file.")
+        filepath = filepaths[0]
 
-    DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
+        df = pd.read_csv(filepath, index_col=0)
+        
+        train_size = int(len(df) * params["train_split"])
 
-    params = yaml.safe_load(open("params.yaml"))["split"]
+        df_train = df.iloc[:train_size]
+        df_test = df.iloc[train_size:]
+
+        df_train.to_csv(
+            DATA_SPLIT_PATH
+            / (os.path.basename(filepath).replace("featurized", "train"))
+        )
+
+        df_test.to_csv(
+            DATA_SPLIT_PATH
+            / (os.path.basename(filepath).replace("featurized", "test"))
+        )
+        
 
     # Parameter 'train_split' is used to find out no. of files in training set
     file_split = int(len(filepaths) * params["train_split"])

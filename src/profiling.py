@@ -1,3 +1,5 @@
+import os 
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,9 +28,15 @@ dir_path = str(DATA_PATH_RAW)
 if raw_subfolder != None:
     dir_path += "/" + raw_subfolder
 
-# Read and append the first 9 .csv files.
-for i in range(1,10):
-    tmp = pd.read_csv(dir_path + "/" + "experiment_0" + str(i) + ".csv")
+filepaths = []
+
+for f in os.listdir(dir_path):
+    if f.endswith(".csv"):
+        filepaths.append(dir_path + "/" + f)
+
+# Read and append the csv files
+for i in range(len(filepaths)):
+    tmp = pd.read_csv(filepaths[i])
     df = df.append(tmp)
 
 #### End of read data section ####
