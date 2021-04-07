@@ -59,7 +59,6 @@ def featurize(dir_path):
         # Read csv
         df = pd.read_csv(filepath)
 
-        # df.dropna(inplace=True)
 
         # Move target column to the beginning of dataframe
         df = move_column(df, column_name=target, new_idx=0)
@@ -78,6 +77,8 @@ def featurize(dir_path):
         for col in df.columns:
             if col not in features and col != target:
                 del df[col]
+
+        df.dropna(inplace=True)
 
         # Save data
         df.to_csv(

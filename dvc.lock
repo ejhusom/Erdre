@@ -4,9 +4,9 @@ stages:
     cmd: python3 src/profiling.py
     deps:
     - path: assets/data/raw
-      md5: af6936314ea175ba0446097b875ad56e.dir
-      size: 15919797
-      nfiles: 2
+      md5: 49fd005e7814e06268a081d1bfe36032.dir
+      size: 15925945
+      nfiles: 3
     - path: src/myconfig.yaml
       md5: 4e8937762dbd8de5bd24c2b3faa78634
       size: 3810
@@ -17,12 +17,12 @@ stages:
     cmd: python3 src/featurize.py assets/data/raw/
     deps:
     - path: assets/data/raw
-      md5: af6936314ea175ba0446097b875ad56e.dir
-      size: 15919797
-      nfiles: 2
+      md5: 49fd005e7814e06268a081d1bfe36032.dir
+      size: 15925945
+      nfiles: 3
     - path: src/featurize.py
-      md5: 359f295e905a1435112802c8398e477d
-      size: 3053
+      md5: 1a188eaa96e2485a38df5d4298dce151
+      size: 3052
     params:
       params.yaml:
         featurize.features:
@@ -40,7 +40,6 @@ stages:
         - Axis_Pos_X
         - Axis_Pos_Y
         - Axis_Pos_Z
-        - Axis_X1_power_percent
         - Axis_X2_power_percent
         - Axis_Table1B_deg_d10000
         - Axis_Table1W_position_mm_d10000
@@ -55,23 +54,24 @@ stages:
         - Cnc_MachineRuningTime
         - Cnc_MachineUpTime
         - Cnc_NcUpTime
+        - Cnc_OperationMode
         - Cnc_Override_Axis
         - Cnc_Override_Spindle
         - Cnc_Tool_Index
         - Machine_isOperational
         - Spindle_Power_percent
         featurize.raw_subfolder:
-        featurize.target: Cnc_OperationMode
+        featurize.target: Axis_X1_power_percent
     outs:
     - path: assets/data/featurized
-      md5: 26cda0af10dd08ece1e6cea2cf17fff7.dir
+      md5: 9cf809ce245daa48cd87f26e1f17145b.dir
       size: 12768385
       nfiles: 1
   split:
     cmd: python3 src/split.py assets/data/featurized/
     deps:
     - path: assets/data/featurized
-      md5: 26cda0af10dd08ece1e6cea2cf17fff7.dir
+      md5: 9cf809ce245daa48cd87f26e1f17145b.dir
       size: 12768385
       nfiles: 1
     - path: src/split.py
@@ -82,14 +82,14 @@ stages:
         split.train_split: 0.4
     outs:
     - path: assets/data/split
-      md5: beb668b28b35e713053148a1e4c8b287.dir
+      md5: f9a615c2a2cdc9f0d90de87acad0b831.dir
       size: 17841842
       nfiles: 2
   scale:
     cmd: python3 src/scale.py assets/data/split/
     deps:
     - path: assets/data/split
-      md5: beb668b28b35e713053148a1e4c8b287.dir
+      md5: f9a615c2a2cdc9f0d90de87acad0b831.dir
       size: 17841842
       nfiles: 2
     - path: src/scale.py
@@ -100,14 +100,14 @@ stages:
         scale.method: standard
     outs:
     - path: assets/data/scaled
-      md5: b049ba1cfbedb30fbaabb44d51d61c51.dir
+      md5: 97c5820423f02c58c939427a5393843a.dir
       size: 32783940
       nfiles: 2
   sequentialize:
     cmd: python3 src/sequentialize.py assets/data/scaled/
     deps:
     - path: assets/data/scaled
-      md5: b049ba1cfbedb30fbaabb44d51d61c51.dir
+      md5: 97c5820423f02c58c939427a5393843a.dir
       size: 32783940
       nfiles: 2
     - path: src/sequentialize.py
@@ -119,14 +119,14 @@ stages:
         sequentialize.target_size: 50
     outs:
     - path: assets/data/sequentialized
-      md5: b92e97cb9a7c051fb5e4d5e241848d88.dir
+      md5: 71627e3b79179a57323079c39b42e970.dir
       size: 1637776980
       nfiles: 2
   combine:
     cmd: python3 src/combine.py assets/data/sequentialized/
     deps:
     - path: assets/data/sequentialized
-      md5: b92e97cb9a7c051fb5e4d5e241848d88.dir
+      md5: 71627e3b79179a57323079c39b42e970.dir
       size: 1637776980
       nfiles: 2
     - path: src/combine.py
@@ -134,14 +134,14 @@ stages:
       size: 1391
     outs:
     - path: assets/data/combined
-      md5: 6fd17e29666c280b89a1934c349444d9.dir
+      md5: 28fb72a2d1b2fa44fcb4c8e48895b0e4.dir
       size: 1637776980
       nfiles: 2
   train:
     cmd: python3 src/train.py assets/data/combined/train.npz
     deps:
     - path: assets/data/combined
-      md5: 6fd17e29666c280b89a1934c349444d9.dir
+      md5: 28fb72a2d1b2fa44fcb4c8e48895b0e4.dir
       size: 1637776980
       nfiles: 2
     - path: src/model.py
@@ -154,26 +154,26 @@ stages:
       params.yaml:
         train.batch_size: 128
         train.kernel_size: 4
-        train.n_epochs: 10
+        train.n_epochs: 30
         train.net: cnn
     outs:
     - path: assets/models
-      md5: d030df49618de466ccc1158c3d26aa06.dir
+      md5: 7381d4aec2cd3847d7d20662cf1c2da4.dir
       size: 4638976
       nfiles: 1
   evaluate:
     cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
     deps:
     - path: assets/data/combined/test.npz
-      md5: 160272872269a9faa0b9052d344f0e5d
+      md5: e67ef2f51702d8fe4703a7b89387d15f
       size: 1170134490
     - path: assets/models/model.h5
-      md5: f46514dae954e05edff3db35d4eaa676
+      md5: c58fe71ee21f20b954a1a344c0c5b563
       size: 4638976
     - path: src/evaluate.py
       md5: b7f94a4d524765dfcccc8959e455b868
       size: 5590
     outs:
     - path: assets/metrics/metrics.json
-      md5: 2e03874a366e9077babbe22c889ce505
-      size: 25
+      md5: b8c7cdb953ff98b13a145f19d3363f5c
+      size: 26

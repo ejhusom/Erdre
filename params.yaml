@@ -19,7 +19,7 @@ featurize:
       - Axis_Pos_X
       - Axis_Pos_Y
       - Axis_Pos_Z
-      - Axis_X1_power_percent
+      # - Axis_X1_power_percent
       - Axis_X2_power_percent
       - Axis_Table1B_deg_d10000
       - Axis_Table1W_position_mm_d10000
@@ -35,7 +35,7 @@ featurize:
       - Cnc_MachineRuningTime
       - Cnc_MachineUpTime
       - Cnc_NcUpTime
-      # - Cnc_OperationMode
+      - Cnc_OperationMode
       - Cnc_Override_Axis
       - Cnc_Override_Spindle
       # - Cnc_Program_Name_RT
@@ -43,7 +43,7 @@ featurize:
       - Cnc_Tool_Index
       - Machine_isOperational
       - Spindle_Power_percent
-  target: Cnc_OperationMode
+  target: Axis_X1_power_percent
 
 split:
   train_split: 0.4
@@ -58,7 +58,7 @@ sequentialize:
 
 train:
   net: cnn
-  n_epochs: 10
+  n_epochs: 30
   batch_size: 128
   kernel_size: 4    
 
