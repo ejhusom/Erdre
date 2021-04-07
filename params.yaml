@@ -46,10 +46,11 @@ featurize:
   target: Axis_X1_power_percent
 
 split:
-  train_split: 0.4
+  train_split: 0.7
 
 scale:
   method: standard # choose between standard and minmax
+  output: standard
 
 sequentialize:
   # History window sample size

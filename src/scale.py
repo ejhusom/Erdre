@@ -42,6 +42,7 @@ def scale(dir_path):
 
     params = yaml.safe_load(open("params.yaml"))["scale"]
     method = params["method"]
+    output_method = params["output"]
     
     if method == "standard":
         scaler = StandardScaler()
@@ -52,9 +53,21 @@ def scale(dir_path):
     elif method == "none":
         scaler = StandardScaler()
     else:
-        raise NotImplementedError(f"{scaler_type} not implemented.")
+        raise NotImplementedError(f"{method} not implemented.")
+
+    if output_method == "standard":
+        output_scaler = StandardScaler()
+    elif output_method == "minmax":
+        output_scaler = MinMaxScaler()
+    elif output_method == "robust":
+        output_scaler = RobustScaler()
+    elif output_method == "none":
+        output_scaler = StandardScaler()
+    else:
+        raise NotImplementedError(f"{output_method} not implemented.")
 
     train_inputs = []
+    train_outputs = []
 
     data_overview = {}
 
@@ -72,6 +85,7 @@ def scale(dir_path):
 
         if "train" in filepath:
             train_inputs.append(X)
+            train_outputs.append(y)
             category = "train"
         elif "test" in filepath:
             category = "test"
@@ -79,9 +93,11 @@ def scale(dir_path):
         data_overview[filepath] = {"X": X, "y": y, "category": category}
 
     X_train = np.concatenate(train_inputs)
+    y_train = np.concatenate(train_outputs)
 
     # Fit a scaler to the training data
     scaler = scaler.fit(X_train)
+    output_scaler = output_scaler.fit(y_train)
 
     for filepath in data_overview:
 
@@ -90,6 +106,12 @@ def scale(dir_path):
             X=data_overview[filepath]["X"]
         else:
             X = scaler.transform(data_overview[filepath]["X"])
+
+        # Scale outputs
+        if output_method == "none":
+            y = data_overview[filepath]["y"]
+        else:
+            y = output_scaler.transform(data_overview[filepath]["y"])
 
         # Save X and y into a binary file
         np.savez(
@@ -102,7 +124,8 @@ def scale(dir_path):
             ),
             #X=data_overview[filepath]["X"],
             X = X, 
-            y = data_overview[filepath]["y"]
+            # y = data_overview[filepath]["y"]
+            y = y
         )
 
 if __name__ == "__main__":
