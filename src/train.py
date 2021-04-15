@@ -37,6 +37,7 @@ def train(filepath):
     params = yaml.safe_load(open("params.yaml"))["train"]
     net = params["net"]
     use_early_stopping = params["early_stopping"]
+    patience = params["patience"]
 
     # Load training set
     train = np.load(filepath)
@@ -81,7 +82,7 @@ def train(filepath):
 
     early_stopping = EarlyStopping(
             monitor="val_loss",
-            patience=15,
+            patience=patience,
             verbose=4
     )
 
@@ -98,7 +99,6 @@ def train(filepath):
             epochs=10,
             batch_size=params["batch_size"],
             validation_split=0.25,
-            sample_weight=sample_weights
         )
 
         loss = history.history['loss']
@@ -110,7 +110,6 @@ def train(filepath):
             epochs=params["n_epochs"],
             batch_size=params["batch_size"],
             validation_split=0.25,
-            sample_weight=sample_weights,
             callbacks=[early_stopping, model_checkpoint]
         )
 
@@ -123,7 +122,6 @@ def train(filepath):
             epochs=params["n_epochs"],
             batch_size=params["batch_size"],
             validation_split=0.25,
-            sample_weight=sample_weights
         )
 
         loss = history.history['loss']

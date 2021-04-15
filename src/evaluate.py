@@ -54,7 +54,7 @@ def evaluate(model_filepath, test_filepath):
     print("MSE: {}".format(mse))
     print("R2: {}".format(r2))
 
-    plot_prediction(y_test, y_pred, inputs=X_test, info="(MSE: {})".format(mse))
+    plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
     plot_individual_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
