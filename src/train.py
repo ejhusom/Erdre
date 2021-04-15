@@ -16,6 +16,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import yaml
 
 from config import MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
@@ -35,6 +36,7 @@ def train(filepath):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["train"]
     net = params["net"]
+    use_early_stopping = params["early_stopping"]
 
     # Load training set
     train = np.load(filepath)
@@ -77,20 +79,61 @@ def train(filepath):
         dpi=96
     )
 
-    history = model.fit(
-        X_train, y_train, 
-        epochs=params["n_epochs"], 
-        batch_size=params["batch_size"],
-        validation_split=0.2
+    early_stopping = EarlyStopping(
+            monitor="val_loss",
+            patience=15,
+            verbose=4
     )
 
-    MODELS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    model.save(MODELS_FILE_PATH)
+    model_checkpoint = ModelCheckpoint(
+            MODELS_FILE_PATH, 
+            monitor="val_loss",
+            save_best_only=True
+    )
+    
+    if use_early_stopping:
+        # Train model for 10 epochs before adding early stopping
+        history = model.fit(
+            X_train, y_train, 
+            epochs=10,
+            batch_size=params["batch_size"],
+            validation_split=0.25,
+            sample_weight=sample_weights
+        )
+
+        loss = history.history['loss']
+        val_loss = history.history['val_loss']
+        print(type(loss))
+
+        history = model.fit(
+            X_train, y_train, 
+            epochs=params["n_epochs"],
+            batch_size=params["batch_size"],
+            validation_split=0.25,
+            sample_weight=sample_weights,
+            callbacks=[early_stopping, model_checkpoint]
+        )
+
+        loss += history.history['loss']
+        val_loss += history.history['val_loss']
+
+    else:
+        history = model.fit(
+            X_train, y_train, 
+            epochs=params["n_epochs"],
+            batch_size=params["batch_size"],
+            validation_split=0.25,
+            sample_weight=sample_weights
+        )
+
+        loss = history.history['loss']
+        val_loss = history.history['val_loss']
+
+        model.save(MODELS_FILE_PATH)
 
     TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
+    print(f"Best model in epoch: {np.argmax(np.array(val_loss))}")
 
     n_epochs = range(len(loss))
 
