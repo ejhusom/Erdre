@@ -3,50 +3,12 @@ profile:
 featurize:
   raw_subfolder:
   features:
-      # - Date
-      - Alarms_IsAnyAlarmActivated_TR
-      - Axis_FeedRate_actual
-      - Cnc_IsCycleOn_RT
-      - Cnc_IsCyclePaused
-      - Cnc_IsManualModeActive
-      - Cnc_Program_BlockNumber_RT
-      - Cnc_Tool_Number_RT
-      - Machine_isON
-      - Axis_FeedRate_commanded
-      # - Axis_Pos_A
-      - Axis_Pos_B
-      - Axis_Pos_C
-      - Axis_Pos_X
-      - Axis_Pos_Y
-      - Axis_Pos_Z
-      # - Axis_X1_power_percent
-      - Axis_X2_power_percent
-      - Axis_Table1B_deg_d10000
-      - Axis_Table1W_position_mm_d10000
-      # - Axis_Table1_U
-      - Axis_X_positionActualMCS_mm_d10000
-      - Axis_Y_positionActualMCS_mm_d10000
-      - Axis_Y_power_percent
-      - Axis_Y_temperature_degreeCelsius_d10
-      - Axis_Z_positionActualMCS_mm_d10000
-      - Axis_Z_power_percent
-      - Axis_Z_temperature_degreeCelsius_d10
-      - CNC_Actual_RPM
-      - Cnc_MachineRuningTime
-      - Cnc_MachineUpTime
-      - Cnc_NcUpTime
-      - Cnc_OperationMode
-      - Cnc_Override_Axis
-      - Cnc_Override_Spindle
-      # - Cnc_Program_Name_RT
-      # - Cnc_Short_Program_Name_RT
-      - Cnc_Tool_Index
-      - Machine_isOperational
-      - Spindle_Power_percent
-  target: Axis_X1_power_percent
+      - B1_POSITION_VALUE
+      - B1_SPEED_VALUE
+  target: B1_CURRENT_VALUE
 
 split:
-  train_split: 0.7
+  train_split: 0.1
 
 scale:
   method: standard # choose between standard and minmax

@@ -17,80 +17,48 @@ stages:
     cmd: python3 src/featurize.py assets/data/raw/
     deps:
     - path: assets/data/raw
-      md5: 49fd005e7814e06268a081d1bfe36032.dir
-      size: 15925945
-      nfiles: 3
+      md5: 9c61fd43168e4945543547cf7182b9b3.dir
+      size: 161965062
+      nfiles: 4
     - path: src/featurize.py
       md5: 1a188eaa96e2485a38df5d4298dce151
       size: 3052
     params:
       params.yaml:
         featurize.features:
-        - Alarms_IsAnyAlarmActivated_TR
-        - Axis_FeedRate_actual
-        - Cnc_IsCycleOn_RT
-        - Cnc_IsCyclePaused
-        - Cnc_IsManualModeActive
-        - Cnc_Program_BlockNumber_RT
-        - Cnc_Tool_Number_RT
-        - Machine_isON
-        - Axis_FeedRate_commanded
-        - Axis_Pos_B
-        - Axis_Pos_C
-        - Axis_Pos_X
-        - Axis_Pos_Y
-        - Axis_Pos_Z
-        - Axis_X2_power_percent
-        - Axis_Table1B_deg_d10000
-        - Axis_Table1W_position_mm_d10000
-        - Axis_X_positionActualMCS_mm_d10000
-        - Axis_Y_positionActualMCS_mm_d10000
-        - Axis_Y_power_percent
-        - Axis_Y_temperature_degreeCelsius_d10
-        - Axis_Z_positionActualMCS_mm_d10000
-        - Axis_Z_power_percent
-        - Axis_Z_temperature_degreeCelsius_d10
-        - CNC_Actual_RPM
-        - Cnc_MachineRuningTime
-        - Cnc_MachineUpTime
-        - Cnc_NcUpTime
-        - Cnc_OperationMode
-        - Cnc_Override_Axis
-        - Cnc_Override_Spindle
-        - Cnc_Tool_Index
-        - Machine_isOperational
-        - Spindle_Power_percent
+        - B1_POSITION_VALUE
+        - B1_SPEED_VALUE
         featurize.raw_subfolder:
-        featurize.target: Axis_X1_power_percent
+        featurize.target: B1_CURRENT_VALUE
     outs:
     - path: assets/data/featurized
-      md5: 9cf809ce245daa48cd87f26e1f17145b.dir
-      size: 12768385
+      md5: 255d5c351e5fca4ea7e54b9e76e756d9.dir
+      size: 25398817
       nfiles: 1
   split:
     cmd: python3 src/split.py assets/data/featurized/
     deps:
     - path: assets/data/featurized
-      md5: 9cf809ce245daa48cd87f26e1f17145b.dir
-      size: 12768385
+      md5: 255d5c351e5fca4ea7e54b9e76e756d9.dir
+      size: 25398817
       nfiles: 1
     - path: src/split.py
       md5: a08e1db056ca51eb9a9ea2bbdce3bde0
       size: 2129
     params:
       params.yaml:
-        split.train_split: 0.7
+        split.train_split: 0.1
     outs:
     - path: assets/data/split
-      md5: 83179c752e23d99fcc5d6f877e5bb519.dir
-      size: 21683817
+      md5: 39181207e0edf0231ea4f57c5696264e.dir
+      size: 27922489
       nfiles: 2
   scale:
     cmd: python3 src/scale.py assets/data/split/
     deps:
     - path: assets/data/split
-      md5: 83179c752e23d99fcc5d6f877e5bb519.dir
-      size: 21683817
+      md5: 39181207e0edf0231ea4f57c5696264e.dir
+      size: 27922489
       nfiles: 2
     - path: src/scale.py
       md5: e53b8796f16bb970d4dca443ae7662f5
@@ -100,15 +68,15 @@ stages:
         scale.method: standard
     outs:
     - path: assets/data/scaled
-      md5: 7dd545a627605d592d57fcf403f359b6.dir
-      size: 39808580
+      md5: 97644b55c0fef48c7ed647b56667128a.dir
+      size: 11405900
       nfiles: 2
   sequentialize:
     cmd: python3 src/sequentialize.py assets/data/scaled/
     deps:
     - path: assets/data/scaled
-      md5: 7dd545a627605d592d57fcf403f359b6.dir
-      size: 39808580
+      md5: 97644b55c0fef48c7ed647b56667128a.dir
+      size: 11405900
       nfiles: 2
     - path: src/sequentialize.py
       md5: de49cefc60e7a076f20ec63009c30cf2
@@ -119,34 +87,34 @@ stages:
         sequentialize.target_size: 50
     outs:
     - path: assets/data/sequentialized
-      md5: 6bda7f24d6948f302825edc38a04946f.dir
-      size: 1989008980
+      md5: 45760e4a99bed85ca6f569c8a8d91228.dir
+      size: 570129380
       nfiles: 2
   combine:
     cmd: python3 src/combine.py assets/data/sequentialized/
     deps:
     - path: assets/data/sequentialized
-      md5: 6bda7f24d6948f302825edc38a04946f.dir
-      size: 1989008980
+      md5: 45760e4a99bed85ca6f569c8a8d91228.dir
+      size: 570129380
       nfiles: 2
     - path: src/combine.py
       md5: d348ebfc8211a036fbba3468f162787f
       size: 1391
     outs:
     - path: assets/data/combined
-      md5: b3e5a353edabf87d335ecb534c0f8e13.dir
-      size: 1989008980
+      md5: da55b22ea95469f37134245d964d3d97.dir
+      size: 570129380
       nfiles: 2
   train:
     cmd: python3 src/train.py assets/data/combined/train.npz
     deps:
     - path: assets/data/combined
-      md5: b3e5a353edabf87d335ecb534c0f8e13.dir
-      size: 1989008980
+      md5: da55b22ea95469f37134245d964d3d97.dir
+      size: 570129380
       nfiles: 2
     - path: src/model.py
-      md5: 12b4ed5113b6e14d1d44984c0b82e9cf
-      size: 5515
+      md5: daa3a29acec1c1ff683235d2e4317890
+      size: 5519
     - path: src/train.py
       md5: 70c7dbf13717c9e13a42219956481e45
       size: 2392
@@ -158,22 +126,22 @@ stages:
         train.net: cnn
     outs:
     - path: assets/models
-      md5: 2291eee0a7311a1d44a64ed0e90fb5e2.dir
-      size: 4638976
+      md5: 926cac85041b65f7bbbf41a76186b696.dir
+      size: 4540672
       nfiles: 1
   evaluate:
     cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
     deps:
     - path: assets/data/combined/test.npz
-      md5: d902b536face1b6cc0e45abff155ef10
-      size: 1170134490
+      md5: 2e6311e8eaba5b5d13d7cbe0a2545875
+      size: 518347690
     - path: assets/models/model.h5
-      md5: b035384c7eed2ec459113e7e8035f60b
-      size: 4638976
+      md5: cad62ff006a9aae99a8c2db48dc54cb9
+      size: 4540672
     - path: src/evaluate.py
       md5: b7f94a4d524765dfcccc8959e455b868
       size: 5590
     outs:
     - path: assets/metrics/metrics.json
-      md5: a2eb8055a8c8c64e6c29d025297c0272
-      size: 28
+      md5: 4a5275e7dc8cdeac6730cc0638103373
+      size: 27
