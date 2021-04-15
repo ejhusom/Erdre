@@ -3,7 +3,7 @@ profile:
 featurize:
   raw_subfolder:
   features:
-      - Y1_POSITION_VALUE
+          # - Y1_POSITION_VALUE
       - Y1_SPEED_VALUE
   target: Y1_CURRENT_VALUE
 
@@ -25,6 +25,6 @@ train:
   batch_size: 128
   kernel_size: 4    
   early_stopping: True
-  patience: 15
+  patience: 40
 
 evaluate:
