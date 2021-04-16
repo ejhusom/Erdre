@@ -3,7 +3,9 @@ profile:
 featurize:
   raw_subfolder:
   features:
-          # - Y1_POSITION_VALUE
+      - X1_POSITION_VALUE
+      - X1_SPEED_VALUE
+      - Y1_POSITION_VALUE
       - Y1_SPEED_VALUE
   target: Y1_CURRENT_VALUE
 
@@ -16,14 +18,14 @@ scale:
 
 sequentialize:
   # History window sample size
-  hist_size: 50
-  target_size: 30
+  hist_size: 9
+  target_size: 9
 
 train:
   net: cnn
   n_epochs: 100
   batch_size: 128
-  kernel_size: 4    
+  kernel_size: 3
   early_stopping: True
   patience: 40
 

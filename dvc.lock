@@ -11,20 +11,23 @@ featurize:
   params:
     params.yaml:
       featurize.features:
+      - X1_POSITION_VALUE
+      - X1_SPEED_VALUE
+      - Y1_POSITION_VALUE
       - Y1_SPEED_VALUE
       featurize.raw_subfolder:
       featurize.target: Y1_CURRENT_VALUE
   outs:
   - path: assets/data/featurized
-    md5: a343f09c9543033e205504e820f6e4ca.dir
-    size: 16712377
+    md5: 981c2caade73259425c963ac98c098df.dir
+    size: 39844669
     nfiles: 1
 split:
   cmd: python3 src/split.py assets/data/featurized/
   deps:
   - path: assets/data/featurized
-    md5: a343f09c9543033e205504e820f6e4ca.dir
-    size: 16712377
+    md5: 981c2caade73259425c963ac98c098df.dir
+    size: 39844669
     nfiles: 1
   - path: src/split.py
     md5: a08e1db056ca51eb9a9ea2bbdce3bde0
@@ -34,15 +37,15 @@ split:
       split.train_split: 0.5
   outs:
   - path: assets/data/split
-    md5: 9f2143881dba600867095581595d36f5.dir
-    size: 24787662
+    md5: 09762078d3366c376af28132efd70b95.dir
+    size: 59500744
     nfiles: 2
 scale:
   cmd: python3 src/scale.py assets/data/split/
   deps:
   - path: assets/data/split
-    md5: 9f2143881dba600867095581595d36f5.dir
-    size: 24787662
+    md5: 09762078d3366c376af28132efd70b95.dir
+    size: 59500744
     nfiles: 2
   - path: src/scale.py
     md5: e53b8796f16bb970d4dca443ae7662f5
@@ -52,49 +55,49 @@ scale:
       scale.method: standard
   outs:
   - path: assets/data/scaled
-    md5: 92a823f45452b56903539ef14b3260e5.dir
-    size: 10369092
+    md5: 2f13b11cb0ceebc31821af49414dc42c.dir
+    size: 25921260
     nfiles: 2
 sequentialize:
   cmd: python3 src/sequentialize.py assets/data/scaled/
   deps:
   - path: assets/data/scaled
-    md5: 92a823f45452b56903539ef14b3260e5.dir
-    size: 10369092
+    md5: 2f13b11cb0ceebc31821af49414dc42c.dir
+    size: 25921260
     nfiles: 2
   - path: src/sequentialize.py
     md5: de49cefc60e7a076f20ec63009c30cf2
     size: 1809
   params:
     params.yaml:
-      sequentialize.hist_size: 50
-      sequentialize.target_size: 30
+      sequentialize.hist_size: 9
+      sequentialize.target_size: 9
   outs:
   - path: assets/data/sequentialized
-    md5: e16a74040b6f84771f62fd4b8661db0f.dir
-    size: 414662740
+    md5: eecfafd2b0493c5a9249bf6947ae88eb.dir
+    size: 233277740
     nfiles: 2
 combine:
   cmd: python3 src/combine.py assets/data/sequentialized/
   deps:
   - path: assets/data/sequentialized
-    md5: e16a74040b6f84771f62fd4b8661db0f.dir
-    size: 414662740
+    md5: eecfafd2b0493c5a9249bf6947ae88eb.dir
+    size: 233277740
     nfiles: 2
   - path: src/combine.py
     md5: d348ebfc8211a036fbba3468f162787f
     size: 1391
   outs:
   - path: assets/data/combined
-    md5: eabe5958a81ac50fadfd9c6a254b5ae8.dir
-    size: 414662740
+    md5: f7c0707e37cbeae7d264e0b37960b2c0.dir
+    size: 233277740
     nfiles: 2
 train:
   cmd: python3 src/train.py assets/data/combined/train.npz
   deps:
   - path: assets/data/combined
-    md5: eabe5958a81ac50fadfd9c6a254b5ae8.dir
-    size: 414662740
+    md5: f7c0707e37cbeae7d264e0b37960b2c0.dir
+    size: 233277740
     nfiles: 2
   - path: src/model.py
     md5: daa3a29acec1c1ff683235d2e4317890
@@ -105,27 +108,27 @@ train:
   params:
     params.yaml:
       train.batch_size: 128
-      train.kernel_size: 4
+      train.kernel_size: 3
       train.n_epochs: 100
       train.net: cnn
   outs:
   - path: assets/models
-    md5: ddca61dbddd67a6117f1b8e6850b6c3f.dir
-    size: 4608576
+    md5: b08f6f42748f87692312dfc924111503.dir
+    size: 764480
     nfiles: 1
 evaluate:
   cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
   deps:
   - path: assets/data/combined/test.npz
-    md5: babf7a8769486e906ce5c11f4cebffcf
-    size: 276452330
+    md5: ef6b96cf70e10691ca7909a5d16f2259
+    size: 155519410
   - path: assets/models/model.h5
-    md5: cfd751b8bb83cd21a362bd923db57dcc
-    size: 4608576
+    md5: cd2b42bb8d3240e15bbe8f5961952a89
+    size: 764480
   - path: src/evaluate.py
     md5: 900abfebff8f06378566953e38d5ab17
     size: 5588
   outs:
   - path: assets/metrics/metrics.json
-    md5: d232104d817a32608d6e06221d5bbe56
+    md5: d46c6d012abc01522a52bdf6fdef36f8
     size: 27
