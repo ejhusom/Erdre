@@ -1,16 +1,17 @@
 profile:
 
 featurize:
-  raw_subfolder:
+  raw_subfolder: 
   features:
-      - X1_POSITION_VALUE
-      - X1_SPEED_VALUE
-      - Y1_POSITION_VALUE
-      - Y1_SPEED_VALUE
-  target: Y1_CURRENT_VALUE
+      - X1_ActualVelocity
+      - X1_ActualAcceleration
+      - X1_CommandPosition
+      - X1_CommandVelocity
+  target: X1_ActualPosition
 
 split:
   train_split: 0.5
+  calibrate_split: 0.3
 
 scale:
   method: standard # choose between standard and minmax
@@ -19,7 +20,8 @@ scale:
 sequentialize:
   # History window sample size
   hist_size: 9
-  target_size: 9
+  # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
+  target_size: 1
 
 train:
   net: cnn

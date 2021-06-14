@@ -28,6 +28,7 @@ stages:
     - assets/data/split
     params:
     - split.train_split
+    - split.calibrate_split
 
   scale:
     cmd: python3 src/scale.py assets/data/split/
@@ -73,11 +74,13 @@ stages:
     - train.kernel_size
 
   evaluate:
-    cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
+    cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz
     deps:
     - assets/data/combined/test.npz
     - assets/models/model.h5
     - src/evaluate.py
     metrics:
     - assets/metrics/metrics.json:
+        cache: false
+    - assets/predictions/predictions.csv:
         cache: false

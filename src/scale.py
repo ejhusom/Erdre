@@ -89,6 +89,8 @@ def scale(dir_path):
             category = "train"
         elif "test" in filepath:
             category = "test"
+        elif "calibrate" in filepath:
+            category = "calibrate"
             
         data_overview[filepath] = {"X": X, "y": y, "category": category}
 
@@ -133,3 +135,4 @@ if __name__ == "__main__":
     np.random.seed(2020)
 
     scale(sys.argv[1])
+

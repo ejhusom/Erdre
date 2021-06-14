@@ -137,6 +137,7 @@ Adjust the parameters in `params.yaml` to customize the machine learning model.
   [available features](#available-features) below.
 - `featurize.target`: What the target variable should be.
 - `split.train_split`: Fraction of data set to use for training.
+- `split.calibrate_split`: Fraction of data set to use for calibration. If set to 0, no conformal prediction is performed.
 - `scale.method`: Which scaling method to use.
 - `sequentialize.hist_size`: How many time steps of input to use for
   prediction.

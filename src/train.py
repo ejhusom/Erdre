@@ -45,7 +45,6 @@ def train(filepath):
     X_train = train["X"]
     y_train = train["y"]
 
-
     n_features = X_train.shape[-1]
 
     hist_size = X_train.shape[-2]
