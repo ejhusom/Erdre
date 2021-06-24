@@ -157,7 +157,7 @@ def save_predictions(df_predictions):
 
         """
 
-    PREDICTIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PREDICTIONS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     df_predictions.to_csv(PREDICTIONS_FILE_PATH, index=False)
 
