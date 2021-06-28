@@ -31,11 +31,13 @@ def featurize(dir_path):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["featurize"]
 
-    raw_subfolder = params["raw_subfolder"]
-    """Subfolder of 'assets/data/raw', in where to look for data."""
+    dataset = params["dataset"]
+    """Name of data set, which must be the name of subfolder of
+    'assets/data/raw', in where to look for data. If no name of data set is
+    given, all files present in 'assets/data/raw' will be used."""
 
-    if raw_subfolder != None:
-        dir_path += "/" + raw_subfolder
+    if dataset != None:
+        dir_path += "/" + dataset
 
     filepaths = []
 
@@ -58,7 +60,6 @@ def featurize(dir_path):
 
         # Read csv
         df = pd.read_csv(filepath)
-
 
         # Move target column to the beginning of dataframe
         df = move_column(df, column_name=target, new_idx=0)
@@ -118,5 +119,4 @@ if __name__ == "__main__":
 
     np.random.seed(2020)
 
-    # featurize(sys.argv[1:])
     featurize(sys.argv[1])

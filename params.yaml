@@ -1,7 +1,7 @@
 profile:
 
 featurize:
-  raw_subfolder: 
+  dataset: data01
   features:
       - X1_ActualVelocity
       - X1_ActualAcceleration
@@ -10,7 +10,7 @@ featurize:
   target: X1_ActualPosition
 
 split:
-  train_split: 0.5
+  train_split: 0.1
   calibrate_split: 0.3
 
 scale:
@@ -25,7 +25,7 @@ sequentialize:
 
 train:
   net: cnn
-  n_epochs: 100
+  n_epochs: 10
   batch_size: 128
   kernel_size: 3
   early_stopping: True

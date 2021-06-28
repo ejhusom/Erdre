@@ -15,7 +15,7 @@ stages:
     outs:
     - assets/data/featurized
     params:
-    - featurize.raw_subfolder
+    - featurize.dataset
     - featurize.features
     - featurize.target
 

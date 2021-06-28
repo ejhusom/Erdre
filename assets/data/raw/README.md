@@ -22,7 +22,7 @@ assets/
 
 If you want to keep data in separate subfolders, make a subfolder in
 `Erdre/assets/data/raw` and enter the subfolder name as the parameter
-`featurize.raw_subfolder` in `params.yaml`.
+`featurize.dataset` in `params.yaml`.
 
 Example with a subfolder called `experiment1`:
 
@@ -49,7 +49,7 @@ And then set the subfolder name in `params.yaml`:
 ...
 
 featurize:
-  raw_subfolder: experiment1
+  dataset: experiment1
   features:
     - ...
     - ...
