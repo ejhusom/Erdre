@@ -3,10 +3,10 @@ profile:
 featurize:
   dataset: data01
   features:
-      - X1_ActualVelocity
-      - X1_ActualAcceleration
-      - X1_CommandPosition
-      - X1_CommandVelocity
+      # - X1_ActualVelocity
+      # - X1_ActualAcceleration
+      # - X1_CommandPosition
+      # - X1_CommandVelocity
   target: X1_ActualPosition
 
 split:

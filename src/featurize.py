@@ -31,6 +31,12 @@ def featurize(dir_path):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["featurize"]
 
+    features = params["features"]
+    """Features to include in data set."""
+
+    target = params["target"]
+    """Variable to use as target."""
+
     dataset = params["dataset"]
     """Name of data set, which must be the name of subfolder of
     'assets/data/raw', in where to look for data. If no name of data set is
@@ -50,11 +56,6 @@ def featurize(dir_path):
     if len(filepaths) == 0:
         raise ValueError(f"Could not find any data files in {dir_path}.")
 
-    features = params["features"]
-    """Features to include in data set."""
-
-    target = params["target"]
-    """Variable to use as target."""
 
     for filepath in filepaths:
 
@@ -63,6 +64,10 @@ def featurize(dir_path):
 
         # Move target column to the beginning of dataframe
         df = move_column(df, column_name=target, new_idx=0)
+
+        # If no features are specified, use all columns as features
+        if type(features) != list:  # TODO: Maybe not the most robust way to test this
+            features = df.columns
 
         # Check if wanted features from params.yaml exists in the data
         for feature in features:
@@ -106,8 +111,8 @@ def add_features(df, features):
     """
 
     # Stop function of features is not a list
-    if features == None:
-        return 0
+    if type(features) != list:
+        return df
 
     # TODO: Add som engineered features
     # if "frequency" in features:
