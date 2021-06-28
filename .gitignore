@@ -81,8 +81,9 @@ models
 
 # dvc
 .dvc
+dvc.lock
 
-assets/plots
-assets/profiling
+assets/plots/
+assets/profiling/
 model_tuning/
 params - Copy.yaml

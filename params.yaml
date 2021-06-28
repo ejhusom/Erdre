@@ -8,10 +8,10 @@ featurize:
     # Which features to use from the data set. If empty, all columns from input
     # files are used.
     features:
-        - X1_ActualVelocity
-        - X1_ActualAcceleration
-        - X1_CommandPosition
-        - X1_CommandVelocity
+        # - X1_ActualVelocity
+        # - X1_ActualAcceleration
+        # - X1_CommandPosition
+        # - X1_CommandVelocity
 
     # Name of target variable.
     target: X1_ActualPosition
