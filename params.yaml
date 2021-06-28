@@ -1,34 +1,44 @@
 profile:
 
 featurize:
-  dataset: data01
-  features:
-      # - X1_ActualVelocity
-      # - X1_ActualAcceleration
-      # - X1_CommandPosition
-      # - X1_CommandVelocity
-  target: X1_ActualPosition
+    # Name of data set, which is the name of the subfolder in which the data
+    # files resides: 'assets/data/raw/[dataset]/
+    dataset: data01
+
+    # Which features to use from the data set. If empty, all columns from input
+    # files are used.
+    features:
+        - X1_ActualVelocity
+        - X1_ActualAcceleration
+        - X1_CommandPosition
+        - X1_CommandVelocity
+
+    # Name of target variable.
+    target: X1_ActualPosition
 
 split:
-  train_split: 0.1
-  calibrate_split: 0.3
+    train_split: 0.5
+    calibrate_split: 0.3
 
 scale:
-  method: standard # choose between standard and minmax
-  output: standard
+    # Current available scaling methods are:
+    # - standard
+    # - minmax
+    method: standard
+    output: standard
 
 sequentialize:
-  # History window sample size
-  hist_size: 9
-  # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
-  target_size: 1
+    # History window sample size
+    hist_size: 9
+    # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
+    target_size: 1
 
 train:
-  net: cnn
-  n_epochs: 10
-  batch_size: 128
-  kernel_size: 3
-  early_stopping: True
-  patience: 40
+    net: cnn
+    n_epochs: 10
+    batch_size: 128
+    kernel_size: 3
+    early_stopping: True
+    patience: 40
 
 evaluate:
