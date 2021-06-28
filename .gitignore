@@ -80,7 +80,7 @@ venv/
 models
 
 # dvc
-.dvc
+.dvc*
 dvc.lock
 
 assets/plots/
