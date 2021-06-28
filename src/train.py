@@ -56,14 +56,14 @@ def train(filepath):
         model = cnn(hist_size, n_features, output_length=target_size,
                 kernel_size=params["kernel_size"]
         )
-    else:
-        raise NotImplementedError("Only 'cnn' is implemented.")
-    # elif net == "dnn":
-    #     pass
+    elif net == "dnn":
+        model = dnn(n_features, output_length=target_size)
     # elif net == "lstm":
     #     pass
     # elif net == "cnndnn":
     #     pass
+    else:
+        raise NotImplementedError("Only 'cnn' is implemented.")
 
     print(model.summary())
 

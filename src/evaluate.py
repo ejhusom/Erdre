@@ -29,6 +29,7 @@ from nonconformist.base import RegressorAdapter
 from nonconformist.nc import RegressorNc
 
 from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH, PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH, INTERVALS_PLOT_PATH
+from model import cnn, dnn, lstm, cnndnn
 
 
 class MyCustomModel(RegressorMixin):
@@ -50,6 +51,7 @@ class MyCustomModel(RegressorMixin):
 
     def predict(self, X=None):
         predictions = self.model.predict(X)
+        print(predictions.shape)
         predictions = predictions.reshape((predictions.shape[0],))
         return predictions
 
@@ -72,7 +74,6 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     params_train = yaml.safe_load(open("params.yaml"))["train"]
     params_split = yaml.safe_load(open("params.yaml"))["split"]
 
-
     test = np.load(test_filepath)
     X_test = test["X"]
     y_test = test["y"]
@@ -88,10 +89,16 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     else:
         mycustommodel = MyCustomModel(model_filepath)
 
+        # m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
+        #         kernel_size=params_train["kernel_size"]
+        # )
+        # m = dnn(X_test.shape[-1], output_length=1)
+
         nc = NcFactory.create_nc(mycustommodel,
-                                 err_func=AbsErrorErrFunc()  # non-conformity function
-                                 #,normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
-                                 )
+            err_func=AbsErrorErrFunc(),  # non-conformity function
+            normalizer_model=KNeighborsRegressor(n_neighbors=20)  # normalizer
+            # normalizer_model=m
+        )
         model = IcpRegressor(nc)
 
         # Fit the normalizer.
@@ -115,7 +122,8 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         # Set conformal prediction error. This should be a parameter specified by the user.
         error = 0.05
 
-        # Predictions will contain the intervals. We need to compute the middle points to get the actual predictions y.
+        # Predictions will contain the intervals. We need to compute the middle
+        # points to get the actual predictions y.
         predictions = model.predict(X_test, significance=error)
 
         # Compute middle points.
@@ -126,9 +134,12 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         # Build data frame with predictions.
         my_results = list(zip(np.reshape(y_test, (y_test.shape[0],)),
-                              np.reshape(y_pred, (y_pred.shape[0],)), predictions[:, 0], predictions[:, 1]))
+                              np.reshape(y_pred, (y_pred.shape[0],)), 
+                              predictions[:, 0], predictions[:, 1]))
 
-        df_predictions = pd.DataFrame(my_results, columns=['groundTruth', 'predicted', 'lowerBound', 'upperBound'])
+        df_predictions = pd.DataFrame(my_results, 
+                columns=['ground_truth', 'predicted', 'lower_bound', 'upper_bound']
+        )
 
         save_predictions(df_predictions)
 
@@ -184,7 +195,7 @@ def plot_intervals(df):
         go.Scatter(
             name='Upper Bound',
             x=x,
-            y=df["upperBound"],
+            y=df["upper_bound"],
             marker=dict(color="#444"),
             line=dict(width=0),
             mode='lines',
@@ -196,7 +207,7 @@ def plot_intervals(df):
         go.Scatter(
             name='Lower Bound',
             x=x,
-            y=df["lowerBound"],
+            y=df["lower_bound"],
             marker=dict(color="#444"),
             line=dict(width=0),
             mode='lines',

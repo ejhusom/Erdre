@@ -29,13 +29,13 @@ scale:
 
 sequentialize:
     # History window sample size
-    hist_size: 9
+    hist_size: 10
     # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
     target_size: 1
 
 train:
-    net: cnn
-    n_epochs: 10
+    net: dnn
+    n_epochs: 100
     batch_size: 128
     kernel_size: 3
     early_stopping: True

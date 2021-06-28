@@ -68,12 +68,12 @@ def cnn(input_x, input_y,
 
     return model
 
-def dnn(input_x, n_steps_out=1, seed=2020):
+def dnn(input_x, output_length=1, seed=2020):
     """Define a DNN model architecture using Keras.
 
     Args:
         input_x (int): Number of features.
-        n_steps_out (int): Number of output steps.
+        output_length (int): Number of output steps.
 
     Returns:
         model (keras model): Model to be trained.
@@ -83,11 +83,12 @@ def dnn(input_x, n_steps_out=1, seed=2020):
     set_seed(seed)
 
     model = models.Sequential()
-    model.add(layers.Dense(256, activation='relu', input_dim=input_x))
-    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(128, activation='relu', input_dim=input_x))
+    # model.add(layers.Dense(256, activation='relu', input_dim=input_x))
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(n_steps_out, activation='linear'))
-    model.compile(optimizer='adam')
+    model.add(layers.Dense(32, activation='relu'))
+    model.add(layers.Dense(output_length, activation='linear'))
+    model.compile(optimizer='adam', loss="mse")
 
     return model
 
