@@ -6,7 +6,6 @@ build*
 
 # data-files
 *.dat
-# *.txt
 *.csv
 
 # doconce:
@@ -20,14 +19,8 @@ build*
 *.exe
 *.x
 
-# images
-#*.png
-#*.jpg
-#*.jpeg
-#*.pdf
-
 # jekyll
-#_site/
+_site/
 .sass-cache
 .jekyll-metadata
 
@@ -76,15 +69,11 @@ Session.vim
 env/
 venv/
 
-# models dir
-models
-
-# dvc
+# project specific files
 .dvc*
 dvc.lock
-
 assets/plots/
 assets/profiling/
 assets/metrics/
 model_tuning/
-params - Copy.yaml
+models/

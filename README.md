@@ -31,6 +31,24 @@ pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly 
 To get a plot of the neural network architecture, the following software needs
 to be installed: [Graphviz](https://graphviz.org/about/).
 
+Initialize DVC by running:
+
+```
+dvc init --no-scm
+```
+
+The `--no-scm` option specifies that we do not want the DVC-related files to be
+tracked by git. This is because this repository only containes the files that
+consitutes the framework for creating a machine learning pipeline, and should
+be agnostic to project specific things, such as data files, plots, metrics and
+so on.
+
+If you have a fork of this repository, and want to track project specific
+files you have to:
+
+1. Remove the last lines under `# project specific files` in .gitignore, and
+2. Initialize DVC with `dvc init`.
+
 ## Add data
 
 The data files should be placed in the folder `assets/data/raw/`. The scripts
@@ -61,13 +79,13 @@ If you want to keep data in separate subfolders, make a subfolder in
 `Erdre/assets/data/raw` and enter the subfolder name as the parameter
 `featurize.dataset` in `params.yaml`.
 
-Example with a subfolder called `experiment1`:
+Example with a subfolder called `dataset1`:
 
 ```
 assets/
 ├── data/
 |   └── raw/
-|       ├── experiment1/
+|       ├── dataset1/
 |       |   ├── experiment_01.csv
 |       |   ├── experiment_02.csv
 |       |   ├── experiment_03.csv
@@ -86,7 +104,7 @@ And then set the subfolder name in `params.yaml`:
 ...
 
 featurize:
-  dataset: experiment1
+  dataset: dataset1
   features:
     - ...
     - ...
