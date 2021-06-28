@@ -35,11 +35,11 @@ def split(dir_path):
 
     params = yaml.safe_load(open("params.yaml"))["split"]
 
-
     for f in os.listdir(dir_path):
         if f.endswith(".csv"):
             filepaths.append(dir_path + "/" + f)
 
+    filepaths = sorted(filepaths)
 
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
