@@ -174,17 +174,39 @@ def plot_intervals(df):
 
     x = [x for x in range(1, df.shape[0] + 1, 1)]
 
-    from matplotlib.pyplot import figure
+    fig = go.Figure()
 
-    figure(figsize=(8, 6), dpi=700)
+    fig.add_trace(
+        go.Scatter(x=x, y=df["predicted"], name="predictions")
+    )
 
-    plt.plot(x, df["predicted"], label='predictions')
+    fig.add_trace(
+        go.Scatter(
+            name='Upper Bound',
+            x=x,
+            y=df["upperBound"],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            showlegend=False
+        )
+    )
 
-    plt.fill_between(x, df["lowerBound"], df["upperBound"], color='b', alpha=.3)
+    fig.add_trace(
+        go.Scatter(
+            name='Lower Bound',
+            x=x,
+            y=df["lowerBound"],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='rgba(68, 68, 68, 0.3)',
+            fill='tonexty',
+            showlegend=False
+        )
+    )
 
-    plt.savefig(INTERVALS_PLOT_PATH)
-
-
+    fig.write_html(str(PLOTS_PATH / "intervals.html"))
 
 
 def plot_prediction(y_true, y_pred, inputs=None, info=""):
@@ -249,7 +271,6 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
     fig.update_yaxes(title_text="scaled units", secondary_y=True)
 
     fig.write_html(str(PLOTS_PATH / "prediction.html"))
-    # fig.show(config=config)
 
 def plot_individual_predictions(y_true, y_pred):
     """
@@ -303,7 +324,7 @@ def plot_individual_predictions(y_true, y_pred):
 
     # plt.title("Predictions", wrap=True)
     # plt.savefig(str(PLOTS_PATH / "prediction_individuals.png"))
-    plt.show()
+    # plt.show()
     fig.write_html(str(PLOTS_PATH / "prediction_individuals.html"))
 
 if __name__ == "__main__":

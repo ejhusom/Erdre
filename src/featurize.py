@@ -48,9 +48,10 @@ def featurize(dir_path):
 
     filepaths = []
 
-    for f in os.listdir(dir_path):
+    for f in sorted(os.listdir(dir_path)):
         if f.endswith(".csv"):
             filepaths.append(dir_path + "/" + f)
+
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -90,6 +91,12 @@ def featurize(dir_path):
             elif not is_numeric_dtype(df[col]):
                 del df[col]
 
+        # number_of_nans_per_row = df.isnull().sum(axis=0)
+        # number_of_samples
+        # print(filepath)
+        # print(number_of_nans_per_row)
+        # print(number_of_nans_per_row[2])
+        
         df.dropna(inplace=True)
 
         # Save data
