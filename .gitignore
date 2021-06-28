@@ -79,5 +79,10 @@ venv/
 # models dir
 models
 
+# dvc
+.dvc
+
+assets/plots
+assets/profiling
 model_tuning/
 params - Copy.yaml
