@@ -14,6 +14,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 import yaml
 
 from config import DATA_FEATURIZED_PATH, DATA_PATH
@@ -56,7 +57,6 @@ def featurize(dir_path):
     if len(filepaths) == 0:
         raise ValueError(f"Could not find any data files in {dir_path}.")
 
-
     for filepath in filepaths:
 
         # Read csv
@@ -66,7 +66,8 @@ def featurize(dir_path):
         df = move_column(df, column_name=target, new_idx=0)
 
         # If no features are specified, use all columns as features
-        if type(features) != list:  # TODO: Maybe not the most robust way to test this
+        # TODO: Maybe not the most robust way to test this
+        if type(params["features"]) != list:  
             features = df.columns
 
         # Check if wanted features from params.yaml exists in the data
@@ -77,11 +78,16 @@ def featurize(dir_path):
         # TODO: Engineer features. At the moment no engineered features exists!
         df = add_features(df, features)
 
-        # Remove feature from input. This is useful in the case that a raw
-        # feature is used to engineer a feature, but the raw feature itself
-        # should not be a part of the input.
         for col in df.columns:
+
+            # Remove feature from input. This is useful in the case that a raw
+            # feature is used to engineer a feature, but the raw feature itself
+            # should not be a part of the input.
             if col not in features and col != target:
+                del df[col]
+            
+            # Remove feature if it is non-numeric
+            elif not is_numeric_dtype(df[col]):
                 del df[col]
 
         df.dropna(inplace=True)
