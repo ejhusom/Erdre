@@ -18,7 +18,7 @@ from pandas.api.types import is_numeric_dtype
 import yaml
 
 from config import DATA_FEATURIZED_PATH, DATA_PATH
-from preprocess_utils import move_column
+from preprocess_utils import move_column, find_files
 
 
 def featurize(dir_path):
@@ -38,25 +38,12 @@ def featurize(dir_path):
     target = params["target"]
     """Variable to use as target."""
 
-    dataset = params["dataset"]
-    """Name of data set, which must be the name of subfolder of
-    'assets/data/raw', in where to look for data. If no name of data set is
-    given, all files present in 'assets/data/raw' will be used."""
-
-    if dataset != None:
-        dir_path += "/" + dataset
-
-    filepaths = []
-
-    for f in sorted(os.listdir(dir_path)):
-        if f.endswith(".csv"):
-            filepaths.append(dir_path + "/" + f)
-
-
-    DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
+    filepaths = find_files(dir_path, file_extension=".csv")
 
     if len(filepaths) == 0:
         raise ValueError(f"Could not find any data files in {dir_path}.")
+
+    DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     for filepath in filepaths:
 
@@ -80,7 +67,6 @@ def featurize(dir_path):
         df = add_features(df, features)
 
         for col in df.columns:
-
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
             # should not be a part of the input.
@@ -90,14 +76,6 @@ def featurize(dir_path):
             # Remove feature if it is non-numeric
             elif not is_numeric_dtype(df[col]):
                 del df[col]
-
-        # number_of_nans_per_row = df.isnull().sum(axis=0)
-        # number_of_samples
-        # print(filepath)
-        # print(number_of_nans_per_row)
-        # print(number_of_nans_per_row[2])
-        
-        df.dropna(inplace=True)
 
         # Save data
         df.to_csv(

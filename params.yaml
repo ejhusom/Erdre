@@ -1,10 +1,18 @@
-profile:
-
-featurize:
-    # Name of data set, which is the name of the subfolder in which the data
+clean:
+    # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/
     dataset: data01
 
+    # combine_files: Whether to combine all files into one. 
+    #
+    # Sometimes it is desirable to keep files separated, for example when:
+    # - Some specific files should be reserved for the test set.
+    # - We are dealing with time series data, and do not want sequences to
+    #   overlap across files.
+    #
+    combine_files: True
+
+featurize:
     # Which features to use from the data set. If empty, all columns from input
     # files are used.
     features:
@@ -24,7 +32,7 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    method: standard
+    input: standard
     output: standard
 
 sequentialize:
@@ -34,9 +42,10 @@ sequentialize:
     target_size: 1
 
 train:
-    net: dnn
+    net: cnn
     n_epochs: 100
     batch_size: 128
+    # Kernel size is only applicable for CNN
     kernel_size: 3
     early_stopping: True
     patience: 40

@@ -16,7 +16,7 @@ import pandas as pd
 import yaml
 
 from config import DATA_SPLIT_PATH
-from preprocess_utils import read_csv
+from preprocess_utils import find_files
 
 
 def split(dir_path):
@@ -29,17 +29,11 @@ def split(dir_path):
 
     """
 
-    filepaths = []
+    params = yaml.safe_load(open("params.yaml"))["split"]
 
     DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
 
-    params = yaml.safe_load(open("params.yaml"))["split"]
-
-    for f in os.listdir(dir_path):
-        if f.endswith(".csv"):
-            filepaths.append(dir_path + "/" + f)
-
-    filepaths = sorted(filepaths)
+    filepaths = find_files(dir_path, file_extension=".csv")
 
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:

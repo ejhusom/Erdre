@@ -15,6 +15,7 @@ import sys
 import numpy as np
 
 from config import DATA_COMBINED_PATH
+from preprocess_utils import find_files
 
 def combine(dir_path):
     """Combine data from multiple input files into one dataset.
@@ -24,11 +25,7 @@ def combine(dir_path):
 
     """
 
-    filepaths = []
-
-    for f in os.listdir(dir_path):
-        if f.endswith(".npz"):
-            filepaths.append(dir_path + "/" + f)
+    filepaths = find_files(dir_path, file_extension=".npz")
 
     DATA_COMBINED_PATH.mkdir(parents=True, exist_ok=True)
 

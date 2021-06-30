@@ -7,15 +7,25 @@ stages:
         #    - src/profiling.py
         #    - src/myconfig.yaml
 
+  clean:
+    cmd: python3 src/clean.py assets/data/raw/
+    deps:
+    - assets/data/raw
+    - src/clean.py
+    outs:
+    - assets/data/cleaned
+    params:
+    - clean.dataset
+    - clean.combine_files
+
   featurize:
     cmd: python3 src/featurize.py assets/data/raw/
     deps:
-    - assets/data/raw
+    - assets/data/cleaned
     - src/featurize.py
     outs:
     - assets/data/featurized
     params:
-    - featurize.dataset
     - featurize.features
     - featurize.target
 
@@ -38,7 +48,8 @@ stages:
     outs:
     - assets/data/scaled
     params:
-    - scale.method
+    - scale.input
+    - scale.output
 
   sequentialize:
     cmd: python3 src/sequentialize.py assets/data/scaled/
@@ -50,6 +61,7 @@ stages:
     params:
     - sequentialize.hist_size
     - sequentialize.target_size
+    - train.net
 
   combine:
     cmd: python3 src/combine.py assets/data/sequentialized/

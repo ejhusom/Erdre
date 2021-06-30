@@ -20,16 +20,12 @@ import yaml
 
 from config import DATA_SEQUENTIALIZED_PATH
 from preprocess_utils import flatten_sequentialized, read_csv
-from preprocess_utils import split_sequences
+from preprocess_utils import find_files, split_sequences
 
 
 def sequentialize(dir_path):
 
-    filepaths = []
-
-    for f in os.listdir(dir_path):
-        if f.endswith(".npz"):
-            filepaths.append(dir_path + "/" + f)
+    filepaths = find_files(dir_path, file_extension=".npz")
 
     DATA_SEQUENTIALIZED_PATH.mkdir(parents=True, exist_ok=True)
 

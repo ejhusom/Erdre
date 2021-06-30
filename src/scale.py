@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import yaml
 
 from config import DATA_SCALED_PATH
-from preprocess_utils import read_csv, scale_data
+from preprocess_utils import find_files, scale_data
 
 def scale(dir_path):
     """Scale training and test data.
@@ -32,28 +32,24 @@ def scale(dir_path):
 
     """
 
-    filepaths = []
-
-    for f in os.listdir(dir_path):
-        if f.endswith(".csv"):
-            filepaths.append(dir_path + "/" + f)
+    filepaths = find_files(dir_path, file_extension=".csv")
 
     DATA_SCALED_PATH.mkdir(parents=True, exist_ok=True)
 
     params = yaml.safe_load(open("params.yaml"))["scale"]
-    method = params["method"]
+    input_method = params["input"]
     output_method = params["output"]
     
-    if method == "standard":
+    if input_method == "standard":
         scaler = StandardScaler()
-    elif method == "minmax":
+    elif input_method == "minmax":
         scaler = MinMaxScaler()
-    elif method == "robust":
+    elif input_method == "robust":
         scaler = RobustScaler()
-    elif method == "none":
+    elif input_method == "none":
         scaler = StandardScaler()
     else:
-        raise NotImplementedError(f"{method} not implemented.")
+        raise NotImplementedError(f"{input_method} not implemented.")
 
     if output_method == "standard":
         output_scaler = StandardScaler()
@@ -104,7 +100,7 @@ def scale(dir_path):
     for filepath in data_overview:
 
         # Scale inputs
-        if method == "none":
+        if input_method == "none":
             X=data_overview[filepath]["X"]
         else:
             X = scaler.transform(data_overview[filepath]["X"])

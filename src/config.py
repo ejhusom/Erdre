@@ -27,7 +27,10 @@ DATA_PATH_RAW = DATA_PATH / "raw"
 """Path to raw data."""
 
 DATA_FEATURIZED_PATH = DATA_PATH / "featurized"
-"""Path to data that is cleaned and has added features."""
+"""Path to data that is has added features."""
+
+DATA_CLEANED_PATH = DATA_PATH / "cleaned"
+"""Path to data that is cleaned."""
 
 DATA_SEQUENTIALIZED_PATH = DATA_PATH / "sequentialized"
 """Path to data that is split into sequences."""
