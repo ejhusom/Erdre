@@ -1,9 +1,13 @@
 profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/
-    dataset: data01
+    dataset: data_aero
 
 clean:
+    # target: Name of target variable.
+    target: B1_CURRENT_VALUE
+    # target: X1_ActualPosition
+
     # combine_files: Whether to combine all files into one. 
     #
     # Sometimes it is desirable to keep files separated, for example when:
@@ -11,7 +15,24 @@ clean:
     # - We are dealing with time series data, and do not want sequences to
     #   overlap across files.
     #
-    combine_files: True
+    combine_files: False
+
+    # percentage_zeros_threshold: If the fraction of zeros in a column is
+    # larger than this threshold, the column is removed.
+    percentage_zeros_threshold: 0.5
+
+    # correlation_metric: Which metric to measure correlation by. Choose from:
+    # - pearson
+    # - spearman
+    # - phi_k
+    # - cramers
+    # - kendall
+    correlation_metric: pearson
+
+    # correlation_threshold: If the correlation between two variables are
+    # higher than this threshold, one of them will be removed. If the threshold
+    # is set to 1.0, no variables will be removed.
+    correlation_threshold: 1.0
 
 featurize:
     # features: Which features to use from the data set. If empty, all columns
@@ -22,8 +43,6 @@ featurize:
         # - X1_CommandPosition
         # - X1_CommandVelocity
 
-    # target: Name of target variable.
-    target: X1_ActualPosition
 
 split:
     train_split: 0.5

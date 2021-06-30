@@ -20,7 +20,11 @@ stages:
         outs:
         - assets/data/cleaned
         params:
+        - clean.target
         - clean.combine_files
+        - clean.percentage_zeros_threshold
+        - clean.correlation_metric
+        - clean.correlation_threshold
 
     featurize:
         cmd: python3 src/featurize.py assets/data/cleaned/
@@ -31,7 +35,7 @@ stages:
         - assets/data/featurized
         params:
         - featurize.features
-        - featurize.target
+        - clean.target
 
     split:
         cmd: python3 src/split.py assets/data/featurized/

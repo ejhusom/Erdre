@@ -35,7 +35,7 @@ def featurize(dir_path):
     features = params["features"]
     """Features to include in data set."""
 
-    target = params["target"]
+    target = yaml.safe_load(open("params.yaml"))["clean"]["target"]
     """Variable to use as target."""
 
     filepaths = find_files(dir_path, file_extension=".csv")

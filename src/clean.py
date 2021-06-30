@@ -54,11 +54,11 @@ def clean(dir_path):
     for filepath in filepaths:
 
         # Read csv
-        df = pd.read_csv(filepath)
+        df = pd.read_csv(filepath, index_col=0)
 
-        removable_columns = parse_profile_warnings()
+        removable_variables = parse_profile_warnings()
 
-        for c in removable_columns:
+        for c in removable_variables:
             del df[c]
         
         df.dropna(inplace=True)
@@ -79,35 +79,64 @@ def clean(dir_path):
                 / (os.path.basename(filepath).replace(".", "-cleaned."))
             )
 
-    # Save list of features used
-    pd.DataFrame(df.columns).to_csv(DATA_PATH / "input_columns.csv")
 
 def parse_profile_warnings():
     """Read profile warnings and find which columns to delete.
 
     Returns:
-        removable_columns (list): Which columns to delete from data set.
+        removable_variables (list): Which columns to delete from data set.
 
     """
 
+    params = yaml.safe_load(open("params.yaml"))["clean"]
+    correlation_metric = params["correlation_metric"]
+    target = params["target"]
+
     profile_json = json.load(open(PROFILE_PATH / "profile.json"))
     messages = profile_json["messages"]
+    variables = list(profile_json["variables"].keys())
+    correlations = profile_json["correlations"]["pearson"]
 
-    removable_columns = []
+    removable_variables = []
 
-    p_zeros_threshold = 0.5
+    percentage_zeros_threshold = params["percentage_zeros_threshold"]
+    correlation_threshold = 1.0
 
     for m in messages:
         m = m.split()
+        warning = m[0]
+        variable = m[-1]
 
-        if m[0] == "[CONSTANT]":
-            removable_columns.append(m[-1])
-        if m[0] == "[ZEROS]":
-            p_zeros = profile_json["variables"][m[-1]]["p_zeros"]
-            if p_zeros > p_zeros_threshold:
-                removable_columns.append(m[-1])
+        if warning == "[CONSTANT]":
+            removable_variables.append(variable)
+        if warning == "[ZEROS]":
+            p_zeros = profile_json["variables"][variable]["p_zeros"]
+            if p_zeros > percentage_zeros_threshold:
+                removable_variables.append(variable)
+        if warning == "[HIGH_CORRELATION]":
+            try:
+                correlation_scores = correlations[variables.index(variable)]
+                for correlated_variable in correlation_scores:
+                    if (correlation_scores[correlated_variable] > correlation_threshold and
+                        variable != correlated_variable and
+                        variable not in removable_variables):
 
-    return removable_columns
+                        removable_variables.append(correlated_variable)
+                        # print(f"{variable} is correlated with {correlated_variable}: {correlation_scores[correlated_variable]}")
+            except:
+                # Pandas profiling might not be able to compute correlation
+                # score for some variables, for example some categorical
+                # variables.
+                pass
+                # print(f"{variable}: Could not find correlation score.")
+
+    removable_variables = list(set(removable_variables))
+
+    if target in removable_variables:
+        print("Warning related to target variable. Check profile for details.")
+        removable_variables.remove(target)
+
+    return removable_variables
 
 if __name__ == "__main__":
 

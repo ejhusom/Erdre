@@ -173,7 +173,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     plot_individual_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
-        json.dump(dict(mse=mse), f)
+        json.dump(dict(mse=mse, r2=r2), f)
 
 
 def save_predictions(df_predictions):
