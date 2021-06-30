@@ -1,8 +1,9 @@
-clean:
+profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/
     dataset: data01
 
+clean:
     # combine_files: Whether to combine all files into one. 
     #
     # Sometimes it is desirable to keep files separated, for example when:
@@ -13,15 +14,15 @@ clean:
     combine_files: True
 
 featurize:
-    # Which features to use from the data set. If empty, all columns from input
-    # files are used.
+    # features: Which features to use from the data set. If empty, all columns
+    # from input files are used.
     features:
         # - X1_ActualVelocity
         # - X1_ActualAcceleration
         # - X1_CommandPosition
         # - X1_CommandVelocity
 
-    # Name of target variable.
+    # target: Name of target variable.
     target: X1_ActualPosition
 
 split:

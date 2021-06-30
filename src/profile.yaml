@@ -18,6 +18,11 @@ infer_dtypes: True
 
 # Show the description at each variable (in addition to the overview tab)
 show_variable_description: True
+#
+# Sort the variables. Possible values: ascending, descending or None (leaves original sorting)
+# Setting 'sort: None' gives an error, so currently the value is set when
+# calling the function.
+# sort: None
 
 # Number of workers (0=multiprocessing.cpu_count())
 pool_size: 0
@@ -67,8 +72,6 @@ vars:
     url:
         active: False
 
-# Sort the variables. Possible values: ascending, descending or None (leaves original sorting)
-sort: None
 
 # which diagrams to show
 missing_diagrams:
@@ -186,7 +189,7 @@ html:
 
 # Styling options for the HTML report
     style:
-      theme: None
+      theme: united
       logo: ""
       primary_color: "#337ab7"
       full_width: False

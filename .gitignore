@@ -73,7 +73,7 @@ venv/
 .dvc*
 dvc.lock
 assets/plots/
-assets/profiling/
+assets/profile/
 assets/metrics/
 model_tuning/
 models/

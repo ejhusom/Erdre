@@ -40,9 +40,6 @@ def featurize(dir_path):
 
     filepaths = find_files(dir_path, file_extension=".csv")
 
-    if len(filepaths) == 0:
-        raise ValueError(f"Could not find any data files in {dir_path}.")
-
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     for filepath in filepaths:

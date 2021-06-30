@@ -17,7 +17,7 @@ from pathlib import Path
 ASSETS_PATH = Path("./assets")
 """Path to all assets of project."""
 
-PROFILING_PATH = ASSETS_PATH / "profiling"
+PROFILE_PATH = ASSETS_PATH / "profile"
 """Path to profiling report."""
 
 DATA_PATH = ASSETS_PATH / "data"

@@ -10,6 +10,7 @@ Created:
 """
 import json
 import os
+import shutil
 import sys
 
 import matplotlib.pyplot as plt
@@ -32,7 +33,8 @@ from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH, P
 from model import cnn, dnn, lstm, cnndnn
 
 
-class MyCustomModel(RegressorMixin):
+# class MyCustomModel(RegressorMixin):
+class MyCustomModel(RegressorAdapter):
     """Implement custom sklearn model to use with the nonconformist library.
 
         Args:
@@ -40,19 +42,25 @@ class MyCustomModel(RegressorMixin):
 
     """
 
-    def __init__(self, model_filepath):
+    # def __init__(self, model_filepath):
+    def __init__(self, model):
         # Load already trained model from h5 file.
-        self.model = models.load_model(model_filepath)
+        # self.model = models.load_model(model_filepath)
+        # self.model_filepath = model_filepath
+
+        # super(MyCustomModel, self).__init__(models.load_model(model_filepath), fit_params=None)
+        super(MyCustomModel, self).__init__(model)
 
     def fit(self, X=None, y=None):
         # We don't do anything here because we are loading an already trained model in __init__().
-        # Still, we need to implement this method so the conformal normalizer is initialized by nonconformist.
+        # Still, we need to implement this method so the conformal normalizer
+        # is initialized by nonconformist.
         pass
 
     def predict(self, X=None):
         predictions = self.model.predict(X)
-        print(predictions.shape)
         predictions = predictions.reshape((predictions.shape[0],))
+
         return predictions
 
 
@@ -87,18 +95,26 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         model = models.load_model(model_filepath)
         y_pred = model.predict(X_test)
     else:
-        mycustommodel = MyCustomModel(model_filepath)
+        trained_model = models.load_model(model_filepath)
+        # mycustommodel = MyCustomModel(model_filepath)
+        mycustommodel = MyCustomModel(trained_model)
 
-        # m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
-        #         kernel_size=params_train["kernel_size"]
-        # )
-        # m = dnn(X_test.shape[-1], output_length=1)
-
-        nc = NcFactory.create_nc(mycustommodel,
-            err_func=AbsErrorErrFunc(),  # non-conformity function
-            normalizer_model=KNeighborsRegressor(n_neighbors=20)  # normalizer
-            # normalizer_model=m
+        m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
+                kernel_size=params_train["kernel_size"]
         )
+
+        nc = RegressorNc(mycustommodel,
+            err_func=AbsErrorErrFunc(),  # non-conformity function
+            # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
+            # normalizer=m
+        )
+
+        # nc = NcFactory.create_nc(mycustommodel,
+        #     err_func=AbsErrorErrFunc(),  # non-conformity function
+        #     # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
+        #     normalizer_model=m
+        # )
+
         model = IcpRegressor(nc)
 
         # Fit the normalizer.
@@ -106,9 +122,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         X_train = train["X"]
         y_train = train["y"]
 
-        #print(y_train.shape)
         y_train = y_train.reshape((y_train.shape[0],))
-        #print(y_train.shape)
 
         model.fit(X_train, y_train)
 
@@ -118,6 +132,8 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         y_calibrate = calibrate["y"]
         y_calibrate = y_calibrate.reshape((y_calibrate.shape[0],))
         model.calibrate(X_calibrate, y_calibrate)
+
+        print(f"Calibration: {X_calibrate.shape}")
 
         # Set conformal prediction error. This should be a parameter specified by the user.
         error = 0.05
