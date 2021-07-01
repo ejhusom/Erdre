@@ -44,30 +44,26 @@ def featurize(dir_path):
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
-    onehotencoder = OneHotEncoder()
-
+    # Read all data to fit one-hot encoder
     dfs = []
 
     for filepath in filepaths:
-
-        # Read csv
         df = pd.read_csv(filepath)
-
         dfs.append(df)
         
     combined_df = pd.concat(dfs, ignore_index=True)
-
     categorical_variables = find_categorical_variables()
 
-    # print(f"Columns: {combined_df.columns}")
-    # print(f"Cat: {categorical_variables}")
-
+    # Check if some categorical variables have been removed in the cleaning
+    # process, and if so, remove them from the list
     for v in categorical_variables:
         if v not in combined_df.columns:
             categorical_variables.remove(v)
 
-    # print(f"Cat: {categorical_variables}")
-    # print(combined_df[categorical_variables])
+    print(combined_df[categorical_variables]
+    # categorical_encoder = OneHotEncoder()
+    # categorical_encoder.fit(combined_df)
+
 
     for filepath in filepaths:
 
