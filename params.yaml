@@ -1,12 +1,12 @@
 profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/
-    dataset: data_aero
+    dataset: data01
 
 clean:
     # target: Name of target variable.
-    target: B1_CURRENT_VALUE
-    # target: X1_ActualPosition
+    # target: B1_POSITION_VALUE
+    target: X1_ActualPosition
 
     # combine_files: Whether to combine all files into one. 
     #

@@ -49,14 +49,15 @@ def clean(dir_path):
 
     DATA_CLEANED_PATH.mkdir(parents=True, exist_ok=True)
 
+    # Find removable variables from profiling report
+    removable_variables = parse_profile_warnings()
+
     dfs = []
 
     for filepath in filepaths:
 
         # Read csv
         df = pd.read_csv(filepath, index_col=0)
-
-        removable_variables = parse_profile_warnings()
 
         for c in removable_variables:
             del df[c]
@@ -143,7 +144,4 @@ if __name__ == "__main__":
     np.random.seed(2020)
 
     clean(sys.argv[1])
-
-    # parse_profile_warnings()
-
 

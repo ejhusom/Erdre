@@ -11,13 +11,15 @@ Date:
 import os
 import sys
 
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from sklearn.preprocessing import OneHotEncoder
 import yaml
 
-from config import DATA_FEATURIZED_PATH, DATA_PATH
+from config import DATA_FEATURIZED_PATH, DATA_PATH, PROFILE_PATH
 from preprocess_utils import move_column, find_files
 
 
@@ -41,6 +43,31 @@ def featurize(dir_path):
     filepaths = find_files(dir_path, file_extension=".csv")
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
+
+    onehotencoder = OneHotEncoder()
+
+    dfs = []
+
+    for filepath in filepaths:
+
+        # Read csv
+        df = pd.read_csv(filepath)
+
+        dfs.append(df)
+        
+    combined_df = pd.concat(dfs, ignore_index=True)
+
+    categorical_variables = find_categorical_variables()
+
+    # print(f"Columns: {combined_df.columns}")
+    # print(f"Cat: {categorical_variables}")
+
+    for v in categorical_variables:
+        if v not in combined_df.columns:
+            categorical_variables.remove(v)
+
+    # print(f"Cat: {categorical_variables}")
+    # print(combined_df[categorical_variables])
 
     for filepath in filepaths:
 
@@ -72,6 +99,7 @@ def featurize(dir_path):
             
             # Remove feature if it is non-numeric
             elif not is_numeric_dtype(df[col]):
+
                 del df[col]
 
         # Save data
@@ -108,8 +136,44 @@ def add_features(df, features):
 
     return df 
 
+def find_categorical_variables():
+    """Find categorical variables based on profiling report.
+
+    Returns:
+        categorical_variables (list): List of categorical variables.
+
+    """
+
+    params = yaml.safe_load(open("params.yaml"))["clean"]
+    target = params["target"]
+
+    profile_json = json.load(open(PROFILE_PATH / "profile.json"))
+    variables = list(profile_json["variables"].keys())
+    correlations = profile_json["correlations"]["pearson"]
+
+    categorical_variables = []
+
+    for v in variables:
+
+        try:
+            n_categories = profile_json["variables"][v]["n_category"]
+            categorical_variables.append(v)
+        except:
+            pass
+
+
+    # categorical_variables = list(set(categorical_variables))
+
+    # if target in categorical_variables:
+    #     print("Warning related to target variable. Check profile for details.")
+    #     categorical_variables.remove(target)
+
+    return categorical_variables
+
+
 if __name__ == "__main__":
 
     np.random.seed(2020)
 
     featurize(sys.argv[1])
+
