@@ -54,13 +54,21 @@ def featurize(dir_path):
     combined_df = pd.concat(dfs, ignore_index=True)
     categorical_variables = find_categorical_variables()
 
+    print(f"Columns: {combined_df.columns}")
+    print(f"Cat: {categorical_variables}")
+
     # Check if some categorical variables have been removed in the cleaning
     # process, and if so, remove them from the list
-    for v in categorical_variables:
-        if v not in combined_df.columns:
-            categorical_variables.remove(v)
+    # removables = []
+    # for v in categorical_variables:
+    #     if v not in combined_df.columns:
+    #         removables.append(v)
+    #         # categorical_variables.remove(v)
+    # print(removables)
+    # categorical_variables.remove(removables)
 
-    print(combined_df[categorical_variables]
+    # print(f"Cat: {categorical_variables}")
+    # print(combined_df[categorical_variables])
     # categorical_encoder = OneHotEncoder()
     # categorical_encoder.fit(combined_df)
 
