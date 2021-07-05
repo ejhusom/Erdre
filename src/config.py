@@ -17,7 +17,7 @@ from pathlib import Path
 ASSETS_PATH = Path("./assets")
 """Path to all assets of project."""
 
-PROFILING_PATH = ASSETS_PATH / "profiling"
+PROFILE_PATH = ASSETS_PATH / "profile"
 """Path to profiling report."""
 
 DATA_PATH = ASSETS_PATH / "data"
@@ -27,7 +27,10 @@ DATA_PATH_RAW = DATA_PATH / "raw"
 """Path to raw data."""
 
 DATA_FEATURIZED_PATH = DATA_PATH / "featurized"
-"""Path to data that is cleaned and has added features."""
+"""Path to data that is has added features."""
+
+DATA_CLEANED_PATH = DATA_PATH / "cleaned"
+"""Path to data that is cleaned."""
 
 DATA_SEQUENTIALIZED_PATH = DATA_PATH / "sequentialized"
 """Path to data that is split into sequences."""
@@ -53,11 +56,20 @@ METRICS_PATH = ASSETS_PATH / "metrics"
 METRICS_FILE_PATH = METRICS_PATH / "metrics.json"
 """Path to file containing metrics."""
 
+PREDICTIONS_PATH = ASSETS_PATH / "predictions"
+"""Path to folder containing predictions file."""
+
+PREDICTIONS_FILE_PATH = PREDICTIONS_PATH / "predictions.csv"
+"""Path to file containing predictions."""
+
 PLOTS_PATH = ASSETS_PATH / "plots"
 """Path to folder plots."""
 
 PREDICTION_PLOT_PATH = PLOTS_PATH / "prediction.png"
 """Path to file containing prediction plot."""
+
+INTERVALS_PLOT_PATH = PLOTS_PATH / "intervals.png"
+"""Path to file containing intervals plot."""
 
 TRAININGLOSS_PLOT_PATH = PLOTS_PATH / "trainingloss.png"
 """Path to file containing training loss plot."""

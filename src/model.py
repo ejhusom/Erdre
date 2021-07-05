@@ -52,8 +52,8 @@ def cnn(input_x, input_y,
         activation="elu", name="conv1d_1"))
     model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
         activation="relu", name="conv1d_2"))
-    model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
-        activation="relu", name="conv1d_3"))
+    # model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+    #     activation="relu", name="conv1d_3"))
     # model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
     #     activation="relu", name="conv1d_4"))
     # model.add(layers.MaxPooling1D(pool_size=2, name="pool_1"))
@@ -64,16 +64,16 @@ def cnn(input_x, input_y,
     # model.add(layers.Dense(32, activation="relu", name="dense_3"))
     model.add(layers.Dense(output_length, activation="linear",
         name="output_layer"))
-    model.compile(optimizer="adam", loss="mse", metrics=["mae", "mape"])
+    model.compile(optimizer="adam", loss="mse")
 
     return model
 
-def dnn(input_x, n_steps_out=1, seed=2020):
+def dnn(input_x, output_length=1, seed=2020):
     """Define a DNN model architecture using Keras.
 
     Args:
         input_x (int): Number of features.
-        n_steps_out (int): Number of output steps.
+        output_length (int): Number of output steps.
 
     Returns:
         model (keras model): Model to be trained.
@@ -83,11 +83,12 @@ def dnn(input_x, n_steps_out=1, seed=2020):
     set_seed(seed)
 
     model = models.Sequential()
-    model.add(layers.Dense(256, activation='relu', input_dim=input_x))
-    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dense(128, activation='relu', input_dim=input_x))
+    # model.add(layers.Dense(256, activation='relu', input_dim=input_x))
     model.add(layers.Dense(64, activation='relu'))
-    model.add(layers.Dense(n_steps_out, activation='linear'))
-    model.compile(optimizer='adam', loss='mae')
+    model.add(layers.Dense(32, activation='relu'))
+    model.add(layers.Dense(output_length, activation='linear'))
+    model.compile(optimizer='adam', loss="mse")
 
     return model
 

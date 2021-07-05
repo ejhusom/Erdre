@@ -10,6 +10,7 @@ Created:
 """
 import json
 import os
+import shutil
 import sys
 
 import matplotlib.pyplot as plt
@@ -18,18 +19,59 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.base import RegressorMixin
+from sklearn.neighbors import KNeighborsRegressor
 from tensorflow.keras import models
 import yaml
 
-from config import METRICS_FILE_PATH, PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH
+from nonconformist.cp import IcpRegressor
+from nonconformist.nc import NcFactory, AbsErrorErrFunc
+from nonconformist.base import RegressorAdapter
+from nonconformist.nc import RegressorNc
+
+from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH, PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH, INTERVALS_PLOT_PATH
+from model import cnn, dnn, lstm, cnndnn
 
 
-def evaluate(model_filepath, test_filepath):
+# class MyCustomModel(RegressorMixin):
+class MyCustomModel(RegressorAdapter):
+    """Implement custom sklearn model to use with the nonconformist library.
+
+        Args:
+            model_filepath (str): Path to ALREADY TRAINED model.
+
+    """
+
+    # def __init__(self, model_filepath):
+    def __init__(self, model):
+        # Load already trained model from h5 file.
+        # self.model = models.load_model(model_filepath)
+        # self.model_filepath = model_filepath
+
+        # super(MyCustomModel, self).__init__(models.load_model(model_filepath), fit_params=None)
+        super(MyCustomModel, self).__init__(model)
+
+    def fit(self, X=None, y=None):
+        # We don't do anything here because we are loading an already trained model in __init__().
+        # Still, we need to implement this method so the conformal normalizer
+        # is initialized by nonconformist.
+        pass
+
+    def predict(self, X=None):
+        predictions = self.model.predict(X)
+        predictions = predictions.reshape((predictions.shape[0],))
+
+        return predictions
+
+
+def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     """Evaluate model to estimate power.
 
     Args:
         model_filepath (str): Path to model.
+        train_filepath (str): Path to train set.
         test_filepath (str): Path to test set.
+        calibrate_filepath (str): Path to calibrate set.
 
     """
 
@@ -38,27 +80,160 @@ def evaluate(model_filepath, test_filepath):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["evaluate"]
     params_train = yaml.safe_load(open("params.yaml"))["train"]
+    params_split = yaml.safe_load(open("params.yaml"))["split"]
 
     test = np.load(test_filepath)
-
     X_test = test["X"]
     y_test = test["y"]
 
-    model = models.load_model(model_filepath)
+    # pandas data frame to store predictions and ground truth.
+    df_predictions = None
 
-    y_pred = model.predict(X_test)
+    y_pred = None
+
+    if params_split["calibrate_split"] == 0:
+        model = models.load_model(model_filepath)
+        y_pred = model.predict(X_test)
+    else:
+        trained_model = models.load_model(model_filepath)
+        # mycustommodel = MyCustomModel(model_filepath)
+        mycustommodel = MyCustomModel(trained_model)
+
+        m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
+                kernel_size=params_train["kernel_size"]
+        )
+
+        nc = RegressorNc(mycustommodel,
+            err_func=AbsErrorErrFunc(),  # non-conformity function
+            # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
+            # normalizer=m
+        )
+
+        # nc = NcFactory.create_nc(mycustommodel,
+        #     err_func=AbsErrorErrFunc(),  # non-conformity function
+        #     # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
+        #     normalizer_model=m
+        # )
+
+        model = IcpRegressor(nc)
+
+        # Fit the normalizer.
+        train = np.load(train_filepath)
+        X_train = train["X"]
+        y_train = train["y"]
+
+        y_train = y_train.reshape((y_train.shape[0],))
+
+        model.fit(X_train, y_train)
+
+        # Calibrate model.
+        calibrate = np.load(calibrate_filepath)
+        X_calibrate = calibrate["X"]
+        y_calibrate = calibrate["y"]
+        y_calibrate = y_calibrate.reshape((y_calibrate.shape[0],))
+        model.calibrate(X_calibrate, y_calibrate)
+
+        print(f"Calibration: {X_calibrate.shape}")
+
+        # Set conformal prediction error. This should be a parameter specified by the user.
+        error = 0.05
+
+        # Predictions will contain the intervals. We need to compute the middle
+        # points to get the actual predictions y.
+        predictions = model.predict(X_test, significance=error)
+
+        # Compute middle points.
+        y_pred = predictions[:, 0] + (predictions[:, 1] - predictions[:, 0]) / 2
+
+        # Reshape to put it in the same format as without calibration set.
+        y_pred = y_pred.reshape((y_pred.shape[0], 1))
+
+        # Build data frame with predictions.
+        my_results = list(zip(np.reshape(y_test, (y_test.shape[0],)),
+                              np.reshape(y_pred, (y_pred.shape[0],)), 
+                              predictions[:, 0], predictions[:, 1]))
+
+        df_predictions = pd.DataFrame(my_results, 
+                columns=['ground_truth', 'predicted', 'lower_bound', 'upper_bound']
+        )
+
+        save_predictions(df_predictions)
+
+        plot_intervals(df_predictions)
+
+
 
     mse = mean_squared_error(y_test, y_pred)
-    #r2 = r2_score(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
     print("MSE: {}".format(mse))
-    #print("R2: {}".format(r2))
+    print("R2: {}".format(r2))
 
-    plot_prediction(y_test, y_pred, inputs=X_test, info="(MSE: {})".format(mse))
+    plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
     plot_individual_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
-        json.dump(dict(mse=mse), f)
+        json.dump(dict(mse=mse, r2=r2), f)
+
+
+def save_predictions(df_predictions):
+    """Save the predictions along with the ground truth as a csv file.
+
+        Args:
+            df_predictions_true (pandas dataframe): pandas data frame with the predictions and ground truth values.
+
+        """
+
+    PREDICTIONS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    df_predictions.to_csv(PREDICTIONS_FILE_PATH, index=False)
+
+
+def plot_intervals(df):
+    """Plot the confidence intervals generated with conformal prediction.
+
+        Args:
+            df (pandas dataframe): pandas data frame.
+
+        """
+
+    INTERVALS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    x = [x for x in range(1, df.shape[0] + 1, 1)]
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(x=x, y=df["predicted"], name="predictions")
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            name='Upper Bound',
+            x=x,
+            y=df["upper_bound"],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            showlegend=False
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            name='Lower Bound',
+            x=x,
+            y=df["lower_bound"],
+            marker=dict(color="#444"),
+            line=dict(width=0),
+            mode='lines',
+            fillcolor='rgba(68, 68, 68, 0.3)',
+            fill='tonexty',
+            showlegend=False
+        )
+    )
+
+    fig.write_html(str(PLOTS_PATH / "intervals.html"))
 
 
 def plot_prediction(y_true, y_pred, inputs=None, info=""):
@@ -123,7 +298,6 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
     fig.update_yaxes(title_text="scaled units", secondary_y=True)
 
     fig.write_html(str(PLOTS_PATH / "prediction.html"))
-    # fig.show(config=config)
 
 def plot_individual_predictions(y_true, y_pred):
     """
@@ -177,7 +351,7 @@ def plot_individual_predictions(y_true, y_pred):
 
     # plt.title("Predictions", wrap=True)
     # plt.savefig(str(PLOTS_PATH / "prediction_individuals.png"))
-    plt.show()
+    # plt.show()
     fig.write_html(str(PLOTS_PATH / "prediction_individuals.html"))
 
 if __name__ == "__main__":
@@ -186,9 +360,10 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 3:
         try:
-            evaluate("assets/models/model.h5", "assets/data/combined/test.npz")
+            evaluate("assets/models/model.h5", "assets/data/combined/train.npz", "assets/data/combined/test.npz", "assets/data/combined/calibrate.npz")
         except:
             print("Could not find model and test set.")
             sys.exit(1)
     else:
-        evaluate(sys.argv[1], sys.argv[2])
+        evaluate(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+

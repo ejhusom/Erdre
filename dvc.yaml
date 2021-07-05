@@ -1,83 +1,106 @@
 stages:
 
-  profile:
-    cmd: python3 src/profiling.py
-    deps:
-    - assets/data/raw
-    - src/profiling.py
-    - src/myconfig.yaml
+    profile:
+        cmd: python3 src/profile.py assets/data/raw/
+        deps:
+        - assets/data/raw
+        - src/profile.py
+        - src/profile.yaml
+        outs:
+        - assets/profile
+        params:
+        - profile.dataset
 
-  featurize:
-    cmd: python3 src/featurize.py assets/data/raw/
-    deps:
-    - assets/data/raw
-    - src/featurize.py
-    outs:
-    - assets/data/featurized
-    params:
-    - featurize.raw_subfolder
-    - featurize.features
-    - featurize.target
+    clean:
+        cmd: python3 src/clean.py assets/data/raw/
+        deps:
+        - assets/data/raw
+        - src/clean.py
+        - assets/profile
+        outs:
+        - assets/data/cleaned
+        params:
+        - clean.target
+        - clean.combine_files
+        - clean.percentage_zeros_threshold
+        - clean.correlation_metric
+        - clean.correlation_threshold
 
-  split:
-    cmd: python3 src/split.py assets/data/featurized/
-    deps:
-    - assets/data/featurized
-    - src/split.py
-    outs:
-    - assets/data/split
-    params:
-    - split.train_split
+    featurize:
+        cmd: python3 src/featurize.py assets/data/cleaned/
+        deps:
+        - assets/data/cleaned
+        - src/featurize.py
+        outs:
+        - assets/data/featurized
+        params:
+        - featurize.features
+        - clean.target
 
-  scale:
-    cmd: python3 src/scale.py assets/data/split/
-    deps:
-    - assets/data/split
-    - src/scale.py
-    outs:
-    - assets/data/scaled
-    params:
-    - scale.method
+    split:
+        cmd: python3 src/split.py assets/data/featurized/
+        deps:
+        - assets/data/featurized
+        - src/split.py
+        outs:
+        - assets/data/split
+        params:
+        - split.train_split
+        - split.calibrate_split
 
-  sequentialize:
-    cmd: python3 src/sequentialize.py assets/data/scaled/
-    deps:
-    - assets/data/scaled
-    - src/sequentialize.py
-    outs:
-    - assets/data/sequentialized
-    params:
-    - sequentialize.hist_size
-    - sequentialize.target_size
+    scale:
+        cmd: python3 src/scale.py assets/data/split/
+        deps:
+        - assets/data/split
+        - src/scale.py
+        outs:
+        - assets/data/scaled
+        params:
+        - scale.input
+        - scale.output
 
-  combine:
-    cmd: python3 src/combine.py assets/data/sequentialized/
-    deps:
-    - assets/data/sequentialized
-    - src/combine.py
-    outs:
-    - assets/data/combined
+    sequentialize:
+        cmd: python3 src/sequentialize.py assets/data/scaled/
+        deps:
+        - assets/data/scaled
+        - src/sequentialize.py
+        outs:
+        - assets/data/sequentialized
+        params:
+        - sequentialize.hist_size
+        - sequentialize.target_size
+        - train.net
 
-  train:
-    cmd: python3 src/train.py assets/data/combined/train.npz
-    deps:
-    - assets/data/combined
-    - src/train.py
-    - src/model.py
-    outs:
-    - assets/models
-    params:
-    - train.net
-    - train.n_epochs
-    - train.batch_size
-    - train.kernel_size
+    combine:
+        cmd: python3 src/combine.py assets/data/sequentialized/
+        deps:
+        - assets/data/sequentialized
+        - src/combine.py
+        outs:
+        - assets/data/combined
 
-  evaluate:
-    cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/test.npz
-    deps:
-    - assets/data/combined/test.npz
-    - assets/models/model.h5
-    - src/evaluate.py
-    metrics:
-    - assets/metrics/metrics.json:
-        cache: false
+    train:
+        cmd: python3 src/train.py assets/data/combined/train.npz
+        deps:
+        - assets/data/combined
+        - src/train.py
+        - src/model.py
+        outs:
+        - assets/models
+        params:
+        - train.net
+        - train.n_epochs
+        - train.batch_size
+        - train.kernel_size
+
+    evaluate:
+        cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz
+        deps:
+        - assets/data/combined/test.npz
+        - assets/models/model.h5
+        - src/evaluate.py
+        metrics:
+        - assets/metrics/metrics.json:
+            cache: false
+        - assets/predictions/predictions.csv:
+            cache: false

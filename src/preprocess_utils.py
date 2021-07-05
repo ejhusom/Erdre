@@ -7,18 +7,20 @@
 # Description:
 # Utilities for data preprocessing.
 # ============================================================================
-import matplotlib.pyplot as plt
+import glob
+import os
+import shutil
+import sys
 
 # plt.rcParams['figure.figsize'] = [5.0, 3.0]
 # plt.rcParams['figure.dpi'] = 300
 
 import datetime
+import matplotlib.pyplot as plt
 import numpy as np
-import os
 import pandas as pd
 import pickle
 import string
-import sys
 import time
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
@@ -58,6 +60,27 @@ def read_csv(filename, delete_columns=[], verbose=False):
         print("Length of data set: {}".format(len(df)))
 
     return df, index
+
+def find_files(dir_path, file_extension=""):
+    """Find files in directory.
+
+    Args:
+        dir_path (str): Path to directory containing files.
+        file_extension (str): Only find files with a certain extension. Default
+            is an empty string, which means it will find all files.
+
+    Returns:
+        filepaths (list): All files found.
+
+    """
+
+    filepaths = []
+
+    for f in sorted(os.listdir(dir_path)):
+        if f.endswith(file_extension):
+            filepaths.append(dir_path + "/" + f)
+
+    return filepaths
 
 
 def print_dataframe(df, message=""):
