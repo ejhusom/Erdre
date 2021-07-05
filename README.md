@@ -153,11 +153,11 @@ folder `assets/plots/`, and show the following data:
 
 ![Example of prediction.](img/prediction_example.png)
 
-- `prediction_individuals.html`: Individual predicted target sequences are
+- `prediction_sequences.html`: Individual predicted target sequences are
   plotted against the true values. The predicted sequences are shown in
   different colors to easily distinguish between them. Only a subset of the
   predicted target sequences are shown, in order to avoid overlapping and make
   the plot easier to interpret.
 
-![Example of individual predictions.](img/prediction_individuals_example.png)
+![Example of sequence predictions.](img/prediction_sequences_example.png)
 
