@@ -50,41 +50,21 @@ files you have to:
 
 ## Add data
 
-The data files should be placed in the folder `assets/data/raw/`. The scripts
-look for `.csv`-files, so all `.csv`-files placed in this folder will be
-considered as a part of the data set. If one or several of the files are not in
-the expected format (and have the expected columns), the scripts will most
-likely return an error message.
+To add your data to the pipeline, perform the following steps:
 
-Example:
+1. Place the data files in the folder `assets/data/raw/[dataset]`, where
+   `dataset` is your chosen name of the data set.
+2. In `params.yaml`, set the parameter `dataset` to the name of your data set.
 
-```
-assets/
-├── data/
-|   └── raw/
-|       ├── experiment_01.csv
-|       ├── experiment_02.csv
-|       ├── experiment_03.csv
-|       ├── ...
-|       ├── experiment_17.csv
-|       ├── experiment_18.csv
-|       └── README.md
-├── metrics/
-├── plots/
-└── profiling/
-```
+Currently only .csv-files are supported.
 
-If you want to keep data in separate subfolders, make a subfolder in
-`Erdre/assets/data/raw` and enter the subfolder name as the parameter
-`featurize.dataset` in `params.yaml`.
-
-Example with a subfolder called `dataset1`:
+Example with a data set called `data01`:
 
 ```
 assets/
 ├── data/
 |   └── raw/
-|       ├── dataset1/
+|       ├── data01/
 |       |   ├── experiment_01.csv
 |       |   ├── experiment_02.csv
 |       |   ├── experiment_03.csv
@@ -97,19 +77,22 @@ assets/
 └── profiling/
 ```
 
-And then set the subfolder name in `params.yaml`:
+The data set name is then specified in `params.yaml`:
 
 ```
 ...
 
 profile:
-  dataset: dataset1
+  dataset: data01
 
 ...
 
 ```
 
-
+It is also possible to keep your data files directly inside `assets/data/raw/`,
+in which case you will need to let the `dataset` parameter in `params.yaml` be
+empty. This will however limit the flexibility of easily swapping data sets
+without having to move files around.
 
 ## Usage
 
