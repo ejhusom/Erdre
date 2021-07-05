@@ -69,7 +69,7 @@ Session.vim
 env/
 venv/
 
-# project specific files
+# project-specific files
 .dvc*
 dvc.lock
 assets/plots/
