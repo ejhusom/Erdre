@@ -9,7 +9,7 @@ This README explains how to use the pipeline to create predictive models from
 scratch:
 
 1. [Installation](#1-installation)
-2. [Setup](#2-setup)
+2. [Setup](#2-setup-dvc)
 3. [Add data](#3-add-data)
 4. [Specify parameters](#4-specify-parameters)
 5. [Run experiments](#5-run-experiments)
@@ -40,25 +40,29 @@ pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly 
 To get a plot of the neural network architecture, the following software needs
 to be installed: [Graphviz](https://graphviz.org/about/).
 
-## 2. Setup
+## 2. Setup DVC
 
-Initialize DVC by running:
+There are 2 options when setting up DVC:
 
-```
-dvc init --no-scm
-```
+### Option A: Simple projects without need for tracking results
+
+Initialize DVC with `dvc init --no-scm`.
 
 The `--no-scm` option specifies that we do not want the DVC-related files to be
-tracked by git. This is because this repository only containes the files that
-consitutes the framework for creating a machine learning pipeline, and should
-be agnostic to project specific things, such as data files, plots, metrics and
-so on.
+tracked by git, because this repository is agnostic to project-specific things
+(data files, plots, metrics). This is recommended when there is no need to
+track experiments in the repository, for simple projects, testing or developing
+of the pipeline itself.
 
-If you have a fork of this repository, and want to track project specific
-files you have to:
 
-1. Remove the last lines under `# project-specific files` in .gitignore, and
-2. Initialize DVC with `dvc init`.
+### Option B: Track experiments using git
+
+For long-term projects, it is recommended that you track DVC-related files with
+git, to take full advantage of the DVC functionality. Follow these steps:
+
+1. Fork this repository.
+2. Remove the lines under `# project-specific files` in .gitignore.
+3. Initialize DVC with `dvc init`.
 
 ## 3. Add data
 

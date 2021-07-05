@@ -33,11 +33,13 @@ Session.vim
 env/
 venv/
 
+# large files
+model_tuning/
+models/
+
 # project-specific files
 .dvc*
 dvc.lock
 assets/plots/
 assets/profile/
 assets/metrics/
-model_tuning/
-models/
