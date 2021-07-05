@@ -1,28 +1,6 @@
-# compiled files:
-build*
-*.o
-*.so
-*.a
-
 # data-files
 *.dat
 *.csv
-
-# doconce:
-.*_html_file_collection
-
-# eclipse files:
-*.cproject
-*.project
-
-# executables
-*.exe
-*.x
-
-# jekyll
-_site/
-.sass-cache
-.jekyll-metadata
 
 # misc:
 .DS_Store
@@ -49,20 +27,6 @@ tmp*
 temp*
 .#*
 \#*
-
-# tex files:
-*.log
-*.dvi
-*.aux
-*.blg
-*.idx
-*.nav
-*.out
-*.toc
-*.snm
-*.vrb
-
-# vim
 Session.vim
 
 # python venv
