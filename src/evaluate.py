@@ -170,7 +170,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     print("R2: {}".format(r2))
 
     plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
-    plot_individual_predictions(y_test, y_pred)
+    plot_sequence_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
         json.dump(dict(mse=mse, r2=r2), f)
@@ -299,7 +299,7 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
 
     fig.write_html(str(PLOTS_PATH / "prediction.html"))
 
-def plot_individual_predictions(y_true, y_pred):
+def plot_sequence_predictions(y_true, y_pred):
     """
     Plot the prediction compared to the true targets.
     
@@ -350,9 +350,9 @@ def plot_individual_predictions(y_true, y_pred):
     PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     # plt.title("Predictions", wrap=True)
-    # plt.savefig(str(PLOTS_PATH / "prediction_individuals.png"))
+    # plt.savefig(str(PLOTS_PATH / "prediction_sequences.png"))
     # plt.show()
-    fig.write_html(str(PLOTS_PATH / "prediction_individuals.html"))
+    fig.write_html(str(PLOTS_PATH / "prediction_sequences.html"))
 
 if __name__ == "__main__":
 
