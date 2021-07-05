@@ -57,8 +57,8 @@ def featurize(dir_path):
     combined_df = pd.concat(dfs, ignore_index=True)
     categorical_variables = find_categorical_variables()
 
-    print(f"Columns: {combined_df.columns}")
-    print(f"Cat: {categorical_variables}")
+    # print(f"Columns: {combined_df.columns}")
+    # print(f"Cat: {categorical_variables}")
 
     # Check if some categorical variables have been removed in the cleaning
     # process, and if so, remove them from the list
@@ -106,7 +106,6 @@ def featurize(dir_path):
             
             # Remove feature if it is non-numeric
             elif not is_numeric_dtype(df[col]):
-
                 del df[col]
 
         # Save data

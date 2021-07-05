@@ -108,8 +108,18 @@ profile:
 
 ## 4. Specify parameters
 
-Adjust the parameters in `params.yaml` to customize the stages of preprocessing
-and machine learning. Documentation of the parameters is found in
+In `params.yaml`, specify the name of the target variable (must match the name
+of the column containing the target variable in the data files). Example with
+target variable `TargetVar`:
+
+```
+clean:
+    # target: Name of target variable.
+    target: TargetVar
+```
+
+The rest of the parameters can also be adjusted.  Documentation of the
+parameters is found in
 [`params.yaml`](https://github.com/SINTEF-9012/Erdre/blob/master/params.yaml).
 
 ## 5. Running experiments
