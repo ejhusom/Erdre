@@ -5,9 +5,13 @@ Erroneous data repair for Industry 4.0.
 This is a project using [DVC](https://dvc.org/) for setting up a flexible and
 robust pipeline for machine learning experiments.
 
-Table of contents:
+Steps to use this pipeline:
 
-1. [Installation](#1.-installation)
+1. [Installation](#1-installation)
+2. [Setup](#2-setup)
+3. [Add data](#3-add-data)
+4. [Specify parameters](#4-specify-parameters)
+5. [Run experiments](#5-run-experiments)
 
 
 ## 1. Installation
@@ -32,7 +36,7 @@ pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly 
 To get a plot of the neural network architecture, the following software needs
 to be installed: [Graphviz](https://graphviz.org/about/).
 
-## 2. Initialize DVC
+## 2. Setup
 
 Initialize DVC by running:
 
@@ -84,8 +88,6 @@ assets/
 The data set name is then specified in `params.yaml`:
 
 ```
-...
-
 profile:
   dataset: data01
 
@@ -98,9 +100,14 @@ in which case you will need to let the `dataset` parameter in `params.yaml` be
 empty. This will however limit the flexibility of easily swapping data sets
 without having to move files around.
 
-## 4. Usage
 
-### Running experiments
+## 4. Specify parameters
+
+Adjust the parameters in `params.yaml` to customize the stages of preprocessing
+and machine learning. Documentation of the parameters is found in
+[`params.yaml`](https://github.com/SINTEF-9012/Erdre/blob/master/params.yaml).
+
+## 5. Running experiments
 
 Run experiments by executing this command on the main directory:
 
@@ -127,13 +134,6 @@ For example:
 dvc repro profile     # will only run the profiling stage
 dvc repro featurize   # will only run the featurize stage
 ```
-
-
-### Adjusting parameters
-
-Adjust the parameters in `params.yaml` to customize the stages of preprocessing
-and machine learning. Documentation of the parameters is found in
-[`params.yaml`](https://github.com/SINTEF-9012/Erdre/blob/master/params.yaml).
 
 
 ## Evaluation
