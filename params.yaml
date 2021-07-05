@@ -5,7 +5,7 @@ profile:
 
 clean:
     # target: Name of target variable.
-    target: X1_ActualPosition
+    target: target_name
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
