@@ -5,7 +5,7 @@ Erroneous data repair for Industry 4.0.
 This is a project using [DVC](https://dvc.org/) for setting up a flexible and
 robust pipeline for machine learning experiments.
 
-For a quick look at an example result, go to [Evalutation](#evaluation).
+For a quick look at an example result, go to [Evaluation](#evaluation).
 
 
 ## Installation and setup
