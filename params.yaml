@@ -1,6 +1,7 @@
 profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
-    # files resides: 'assets/data/raw/[dataset]/
+    # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
+    # 'assets/data/raw/'.
     dataset: 
 
 clean:
