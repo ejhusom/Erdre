@@ -67,17 +67,21 @@ def train(filepath):
 
     print(model.summary())
 
-    # Save a plot of the model
-    PLOTS_PATH.mkdir(parents=True, exist_ok=True)
-    plot_model(
-        model,
-        to_file=PLOTS_PATH / 'model.png',
-        show_shapes=False,
-        show_layer_names=True,
-        rankdir='TB',
-        expand_nested=True,
-        dpi=96
-    )
+    # Save a plot of the model. Will not work if Graphviz is not installed, and
+    # is therefore skipped if an error is thrown.
+    try:
+        PLOTS_PATH.mkdir(parents=True, exist_ok=True)
+        plot_model(
+            model,
+            to_file=PLOTS_PATH / 'model.png',
+            show_shapes=False,
+            show_layer_names=True,
+            rankdir='TB',
+            expand_nested=True,
+            dpi=96
+        )
+    except:
+        print("Failed saving plot of the network architecture.")
 
     early_stopping = EarlyStopping(
             monitor="val_loss",
