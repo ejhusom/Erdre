@@ -29,7 +29,6 @@ clean:
     # - spearman
     # - phi_k
     # - cramers
-    # - kendall
     correlation_metric: pearson
 
     # correlation_threshold: If the correlation between two variables are

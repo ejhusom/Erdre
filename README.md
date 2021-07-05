@@ -5,7 +5,8 @@ Erroneous data repair for Industry 4.0.
 This is a project using [DVC](https://dvc.org/) for setting up a flexible and
 robust pipeline for machine learning experiments.
 
-Steps to use this pipeline:
+This README explains how to use the pipeline to create predictive models from
+scratch:
 
 1. [Installation](#1-installation)
 2. [Setup](#2-setup)
@@ -13,6 +14,9 @@ Steps to use this pipeline:
 4. [Specify parameters](#4-specify-parameters)
 5. [Run experiments](#5-run-experiments)
 
+An example of results can be seen here:
+
+- [Example of results](#example-of-results)
 
 ## 1. Installation
 
@@ -30,7 +34,7 @@ pip3 install -r requirements.txt
 As an alternative you can install the required modules by running:
 
 ```
-pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc
+pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc nonconformist
 ```
 
 To get a plot of the neural network architecture, the following software needs
@@ -136,7 +140,7 @@ dvc repro featurize   # will only run the featurize stage
 ```
 
 
-## Evaluation
+## Example of results
 
 When the trained model is evaluated, the program produces two plots that
 visualizes the predictions on the test set. These plots are placed on the
