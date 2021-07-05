@@ -101,7 +101,7 @@ def parse_profile_warnings():
     removable_variables = []
 
     percentage_zeros_threshold = params["percentage_zeros_threshold"]
-    correlation_threshold = 1.0
+    correlation_threshold = params["correlation_threshold"]
 
     for m in messages:
         m = m.split()
