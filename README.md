@@ -7,7 +7,6 @@ robust pipeline for machine learning experiments.
 
 For a quick look at an example result, go to [Evaluation](#evaluation).
 
-
 ## Installation and setup
 
 Developed using Python3.8. You can install the required modules by creating a
@@ -103,11 +102,8 @@ And then set the subfolder name in `params.yaml`:
 ```
 ...
 
-featurize:
+profile:
   dataset: dataset1
-  features:
-    - ...
-    - ...
 
 ...
 
@@ -148,24 +144,9 @@ dvc repro featurize   # will only run the featurize stage
 
 ### Adjusting parameters
 
-Adjust the parameters in `params.yaml` to customize the machine learning model.
-
-- `featurize.features`: List of the features you want to use as input to the
-  model. By default these are the names of the columns in the data files. See
-  [available features](#available-features) below.
-- `featurize.target`: What the target variable should be.
-- `split.train_split`: Fraction of data set to use for training.
-- `split.calibrate_split`: Fraction of data set to use for calibration. If set to 0, no conformal prediction is performed.
-- `scale.method`: Which scaling method to use.
-- `sequentialize.hist_size`: How many time steps of input to use for
-  prediction.
-- `sequentialize.target_size`: How large sequence (number of time steps) to
-  predict per input sample.
-- `train.net`: What type of neural network to use.
-- `train.n_epochs`: Number of training epochs.
-- `train.batch_size`: Batch size per epoch.
-- `train.kernel_size`: Kernel size (only applicable when convolutional layers are
-  used).
+Adjust the parameters in `params.yaml` to customize the stages of preprocessing
+and machine learning. Documentation of the parameters is found in
+[`params.yaml`](https://github.com/SINTEF-9012/Erdre/blob/master/params.yaml).
 
 
 ## Evaluation

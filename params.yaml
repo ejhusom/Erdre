@@ -8,17 +8,21 @@ clean:
     # target: B1_POSITION_VALUE
     target: X1_ActualPosition
 
-    # combine_files: Whether to combine all files into one. 
+    # combine_files: Whether to combine the data from all files into one file
+    # after cleaning.
     #
-    # Sometimes it is desirable to keep files separated, for example when:
-    # - Some specific files should be reserved for the test set.
-    # - We are dealing with time series data, and do not want sequences to
-    #   overlap across files.
+    # Sometimes it is desirable to not combine the data into a single file,
+    # for example when:
+    # - Some specific files contain data that should be reserved for the test set.
+    # - We are going to use sequences of data points as input samples, and do
+    #   not want sequences to overlap across files.
     #
     combine_files: False
 
     # percentage_zeros_threshold: If the fraction of zeros in a column is
-    # larger than this threshold, the column is removed.
+    # larger than this threshold, the column is removed. If this parameter is
+    # set to 1.0, we will only remove the columns that solely consists of
+    # zeros.
     percentage_zeros_threshold: 0.5
 
     # correlation_metric: Which metric to measure correlation by. Choose from:
@@ -36,16 +40,16 @@ clean:
 
 featurize:
     # features: Which features to use from the data set. If empty, all columns
-    # from input files are used.
+    # from input files are used (except those that are removed during
+    # cleaning).
     features:
-        # - X1_ActualVelocity
-        # - X1_ActualAcceleration
-        # - X1_CommandPosition
-        # - X1_CommandVelocity
-
 
 split:
+    # train_split: Fraction of data set to use for training.
     train_split: 0.5
+
+    # calibrate_split: Fraction of data set to use for calibration. If set to
+    # 0, no conformal prediction is performed.
     calibrate_split: 0.3
 
 scale:
@@ -62,12 +66,26 @@ sequentialize:
     target_size: 1
 
 train:
+    # net: Which type of neural network to use. Choose from:
+    # - dnn (dense neural network)
+    # - cnn (convolutional neural network
     net: cnn
+
+    # n_epochs: Number of epochs to perform during training. If early_stopping
+    # is set to True, training may be stopped before n_epochs is reached.
     n_epochs: 100
+
     batch_size: 128
-    # Kernel size is only applicable for CNN
+    
+    # kernel_size: Only applicable for CNN
     kernel_size: 3
+
+    # early_stopping: Stop training if validation loss does not improve after
+    # [patience] number of epochs.
     early_stopping: True
+
+    # patience: The number of epochs to wait for validation loss to improve,
+    # before stopping training early.
     patience: 40
 
 evaluate:
