@@ -66,15 +66,17 @@ git, to take full advantage of the DVC functionality. Follow these steps:
 
 ## 3. Add data
 
-To add your data to the pipeline, perform the following steps:
+To add your data to the pipeline, you have two options:
 
-1. Place the data files in the folder `assets/data/raw/[dataset]`, where
-   `dataset` is your chosen name of the data set.
-2. In `params.yaml`, set the parameter `dataset` to the name of your data set.
+A. Place the data files in the folder `assets/data/raw/`. 
+B. If you want to easily swap between several data sets:
+   1. Place the files in a subfolder `assets/data/raw/[dataset]`, where
+      `dataset` is your chosen name of the data
+   2. In `params.yaml`, set the parameter `dataset` to the name of your data set.
 
 Currently only .csv-files are supported.
 
-Example with a data set called `data01`:
+Example with a data set called `data01` (option B):
 
 ```
 assets/
@@ -102,11 +104,6 @@ profile:
 ...
 
 ```
-
-It is also possible to keep your data files directly inside `assets/data/raw/`,
-in which case you will need to let the `dataset` parameter in `params.yaml` be
-empty. This will however limit the flexibility of easily swapping data sets
-without having to move files around.
 
 
 ## 4. Specify parameters

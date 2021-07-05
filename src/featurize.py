@@ -7,6 +7,9 @@ Author:
 Date:
     2020-09-16
 
+TODO: Handle categorical variables
+TODO: Find minimum correlation
+
 """
 import os
 import sys
@@ -139,6 +142,62 @@ def add_features(df, features):
         # df["frequency"] = 0
 
     return df 
+
+# def filter_inputs_by_correlation():
+#     """Filter the input features based on the correlation between the features
+#     and the target variable.
+
+#     Returns:
+#         removable_variables (list): Which columns to delete from data set.
+
+#     """
+
+#     params_clean = yaml.safe_load(open("params.yaml"))["clean"]
+#     correlation_metric = params_clean["correlation_metric"]
+#     target = params_clean["target"]
+
+#     params_featurize = yaml.safe_load(open("params.yaml"))["featurize"]
+#     target_min_correlation_threshold = params["target_min_correlation_threshold"]
+
+#     profile_json = json.load(open(PROFILE_PATH / "profile.json"))
+#     messages = profile_json["messages"]
+#     variables = list(profile_json["variables"].keys())
+#     correlations = profile_json["correlations"]["pearson"]
+
+#     removable_variables = []
+
+
+#     for m in messages:
+#         m = m.split()
+#         warning = m[0]
+#         variable = m[-1]
+
+#         if warning == "[CONSTANT]":
+#             removable_variables.append(variable)
+#         if warning == "[ZEROS]":
+#             p_zeros = profile_json["variables"][variable]["p_zeros"]
+#             if p_zeros > percentage_zeros_threshold:
+#                 removable_variables.append(variable)
+#         if warning == "[HIGH_CORRELATION]":
+#             try:
+#                 correlation_scores = correlations[variables.index(variable)]
+#                 for correlated_variable in correlation_scores:
+#                     if (correlation_scores[correlated_variable] > input_max_correlation_threshold and
+#                         variable != correlated_variable and
+#                         variable not in removable_variables):
+
+#                         removable_variables.append(correlated_variable)
+#                         # print(f"{variable} is correlated with {correlated_variable}: {correlation_scores[correlated_variable]}")
+#             except:
+#                 # Pandas profiling might not be able to compute correlation
+#                 # score for some variables, for example some categorical
+#                 # variables.
+#                 pass
+#                 # print(f"{variable}: Could not find correlation score.")
+
+#     removable_variables = list(set(removable_variables))
+
+#     return removable_variables
 
 def find_categorical_variables():
     """Find categorical variables based on profiling report.

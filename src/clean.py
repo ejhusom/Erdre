@@ -101,7 +101,7 @@ def parse_profile_warnings():
     removable_variables = []
 
     percentage_zeros_threshold = params["percentage_zeros_threshold"]
-    correlation_threshold = params["correlation_threshold"]
+    input_max_correlation_threshold = params["input_max_correlation_threshold"]
 
     for m in messages:
         m = m.split()
@@ -118,7 +118,7 @@ def parse_profile_warnings():
             try:
                 correlation_scores = correlations[variables.index(variable)]
                 for correlated_variable in correlation_scores:
-                    if (correlation_scores[correlated_variable] > correlation_threshold and
+                    if (correlation_scores[correlated_variable] > input_max_correlation_threshold and
                         variable != correlated_variable and
                         variable not in removable_variables):
 
