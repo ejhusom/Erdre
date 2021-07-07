@@ -21,7 +21,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import yaml
 
-from config import DATA_SCALED_PATH
+from config import DATA_PATH, DATA_SCALED_PATH
 from preprocess_utils import find_files, scale_data
 
 def scale(dir_path):
@@ -39,6 +39,7 @@ def scale(dir_path):
     params = yaml.safe_load(open("params.yaml"))["scale"]
     input_method = params["input"]
     output_method = params["output"]
+    classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
     
     if input_method == "standard":
         scaler = StandardScaler()
@@ -67,6 +68,12 @@ def scale(dir_path):
 
     data_overview = {}
 
+    output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+    ).reshape(-1)
+
+    n_output_cols = len(output_columns)
+
     for filepath in filepaths:
 
         df = pd.read_csv(filepath, index_col=0)
@@ -75,9 +82,13 @@ def scale(dir_path):
         data = df.to_numpy()
 
         # Split into input (X) and output/target (y)
-        X = data[:, 1:].copy()
-        y = data[:, 0].copy().reshape(-1, 1)
+        # X = data[:, 1:].copy()
+        # y = data[:, 0].copy().reshape(-1, 1)
+        X = data[:, n_output_cols:].copy()
+        y = data[:, 0:n_output_cols].copy()
 
+        if not classification:
+            y = y.reshape(-1, 1)
 
         if "train" in filepath:
             train_inputs.append(X)
@@ -95,7 +106,9 @@ def scale(dir_path):
 
     # Fit a scaler to the training data
     scaler = scaler.fit(X_train)
-    output_scaler = output_scaler.fit(y_train)
+
+    if not classification:
+        output_scaler = output_scaler.fit(y_train)
 
     for filepath in data_overview:
 
@@ -105,11 +118,12 @@ def scale(dir_path):
         else:
             X = scaler.transform(data_overview[filepath]["X"])
 
+        if not classification:
         # Scale outputs
-        if output_method == "none":
-            y = data_overview[filepath]["y"]
-        else:
-            y = output_scaler.transform(data_overview[filepath]["y"])
+            if output_method == "none":
+                y = data_overview[filepath]["y"]
+            else:
+                y = output_scaler.transform(data_overview[filepath]["y"])
 
         # Save X and y into a binary file
         np.savez(
@@ -120,9 +134,7 @@ def scale(dir_path):
                     data_overview[filepath]["category"] + "-scaled.npz"
                 )
             ),
-            #X=data_overview[filepath]["X"],
             X = X, 
-            # y = data_overview[filepath]["y"]
             y = y
         )
 

@@ -106,7 +106,6 @@ def train(filepath):
 
         loss = history.history['loss']
         val_loss = history.history['val_loss']
-        print(type(loss))
 
         history = model.fit(
             X_train, y_train, 

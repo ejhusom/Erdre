@@ -7,9 +7,6 @@ Author:
 Date:
     2020-09-16
 
-TODO: Handle categorical variables
-TODO: Find minimum correlation
-
 """
 import os
 import sys
@@ -47,15 +44,20 @@ def featurize(dir_path):
 
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
-    # Read all data to fit one-hot encoder
-    dfs = []
+    output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+    ).reshape(-1)
 
-    for filepath in filepaths:
-        df = pd.read_csv(filepath)
-        dfs.append(df)
+    #===============================================
+    # Read all data to fit one-hot encoder
+    # dfs = []
+
+    # for filepath in filepaths:
+    #     df = pd.read_csv(filepath)
+    #     dfs.append(df)
         
-    combined_df = pd.concat(dfs, ignore_index=True)
-    categorical_variables = find_categorical_variables()
+    # combined_df = pd.concat(dfs, ignore_index=True)
+    # categorical_variables = find_categorical_variables()
 
     # print(f"Columns: {combined_df.columns}")
     # print(f"Cat: {categorical_variables}")
@@ -74,15 +76,17 @@ def featurize(dir_path):
     # print(combined_df[categorical_variables])
     # categorical_encoder = OneHotEncoder()
     # categorical_encoder.fit(combined_df)
+    #===============================================
 
 
     for filepath in filepaths:
 
         # Read csv
-        df = pd.read_csv(filepath)
+        df = pd.read_csv(filepath, index_col=0)
 
-        # Move target column to the beginning of dataframe
-        df = move_column(df, column_name=target, new_idx=0)
+        # Move target column(s) to the beginning of dataframe
+        for col in output_columns[::-1]:
+            df = move_column(df, column_name=col, new_idx=0)
 
         # If no features are specified, use all columns as features
         # TODO: Maybe not the most robust way to test this
@@ -113,6 +117,7 @@ def featurize(dir_path):
             DATA_FEATURIZED_PATH
             / (os.path.basename(filepath).replace(".", "-featurized."))
         )
+
 
     # Save list of features used
     pd.DataFrame(df.columns).to_csv(DATA_PATH / "input_columns.csv")

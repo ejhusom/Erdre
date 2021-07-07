@@ -19,8 +19,10 @@ stages:
         - assets/profile
         outs:
         - assets/data/cleaned
+        - assets/data/output_columns.csv
         params:
         - clean.target
+        - clean.classification
         - clean.combine_files
         - clean.percentage_zeros_threshold
         - clean.correlation_metric
@@ -30,9 +32,11 @@ stages:
         cmd: python3 src/featurize.py assets/data/cleaned/
         deps:
         - assets/data/cleaned
+        - assets/data/output_columns.csv
         - src/featurize.py
         outs:
         - assets/data/featurized
+        - assets/data/input_columns.csv
         params:
         - featurize.features
         - clean.target
@@ -52,10 +56,12 @@ stages:
         cmd: python3 src/scale.py assets/data/split/
         deps:
         - assets/data/split
+        - assets/data/output_columns.csv
         - src/scale.py
         outs:
         - assets/data/scaled
         params:
+        - clean.classification
         - scale.input
         - scale.output
 
@@ -67,6 +73,7 @@ stages:
         outs:
         - assets/data/sequentialized
         params:
+        - clean.classification
         - sequentialize.hist_size
         - sequentialize.target_size
         - train.net

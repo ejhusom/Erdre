@@ -6,7 +6,12 @@ profile:
 
 clean:
     # target: Name of target variable.
-    target: 
+    target: label
+
+    # classification: Indicates if we are dealing with a classification case
+    # (if False, a regression model will be produced).
+    # classification: True
+    classification: False
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
@@ -48,6 +53,7 @@ featurize:
     # target_min_correlation_threshold: Minimum correlation between target and
     # an input feature to include the feature in the model. If set to 0.0, no
     # features will be removed based on correlation.
+    # NB: Not implemented yet.
     target_min_correlation_threshold: 0.0
 
 split:
@@ -56,18 +62,24 @@ split:
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
-    calibrate_split: 0.3
+    calibrate_split: 0.0
 
 scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
     input: standard
+    
+    # output: Scaling method for output variable. Not applicable for
+    # classification.
     output: standard
 
 sequentialize:
     # History window sample size
     hist_size: 10
+
+    # target_size: Number of points in prediction sequence. Only applicable for
+    # regression cases.
     # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
     target_size: 1
 

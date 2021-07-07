@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from sklearn.preprocessing import OneHotEncoder
 import yaml
 
 from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
@@ -38,7 +39,10 @@ def clean(dir_path):
     """Name of data set, which must be the name of subfolder of
     'assets/data/raw', in where to look for data.""" 
 
-    combine_files = yaml.safe_load(open("params.yaml"))["clean"]["combine_files"]
+    params = yaml.safe_load(open("params.yaml"))["clean"]
+    combine_files = params["combine_files"]
+    target = params["target"]
+    classification = params["classification"]
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
@@ -57,7 +61,7 @@ def clean(dir_path):
     for filepath in filepaths:
 
         # Read csv
-        df = pd.read_csv(filepath, index_col=0)
+        df = pd.read_csv(filepath)
 
         for c in removable_variables:
             del df[c]
@@ -67,6 +71,20 @@ def clean(dir_path):
         dfs.append(df)
         
     combined_df = pd.concat(dfs, ignore_index=True)
+
+    # If classification, onehot encode target variable.
+    if classification:
+        target_col = np.array(combined_df[target]).reshape(-1,1)
+        onehotencoder = OneHotEncoder()
+        onehotencoder.fit(target_col)
+
+        combined_df, output_columns = transform_target_to_onehot(onehotencoder, combined_df, target)
+
+        for i in range(len(dfs)):
+            dfs[i], _ = transform_target_to_onehot(onehotencoder, dfs[i], target)
+
+    else:
+        output_columns = [target]
 
     if combine_files:
         combined_df.to_csv(
@@ -80,6 +98,37 @@ def clean(dir_path):
                 / (os.path.basename(filepath).replace(".", "-cleaned."))
             )
 
+    pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
+
+def transform_target_to_onehot(encoder, df, target):
+    """Onehot encode a target variable based on a fitted encoder.
+
+    Args:
+        encoder: A fitted OneHotEncoder.
+        df (DataFrame): DataFrame containing the target variable.
+        target (str): Name of the target variable.
+
+    Returns:
+        df (DataFrame): DataFrame with the original target variable removed,
+            substituted by a onehot encoding of the variable.
+        output_columns (list): List of the names of the target columns.
+
+    """
+
+    output_columns = []
+
+    target_col = np.array(df[target]).reshape(-1,1)
+    target_onehot = encoder.transform(target_col).toarray()
+
+    del df[target]
+    
+    for i in range(target_onehot.shape[-1]):
+        column_name = f"{target}_{i}"
+        df[column_name] = target_onehot[:,i]
+        output_columns.append(column_name)
+
+    return df, output_columns
+
 
 def parse_profile_warnings():
     """Read profile warnings and find which columns to delete.
@@ -88,7 +137,6 @@ def parse_profile_warnings():
         removable_variables (list): Which columns to delete from data set.
 
     """
-
     params = yaml.safe_load(open("params.yaml"))["clean"]
     correlation_metric = params["correlation_metric"]
     target = params["target"]
