@@ -170,7 +170,10 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     print("R2: {}".format(r2))
 
     plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
-    plot_sequence_predictions(y_test, y_pred)
+
+    # Only plot predicted sequences if the output samples are sequences.
+    if len(y_shape) > 1 and y.shape[1] > 1:
+        plot_sequence_predictions(y_test, y_pred)
 
     with open(METRICS_FILE_PATH, "w") as f:
         json.dump(dict(mse=mse, r2=r2), f)
