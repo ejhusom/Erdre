@@ -102,5 +102,3 @@ stages:
         metrics:
         - assets/metrics/metrics.json:
             cache: false
-        - assets/predictions/predictions.csv:
-            cache: false
