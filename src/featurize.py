@@ -120,7 +120,8 @@ def featurize(dir_path):
 
 
     # Save list of features used
-    pd.DataFrame(df.columns).to_csv(DATA_PATH / "input_columns.csv")
+    input_columns = [col for col in df.columns if col not in output_columns]
+    pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
 
 def add_features(df, features):
     """

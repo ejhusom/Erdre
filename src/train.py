@@ -15,11 +15,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import yaml
 
-from config import MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
+from config import DATA_PATH, MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
 from config import PLOTS_PATH
 from model import cnn, dnn, lstm, cnndnn
 
@@ -38,6 +39,13 @@ def train(filepath):
     net = params["net"]
     use_early_stopping = params["early_stopping"]
     patience = params["patience"]
+    classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
+
+    output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+    ).reshape(-1)
+
+    n_output_cols = len(output_columns)
 
     # Load training set
     train = np.load(filepath)
@@ -49,15 +57,30 @@ def train(filepath):
 
     hist_size = X_train.shape[-2]
     target_size = y_train.shape[-1]
+    print(f"y_train.shape: {y_train.shape}")
+
+    if classification:
+        output_activation = "softmax"
+        output_length = n_output_cols
+        loss = "categorical_crossentropy"
+        metrics = "accuracy"
+    else:
+        output_activation = "linear"
+        output_length = target_size
+        loss = "mse"
+        metrics = "mse"
 
     # Build model
     if net == "cnn":
         hist_size = X_train.shape[-2]
-        model = cnn(hist_size, n_features, output_length=target_size,
-                kernel_size=params["kernel_size"]
+        model = cnn(hist_size, n_features, output_length=output_length,
+                kernel_size=params["kernel_size"],
+                output_activation=output_activation, loss=loss, metrics=metrics
         )
     elif net == "dnn":
-        model = dnn(n_features, output_length=target_size)
+        model = dnn(n_features, output_length=output_length,
+                output_activation=output_activation, loss=loss,
+                metrics=metrics)
     # elif net == "lstm":
     #     pass
     # elif net == "cnndnn":
@@ -95,6 +118,7 @@ def train(filepath):
             save_best_only=True
     )
     
+    print(y_train.shape)
     if use_early_stopping:
         # Train model for 10 epochs before adding early stopping
         history = model.fit(

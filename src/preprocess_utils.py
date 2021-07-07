@@ -119,16 +119,17 @@ def move_column(df, column_name, new_idx):
     return df[reordered_columns]
 
 
-def split_sequences(sequences, hist_size, target_size=1):
+def split_sequences(sequences, hist_size, target_size=1, n_target_columns=1):
     """Split data sequence into samples with matching input and targets.
 
     Args:
         sequences (array): The matrix containing the sequences, with the
-            targets in the first column.
+            targets in the first columns.
         hist_size (int): Number of time steps to include in each sample, i.e.
             how much history should be matched with a given target.
         target_size (int): Size of target window. Default=1, i.e. only one
             value is used as target.
+        n_target_columns: Number of target columns. Default=1.
 
     Returns:
         X (array): The input samples.
@@ -150,10 +151,14 @@ def split_sequences(sequences, hist_size, target_size=1):
             break
        
         # Select all cols from sequences except target col, which leaves inputs
-        seq_x = sequences[i:end_ix, 1:]
+        seq_x = sequences[i:end_ix, n_target_columns:]
 
         # Extract targets from sequences
-        seq_y = sequences[target_start_ix: end_ix, 0]
+        if n_target_columns > 1:
+            seq_y = sequences[target_start_ix: end_ix, 0:n_target_columns]
+            seq_y = seq_y.reshape(-1)
+        else:
+            seq_y = sequences[target_start_ix: end_ix, 0]
 
         X.append(seq_x)
         y.append(seq_y)

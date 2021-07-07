@@ -16,9 +16,10 @@ import os
 import sys
 
 import numpy as np
+import pandas as pd
 import yaml
 
-from config import DATA_SEQUENTIALIZED_PATH
+from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH
 from preprocess_utils import flatten_sequentialized, read_csv
 from preprocess_utils import find_files, split_sequences
 
@@ -31,12 +32,23 @@ def sequentialize(dir_path):
 
     params = yaml.safe_load(open("params.yaml"))["sequentialize"]
     net = yaml.safe_load(open("params.yaml"))["train"]["net"]
+    classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
 
     hist_size = params["hist_size"]
-    target_size = params["target_size"]
+
+    if classification:
+        target_size = 1
+    else:
+        target_size = params["target_size"]
 
     if target_size > hist_size:
         raise ValueError("target_size cannot be larger than hist_size.")
+
+    output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+    ).reshape(-1)
+
+    n_output_cols = len(output_columns)
 
     for filepath in filepaths:
 
@@ -49,7 +61,8 @@ def sequentialize(dir_path):
         data = np.hstack((y, X))
 
         # Split into sequences
-        X, y = split_sequences(data, hist_size, target_size=target_size)
+        X, y = split_sequences(data, hist_size, target_size=target_size,
+                n_target_columns=n_output_cols)
 
         if net == "dnn":
             X = flatten_sequentialized(X)

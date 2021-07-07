@@ -18,7 +18,9 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from sklearn.metrics import mean_squared_error, r2_score
+import seaborn as sn
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 from sklearn.base import RegressorMixin
 from sklearn.neighbors import KNeighborsRegressor
 from tensorflow.keras import models
@@ -81,6 +83,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     params = yaml.safe_load(open("params.yaml"))["evaluate"]
     params_train = yaml.safe_load(open("params.yaml"))["train"]
     params_split = yaml.safe_load(open("params.yaml"))["split"]
+    classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
 
     test = np.load(test_filepath)
     X_test = test["X"]
@@ -91,10 +94,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
     y_pred = None
 
-    if params_split["calibrate_split"] == 0:
-        model = models.load_model(model_filepath)
-        y_pred = model.predict(X_test)
-    else:
+    if params_split["calibrate_split"] > 0 and not classification:
         trained_model = models.load_model(model_filepath)
         # mycustommodel = MyCustomModel(model_filepath)
         mycustommodel = MyCustomModel(trained_model)
@@ -161,22 +161,71 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         plot_intervals(df_predictions)
 
+    else:
+        model = models.load_model(model_filepath)
+
+        if classification:
+            # y_pred = model.predict_classes(X_test)
+            y_pred = np.argmax(model.predict(X_test), axis=-1)
+        else:
+            y_pred = model.predict(X_test)
+
+    if classification:
+
+        y_test = np.argmax(y_test, axis=-1)
+        # test_loss, test_acc = model.evaluate(X_test,  y_test,
+        #         verbose=2)
+
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f"(Accuracy: {accuracy}")
+
+        plot_prediction(y_test, y_pred, inputs=X_test, 
+                info="(Accuracy: {})".format(accuracy))
+
+        plot_confusion(y_test, y_pred)
 
 
-    mse = mean_squared_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
+        with open(METRICS_FILE_PATH, "w") as f:
+            json.dump(dict(accuracy=accuracy), f)
+    else:
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
 
-    print("MSE: {}".format(mse))
-    print("R2: {}".format(r2))
+        print("MSE: {}".format(mse))
+        print("R2: {}".format(r2))
 
-    plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
+        plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
 
-    # Only plot predicted sequences if the output samples are sequences.
-    if len(y_test.shape) > 1 and y_test.shape[1] > 1:
-        plot_sequence_predictions(y_test, y_pred)
+        # Only plot predicted sequences if the output samples are sequences.
+        if len(y_test.shape) > 1 and y_test.shape[1] > 1:
+            plot_sequence_predictions(y_test, y_pred)
 
-    with open(METRICS_FILE_PATH, "w") as f:
-        json.dump(dict(mse=mse, r2=r2), f)
+        with open(METRICS_FILE_PATH, "w") as f:
+            json.dump(dict(mse=mse, r2=r2), f)
+
+def plot_confusion(y_test, y_pred):
+    """Plotting confusion matrix of a classification model."""
+
+    output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+    ).reshape(-1)
+
+    n_output_cols = len(output_columns)
+    indeces = np.arange(0, n_output_cols, 1)
+
+    confusion = confusion_matrix(y_test, y_pred, normalize="true",
+            labels=indeces)
+    df_confusion = pd.DataFrame(
+            confusion,
+            columns=indeces,
+            index=indeces
+    )
+
+    df_confusion.index.name = 'True'
+    df_confusion.columns.name = 'Pred'
+    plt.figure(figsize = (10,7))
+    sn.heatmap(df_confusion, cmap="Blues", annot=True,annot_kws={"size": 16})
+    plt.savefig(PLOTS_PATH / "confusion_matrix.png")
 
 
 def save_predictions(df_predictions):
@@ -258,13 +307,20 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     config = dict({'scrollZoom': True})
 
+    if len(y_true.shape) > 1:
+        y_true = y_true[:,-1].reshape(-1)
+        y_pred = y_pred[:,-1].reshape(-1)
+    else:
+        y = y_true
+        y = y_pred
+
     fig.add_trace(
-            go.Scatter(x=x, y=y_true[:,-1].reshape(-1), name="true"),
+            go.Scatter(x=x, y=y_true, name="true"),
             secondary_y=False,
     )
 
     fig.add_trace(
-            go.Scatter(x=x, y=y_pred[:,-1].reshape(-1), name="pred"),
+            go.Scatter(x=x, y=y_pred, name="pred"),
             secondary_y=False,
     )
 
@@ -274,7 +330,7 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
         if len(inputs.shape) == 3:
             n_features = inputs.shape[-1]
         elif len(inputs.shape) == 2:
-            n_features = len(input_columns) - 1
+            n_features = len(input_columns)
 
         for i in range(n_features):
 
@@ -282,7 +338,7 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
                 fig.add_trace(
                         go.Scatter(
                             x=x, y=inputs[:, -1, i],
-                            name=input_columns.iloc[i+1, 1]
+                            name=input_columns.iloc[i, 1]
                         ),
                         secondary_y=True,
                 )
@@ -290,7 +346,7 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
                 fig.add_trace(
                         go.Scatter(
                             x=x, y=inputs[:, i-n_features],
-                            name=input_columns.iloc[i+1, 1]
+                            name=input_columns.iloc[i, 1]
                         ),
                         secondary_y=True,
                 )

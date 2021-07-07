@@ -69,7 +69,9 @@ stages:
         cmd: python3 src/sequentialize.py assets/data/scaled/
         deps:
         - assets/data/scaled
+        - assets/data/output_columns.csv
         - src/sequentialize.py
+        - src/preprocess_utils.py
         outs:
         - assets/data/sequentialized
         params:
@@ -90,11 +92,13 @@ stages:
         cmd: python3 src/train.py assets/data/combined/train.npz
         deps:
         - assets/data/combined
+        - assets/data/output_columns.csv
         - src/train.py
         - src/model.py
         outs:
         - assets/models
         params:
+        - clean.classification
         - train.net
         - train.n_epochs
         - train.batch_size
@@ -104,8 +108,11 @@ stages:
         cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz
         deps:
         - assets/data/combined/test.npz
+        - assets/data/output_columns.csv
         - assets/models/model.h5
         - src/evaluate.py
+        params:
+        - clean.classification
         metrics:
         - assets/metrics/metrics.json:
             cache: false

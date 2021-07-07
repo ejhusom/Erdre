@@ -118,12 +118,11 @@ def scale(dir_path):
         else:
             X = scaler.transform(data_overview[filepath]["X"])
 
-        if not classification:
         # Scale outputs
-            if output_method == "none":
-                y = data_overview[filepath]["y"]
-            else:
-                y = output_scaler.transform(data_overview[filepath]["y"])
+        if output_method == "none" or classification:
+            y = data_overview[filepath]["y"]
+        else:
+            y = output_scaler.transform(data_overview[filepath]["y"])
 
         # Save X and y into a binary file
         np.savez(

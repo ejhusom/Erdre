@@ -17,7 +17,10 @@ from tensorflow.random import set_seed
 def cnn(input_x, input_y, 
         output_length=1, 
         seed=2020,
-        kernel_size=2
+        kernel_size=2,
+        output_activation="linear",
+        loss="mse",
+        metrics="mse"
     ):
     """Define a CNN model architecture using Keras.
 
@@ -28,6 +31,7 @@ def cnn(input_x, input_y,
         n_steps_out (int): Number of output steps.
         seed (int): Seed for random initialization of weights.
         kernel_size (int): Size of kernel in CNN.
+        output_activation: Activation function for outputs.
 
     Returns:
         model (keras model): Model to be trained.
@@ -48,32 +52,39 @@ def cnn(input_x, input_y,
             name="input_layer"
         )
     )
-    model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+    model.add(layers.Conv1D(filters=128, kernel_size=kernel_size,
         activation="elu", name="conv1d_1"))
     model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
         activation="relu", name="conv1d_2"))
-    # model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+    # model.add(layers.MaxPooling1D(pool_size=4, name="pool_1"))
+    # model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
     #     activation="relu", name="conv1d_3"))
-    # model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+    # model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
     #     activation="relu", name="conv1d_4"))
-    # model.add(layers.MaxPooling1D(pool_size=2, name="pool_1"))
     model.add(layers.Dropout(rate=0.1))
     model.add(layers.Flatten(name="flatten"))
     model.add(layers.Dense(128, activation="relu", name="dense_1"))
     model.add(layers.Dense(64, activation="relu", name="dense_2"))
     # model.add(layers.Dense(32, activation="relu", name="dense_3"))
-    model.add(layers.Dense(output_length, activation="linear",
+    model.add(layers.Dense(output_length, activation=output_activation,
         name="output_layer"))
-    model.compile(optimizer="adam", loss="mse")
+    model.compile(optimizer="adam", loss=loss, metrics=metrics)
 
     return model
 
-def dnn(input_x, output_length=1, seed=2020):
+def dnn(input_x, 
+        output_length=1, 
+        seed=2020, 
+        output_activation="linear",
+        loss="mse",
+        metrics="mse"
+    ):
     """Define a DNN model architecture using Keras.
 
     Args:
         input_x (int): Number of features.
         output_length (int): Number of output steps.
+        output_activation: Activation function for outputs.
 
     Returns:
         model (keras model): Model to be trained.
@@ -87,8 +98,8 @@ def dnn(input_x, output_length=1, seed=2020):
     # model.add(layers.Dense(256, activation='relu', input_dim=input_x))
     model.add(layers.Dense(64, activation='relu'))
     model.add(layers.Dense(32, activation='relu'))
-    model.add(layers.Dense(output_length, activation='linear'))
-    model.compile(optimizer='adam', loss="mse")
+    model.add(layers.Dense(output_length, activation=output_activation))
+    model.compile(optimizer='adam', loss=loss, metrics=metrics)
 
     return model
 

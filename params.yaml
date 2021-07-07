@@ -6,11 +6,10 @@ profile:
 
 clean:
     # target: Name of target variable.
-    target: label
+    target: 
 
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
-    # classification: True
     classification: False
 
     # combine_files: Whether to combine the data from all files into one file
@@ -78,8 +77,8 @@ sequentialize:
     # History window sample size
     hist_size: 10
 
-    # target_size: Number of points in prediction sequence. Only applicable for
-    # regression cases.
+    # target_size: Number of points in prediction sequence. For classification
+    # cases, this number will be overridden to 1.
     # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
     target_size: 1
 
@@ -96,7 +95,7 @@ train:
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 3
+    kernel_size: 8
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
@@ -104,6 +103,6 @@ train:
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
-    patience: 40
+    patience: 10
 
 evaluate:
