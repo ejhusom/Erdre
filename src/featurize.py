@@ -33,12 +33,9 @@ def featurize(dir_path):
 
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["featurize"]
-
     features = params["features"]
-    """Features to include in data set."""
-
+    rolling_window_size = params["rolling_window_size"]
     target = yaml.safe_load(open("params.yaml"))["clean"]["target"]
-    """Variable to use as target."""
 
     filepaths = find_files(dir_path, file_extension=".csv")
 
@@ -98,19 +95,21 @@ def featurize(dir_path):
             if feature not in df.columns:
                 print(f"Feature {feature} not found!")
 
-        # TODO: Engineer features. At the moment no engineered features exists!
-        df = add_features(df, features)
 
         for col in df.columns:
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
             # should not be a part of the input.
-            if col not in features and col != target:
-                del df[col]
+            # if col not in features and col != target:
+            #     del df[col]
             
             # Remove feature if it is non-numeric
-            elif not is_numeric_dtype(df[col]):
+            # elif not is_numeric_dtype(df[col]):
+            #     del df[col]
+            if not is_numeric_dtype(df[col]):
                 del df[col]
+
+        df = add_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
 
         # Save data
         df.to_csv(
@@ -123,10 +122,19 @@ def featurize(dir_path):
     input_columns = [col for col in df.columns if col not in output_columns]
     pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
 
-def add_features(df, features):
+def add_rolling_features(df, window_size, ignore_columns=None):
     """
     This function adds features to the input data, based on the arguments
     given in the features-list.
+
+    Available features (TODO):
+
+    - mean
+    - std
+    - autocorrelation
+    - abs_energy
+    - absolute_maximum
+    - absolute_sum_of_change
 
     Args:
     df (pandas DataFrame): Data frame to add features to.
@@ -137,16 +145,60 @@ def add_features(df, features):
         df (pandas DataFrame): Data frame with added features.
 
     """
-
     # Stop function of features is not a list
-    if type(features) != list:
-        return df
+    # if type(features) != list:
+    #     return df
 
-    # TODO: Add som engineered features
     # if "frequency" in features:
-        # df["frequency"] = 0
+    #     df["frequency"] = 0
+    columns = [col for col in df.columns if col not in ignore_columns]
 
+    for col in columns:
+        df[f"{col}_gradient"] = np.gradient(df[col])
+        df[f"{col}_mean"] = df[col].rolling(window_size).mean()
+        maximum = df[col].rolling(window_size).max()
+        minimum = df[col].rolling(window_size).min()
+        df[f"{col}_maximum"] = maximum
+        df[f"{col}_minimum"] = minimum
+        df[f"{col}_min_max_range"] = maximum - minimum
+        slope = calculate_slope(df[col])
+        df[f"{col}_slope"] = slope
+        df[f"{col}_slope"] = calculate_slope(df[col])
+        df[f"{col}_slope_sin"] = np.sin(slope)
+        df[f"{col}_slope_cos"] = np.cos(slope)
+        df[f"{col}_standard_deviation"] = df[col].rolling(window_size).std()
+        df[f"{col}_variance"] = np.var(df[col])
+
+    df = df.dropna()
     return df 
+
+def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
+    """Calculate slope.
+
+    Args:
+        series (array): Data for slope calculation.
+        shift (int): How many steps backwards to go when calculating the slope.
+            For example: If shift=2, the slope is calculated from the data
+            point two time steps ago to the data point at the current time
+            step.
+        rolling_mean_window (int): Window for calculating rolling mean.
+
+    Returns:
+        slope (array): Array of slope angle.
+
+    """
+
+    v_dist = series - series.shift(shift)
+    h_dist = 0.1 * shift
+
+    slope = np.arctan(v_dist / h_dist)
+
+    if absvalue:
+        slope = np.abs(slope)
+
+    slope = slope.rolling(rolling_mean_window).mean()
+
+    return slope
 
 # def filter_inputs_by_correlation():
 #     """Filter the input features based on the correlation between the features

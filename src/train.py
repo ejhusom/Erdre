@@ -13,12 +13,18 @@ Created:
 import sys
 import time
 
+from joblib import dump, load
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.metrics import confusion_matrix
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import yaml
+import xgboost as xgb
 
 from config import DATA_PATH, MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
 from config import PLOTS_PATH
@@ -83,6 +89,10 @@ def train(filepath):
         model = dnn(n_features, output_length=output_length,
                 output_activation=output_activation, loss=loss,
                 metrics=metrics)
+    elif net == "dt":
+        # model = DecisionTreeClassifier()
+        # model = RandomForestClassifier(n_estimators=300)
+        model = xgb.XGBClassifier(n_estimators=300)
     # elif net == "lstm":
     #     pass
     # elif net == "cnndnn":
@@ -90,84 +100,103 @@ def train(filepath):
     else:
         raise NotImplementedError("Only 'cnn' is implemented.")
 
-    print(model.summary())
+    if net == "dt":
+        model.fit(X_train, y_train)
 
-    # Save a plot of the model. Will not work if Graphviz is not installed, and
-    # is therefore skipped if an error is thrown.
-    try:
-        PLOTS_PATH.mkdir(parents=True, exist_ok=True)
-        plot_model(
-            model,
-            to_file=PLOTS_PATH / 'model.png',
-            show_shapes=False,
-            show_layer_names=True,
-            rankdir='TB',
-            expand_nested=True,
-            dpi=96
-        )
-    except:
-        print("Failed saving plot of the network architecture.")
+        # Load training set
+        test = np.load("assets/data/combined/test.npz")
 
-    early_stopping = EarlyStopping(
-            monitor="val_" + monitor_metric,
-            patience=patience,
-            verbose=4
-    )
+        X_test = test["X"]
+        y_test = test["y"]
 
-    model_checkpoint = ModelCheckpoint(
-            MODELS_FILE_PATH, 
-            monitor="val_" + monitor_metric,
-            save_best_only=True
-    )
-    
-    print(y_train.shape)
-    if use_early_stopping:
-        # Train model for 10 epochs before adding early stopping
-        history = model.fit(
-            X_train, y_train, 
-            epochs=10,
-            batch_size=params["batch_size"],
-            validation_split=0.25,
-        )
+        y_score = model.predict(X_test)
+        print("Trained on {0} observations and scoring with {1} test samples.".format(len(X_train), len(X_test)))
+        print("Accuracy: {0:0.4f}".format(accuracy_score(y_test, y_score)))
+        print("F1 Score: {0:0.4f}".format(f1_score(y_test, y_score)))
+        print("Area under ROC curve: {0:0.4f}".format(roc_auc_score(y_test, y_score)))
 
-        loss = history.history[monitor_metric]
-        val_loss = history.history["val_" + monitor_metric]
+        confusion = confusion_matrix(y_test, y_score, normalize="true")
+        print(confusion)
+        dump(model, MODELS_FILE_PATH)
+    else: 
+        print(model.summary())
 
-        history = model.fit(
-            X_train, y_train, 
-            epochs=params["n_epochs"],
-            batch_size=params["batch_size"],
-            validation_split=0.25,
-            callbacks=[early_stopping, model_checkpoint]
+        # Save a plot of the model. Will not work if Graphviz is not installed, and
+        # is therefore skipped if an error is thrown.
+        try:
+            PLOTS_PATH.mkdir(parents=True, exist_ok=True)
+            plot_model(
+                model,
+                to_file=PLOTS_PATH / 'model.png',
+                show_shapes=False,
+                show_layer_names=True,
+                rankdir='TB',
+                expand_nested=True,
+                dpi=96
+            )
+        except:
+            print("Failed saving plot of the network architecture.")
+
+        early_stopping = EarlyStopping(
+                monitor="val_" + monitor_metric,
+                patience=patience,
+                verbose=4
         )
 
-        loss += history.history[monitor_metric]
-        val_loss += history.history["val_" + monitor_metric]
-
-    else:
-        history = model.fit(
-            X_train, y_train, 
-            epochs=params["n_epochs"],
-            batch_size=params["batch_size"],
-            validation_split=0.25,
+        model_checkpoint = ModelCheckpoint(
+                MODELS_FILE_PATH, 
+                monitor="val_" + monitor_metric,
+                save_best_only=True
         )
+        
+        print(y_train.shape)
+        if use_early_stopping:
+            # Train model for 10 epochs before adding early stopping
+            history = model.fit(
+                X_train, y_train, 
+                epochs=10,
+                batch_size=params["batch_size"],
+                validation_split=0.25,
+            )
 
-        loss = history.history['loss']
-        val_loss = history.history['val_loss']
+            loss = history.history[monitor_metric]
+            val_loss = history.history["val_" + monitor_metric]
 
-        model.save(MODELS_FILE_PATH)
+            history = model.fit(
+                X_train, y_train, 
+                epochs=params["n_epochs"],
+                batch_size=params["batch_size"],
+                validation_split=0.25,
+                callbacks=[early_stopping, model_checkpoint]
+            )
 
-    TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+            loss += history.history[monitor_metric]
+            val_loss += history.history["val_" + monitor_metric]
 
-    print(f"Best model in epoch: {np.argmax(np.array(val_loss))}")
+        else:
+            history = model.fit(
+                X_train, y_train, 
+                epochs=params["n_epochs"],
+                batch_size=params["batch_size"],
+                validation_split=0.25,
+            )
 
-    n_epochs = range(len(loss))
+            loss = history.history['loss']
+            val_loss = history.history['val_loss']
 
-    plt.figure()
-    plt.plot(n_epochs, loss, label="Training loss")
-    plt.plot(n_epochs, val_loss, label="Validation loss")
-    plt.legend()
-    plt.savefig(TRAININGLOSS_PLOT_PATH)
+            model.save(MODELS_FILE_PATH)
+
+        TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+        print(f"Best model in epoch: {np.argmax(np.array(val_loss))}")
+
+        n_epochs = range(len(loss))
+
+        plt.figure()
+        plt.plot(n_epochs, loss, label="Training loss")
+        plt.plot(n_epochs, val_loss, label="Validation loss")
+        plt.legend()
+        plt.savefig(TRAININGLOSS_PLOT_PATH)
 
 
 

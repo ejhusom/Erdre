@@ -64,7 +64,7 @@ def sequentialize(dir_path):
         X, y = split_sequences(data, hist_size, target_size=target_size,
                 n_target_columns=n_output_cols)
 
-        if net == "dnn":
+        if net == "dnn" or net == "dt":
             X = flatten_sequentialized(X)
 
         # Save X and y into a binary file

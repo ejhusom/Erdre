@@ -48,7 +48,7 @@ def scale(dir_path):
         scaler = MinMaxScaler()
     elif input_method == "robust":
         scaler = RobustScaler()
-    elif input_method == "none":
+    elif input_method == None:
         scaler = StandardScaler()
     else:
         raise NotImplementedError(f"{input_method} not implemented.")
@@ -59,7 +59,7 @@ def scale(dir_path):
         output_scaler = MinMaxScaler()
     elif output_method == "robust":
         output_scaler = RobustScaler()
-    elif output_method == "none":
+    elif output_method == None:
         output_scaler = StandardScaler()
     else:
         raise NotImplementedError(f"{output_method} not implemented.")
@@ -114,13 +114,13 @@ def scale(dir_path):
     for filepath in data_overview:
 
         # Scale inputs
-        if input_method == "none":
+        if input_method == None:
             X=data_overview[filepath]["X"]
         else:
             X = scaler.transform(data_overview[filepath]["X"])
 
         # Scale outputs
-        if output_method == "none" or classification:
+        if output_method == None or classification:
             y = data_overview[filepath]["y"]
         else:
             y = output_scaler.transform(data_overview[filepath]["y"])

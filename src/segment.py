@@ -14,6 +14,7 @@ import sys
 import numpy as np
 import pandas as pd
 from tsfresh import extract_relevant_features
+from tsfresh.utilities.dataframe_functions import roll_time_series
 import yaml
 
 from config import DATA_PATH
@@ -38,10 +39,12 @@ def segment(dir_path):
     for filepath in filepaths:
         df = pd.read_csv(filepath, index_col=0)
         # df = df.iloc[10000:90000,:]
-        df = df.iloc[:,:-1]
+        # df = df.iloc[:,:-1]
         dfs.append(df)
 
     combined_df = pd.concat(dfs, ignore_index=True)
+    combined_df = combined_df[::10]
+    print(combined_df)
 
     n_rows = len(combined_df)
     segment_size = 100
@@ -55,30 +58,54 @@ def segment(dir_path):
 
     idlist = np.array(idlist, dtype=np.int32)
 
-    combined_df = combined_df.iloc[:len(idlist),:]
-    combined_df["id"] = idlist
+    # combined_df = combined_df.iloc[:len(idlist),:]
+    # combined_df["id"] = idlist
+    combined_df["id"] = np.ones(n_rows)
 
-    y = []
+    # y = []
 
-    for i in ids:
-        target_value = combined_df[combined_df["id"] == i][target].iloc[-1]
-        y.append(target_value)
+    # for i in ids:
+    #     target_value = combined_df[combined_df["id"] == i][target].iloc[-1]
+    #     y.append(target_value)
 
-    y = pd.Series(y)
-    y.index = y.index + 1
+    # y = pd.Series(y)
+    # y.index = y.index + 1
     # combined_df.index.name = "index"
-    print(y)
+    # print(y)
     print(combined_df)
-    print(np.unique(y))
+    # print(np.unique(y))
 
-    features_filtered_direct = extract_relevant_features(
-            combined_df,
-            y,
-            column_id='id',
-            # column_sort='index'
-    )
+    df_rolled = roll_time_series(combined_df, column_id="id", column_sort=None)
+    print(df_rolled)
 
-    print(features_filtered_direct)
+    # features_filtered_direct = extract_relevant_features(
+    #         combined_df,
+    #         y,
+    #         column_id='id',
+    #         # column_sort='index'
+    # )
+
+    # print(features_filtered_direct)
+
+def try_cesium(df):
+
+    from cesium import featurize
+    features_to_use = ["amplitude",
+        "percent_beyond_1_std",
+        "maximum",
+        "max_slope",
+        "median",
+        "median_absolute_deviation",
+        "percent_close_to_median",
+        "minimum",
+        "skew",
+        "std",
+        "weighted_average"]
+    fset_cesium = featurize.featurize_time_series(times=eeg["times"],
+        values=eeg["measurements"],
+        errors=None,
+        features_to_use=features_to_use)
+    print(fset_cesium.head())
 
 
 if __name__ == '__main__':

@@ -40,6 +40,7 @@ stages:
         - assets/data/input_columns.csv
         params:
         - featurize.features
+        - featurize.rolling_window_size
         - clean.target
 
     split:

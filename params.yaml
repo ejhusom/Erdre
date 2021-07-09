@@ -4,14 +4,16 @@ profile:
     # 'assets/data/raw/'.
     # dataset: wesad
     # dataset: data01
-    dataset: har3
+    dataset: cnc_toolwear
+    # dataset: hartest
 
 clean:
     # target: Name of target variable.
-    target: "4"
+    # target: "3"
     # target: label
     # target: X1_ActualPosition
     # target: Machining_Process
+    target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
 
     # classification: Indicates if we are dealing with a classification case
@@ -20,8 +22,8 @@ clean:
     # classification: False
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
-    # onehot_encode_target: False
-    onehot_encode_target: True
+    onehot_encode_target: False
+    # onehot_encode_target: True
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
@@ -60,6 +62,9 @@ featurize:
         # - feature1
         # - feature2
 
+    # rolling_window_size: Window size for calculating rolling features.
+    rolling_window_size: 100
+
     # target_min_correlation_threshold: Minimum correlation between target and
     # an input feature to include the feature in the model. If set to 0.0, no
     # features will be removed based on correlation.
@@ -68,7 +73,7 @@ featurize:
 
 split:
     # train_split: Fraction of data set to use for training.
-    train_split: 0.7
+    train_split: 0.6
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
@@ -78,15 +83,15 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    input: standard
+    input:
     
     # output: Scaling method for output variable. Not applicable for
     # classification.
-    output: standard
+    output: minmax
 
 sequentialize:
     # History window sample size
-    hist_size: 30
+    hist_size: 1
 
     # target_size: Number of points in prediction sequence. For classification
     # cases, this number will be overridden to 1.
@@ -97,7 +102,7 @@ train:
     # net: Which type of neural network to use. Choose from:
     # - dnn (dense neural network)
     # - cnn (convolutional neural network
-    net: cnn
+    net: dt
 
     # n_epochs: Number of epochs to perform during training. If early_stopping
     # is set to True, training may be stopped before n_epochs is reached.
@@ -106,7 +111,7 @@ train:
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 4
+    kernel_size: 3
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
@@ -114,6 +119,6 @@ train:
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
-    patience: 20
+    patience: 5
 
 evaluate:
