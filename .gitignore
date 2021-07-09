@@ -1,6 +1,8 @@
 # data-files
 *.dat
 *.csv
+assets/data/raw
+!assets/data/raw/README.md
 
 # misc:
 .DS_Store
@@ -36,6 +38,7 @@ venv/
 # large files
 model_tuning/
 models/
+
 
 # project-specific files
 .dvc*

@@ -40,6 +40,7 @@ def scale(dir_path):
     input_method = params["input"]
     output_method = params["output"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
+    onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"]["onehot_encode_target"]
     
     if input_method == "standard":
         scaler = StandardScaler()
@@ -87,7 +88,7 @@ def scale(dir_path):
         X = data[:, n_output_cols:].copy()
         y = data[:, 0:n_output_cols].copy()
 
-        if not classification:
+        if not onehot_encode_target:
             y = y.reshape(-1, 1)
 
         if "train" in filepath:
@@ -136,6 +137,10 @@ def scale(dir_path):
             X = X, 
             y = y
         )
+
+        # import matplotlib.pyplot as plt
+        # plt.plot(y)
+        # plt.show()
 
 if __name__ == "__main__":
 

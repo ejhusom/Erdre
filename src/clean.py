@@ -19,12 +19,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 import yaml
 
 from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
 from preprocess_utils import move_column, find_files
-from profile import profile
+from profiling import profile
 
 def clean(dir_path):
     """Clean up inputs.
@@ -43,6 +43,7 @@ def clean(dir_path):
     combine_files = params["combine_files"]
     target = params["target"]
     classification = params["classification"]
+    onehot_encode_target = params["onehot_encode_target"]
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
@@ -72,16 +73,22 @@ def clean(dir_path):
         
     combined_df = pd.concat(dfs, ignore_index=True)
 
-    # If classification, onehot encode target variable.
     if classification:
-        target_col = np.array(combined_df[target]).reshape(-1,1)
-        onehotencoder = OneHotEncoder()
-        onehotencoder.fit(target_col)
 
-        combined_df, output_columns = transform_target_to_onehot(onehotencoder, combined_df, target)
+        if onehot_encode_target:
+            encoder = LabelBinarizer()
+        else:
+            encoder = LabelEncoder()
+
+        target_col = np.array(combined_df[target]).reshape(-1)
+        encoder.fit(target_col)
+        print(f"Classes: {encoder.classes_}")
+        print(f"Encoded classes: {encoder.transform(encoder.classes_)}")
+
+        combined_df, output_columns = encode_target(encoder, combined_df, target)
 
         for i in range(len(dfs)):
-            dfs[i], _ = transform_target_to_onehot(onehotencoder, dfs[i], target)
+            dfs[i], _ = encode_target(encoder, dfs[i], target)
 
     else:
         output_columns = [target]
@@ -100,11 +107,11 @@ def clean(dir_path):
 
     pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
 
-def transform_target_to_onehot(encoder, df, target):
-    """Onehot encode a target variable based on a fitted encoder.
+def encode_target(encoder, df, target):
+    """Encode a target variable based on a fitted encoder.
 
     Args:
-        encoder: A fitted OneHotEncoder.
+        encoder: A fitted encoder.
         df (DataFrame): DataFrame containing the target variable.
         target (str): Name of the target variable.
 
@@ -117,15 +124,19 @@ def transform_target_to_onehot(encoder, df, target):
 
     output_columns = []
 
-    target_col = np.array(df[target]).reshape(-1,1)
-    target_onehot = encoder.transform(target_col).toarray()
+    target_col = np.array(df[target]).reshape(-1)
+    target_encoded = encoder.transform(target_col)
 
     del df[target]
     
-    for i in range(target_onehot.shape[-1]):
-        column_name = f"{target}_{i}"
-        df[column_name] = target_onehot[:,i]
-        output_columns.append(column_name)
+    if len(target_encoded.shape) > 1:
+        for i in range(target_encoded.shape[-1]):
+            column_name = f"{target}_{i}"
+            df[column_name] = target_encoded[:,i]
+            output_columns.append(column_name)
+    else:
+        df[target] = target_encoded
+        output_columns.append(target)
 
     return df, output_columns
 

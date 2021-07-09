@@ -64,11 +64,13 @@ def train(filepath):
         output_length = n_output_cols
         loss = "categorical_crossentropy"
         metrics = "accuracy"
+        monitor_metric = "accuracy"
     else:
         output_activation = "linear"
         output_length = target_size
         loss = "mse"
         metrics = "mse"
+        monitor_metric = "loss"
 
     # Build model
     if net == "cnn":
@@ -107,14 +109,14 @@ def train(filepath):
         print("Failed saving plot of the network architecture.")
 
     early_stopping = EarlyStopping(
-            monitor="val_loss",
+            monitor="val_" + monitor_metric,
             patience=patience,
             verbose=4
     )
 
     model_checkpoint = ModelCheckpoint(
             MODELS_FILE_PATH, 
-            monitor="val_loss",
+            monitor="val_" + monitor_metric,
             save_best_only=True
     )
     
@@ -128,8 +130,8 @@ def train(filepath):
             validation_split=0.25,
         )
 
-        loss = history.history['loss']
-        val_loss = history.history['val_loss']
+        loss = history.history[monitor_metric]
+        val_loss = history.history["val_" + monitor_metric]
 
         history = model.fit(
             X_train, y_train, 
@@ -139,8 +141,8 @@ def train(filepath):
             callbacks=[early_stopping, model_checkpoint]
         )
 
-        loss += history.history['loss']
-        val_loss += history.history['val_loss']
+        loss += history.history[monitor_metric]
+        val_loss += history.history["val_" + monitor_metric]
 
     else:
         history = model.fit(

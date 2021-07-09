@@ -2,19 +2,26 @@ profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
     # 'assets/data/raw/'.
-    dataset: wesad
+    # dataset: wesad
     # dataset: data01
+    dataset: har3
 
 clean:
     # target: Name of target variable.
-    target: label
+    target: "4"
+    # target: label
     # target: X1_ActualPosition
     # target: Machining_Process
+    # target: M1_CURRENT_PROGRAM_NUMBER
 
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
     classification: True
     # classification: False
+
+    # onehot_encode_target: Whether to one-hot encode target variable or not.
+    # onehot_encode_target: False
+    onehot_encode_target: True
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
@@ -61,7 +68,7 @@ featurize:
 
 split:
     # train_split: Fraction of data set to use for training.
-    train_split: 0.5
+    train_split: 0.7
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
@@ -79,7 +86,7 @@ scale:
 
 sequentialize:
     # History window sample size
-    hist_size: 200
+    hist_size: 30
 
     # target_size: Number of points in prediction sequence. For classification
     # cases, this number will be overridden to 1.
@@ -94,12 +101,12 @@ train:
 
     # n_epochs: Number of epochs to perform during training. If early_stopping
     # is set to True, training may be stopped before n_epochs is reached.
-    n_epochs: 200
+    n_epochs: 100
 
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 8
+    kernel_size: 4
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
@@ -107,6 +114,6 @@ train:
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
-    patience: 40
+    patience: 20
 
 evaluate:

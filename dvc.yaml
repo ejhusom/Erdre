@@ -1,10 +1,10 @@
 stages:
 
     profile:
-        cmd: python3 src/profile.py assets/data/raw/
+        cmd: python3 src/profiling.py assets/data/raw/
         deps:
         - assets/data/raw
-        - src/profile.py
+        - src/profiling.py
         - src/profile.yaml
         outs:
         - assets/profile
@@ -23,6 +23,7 @@ stages:
         params:
         - clean.target
         - clean.classification
+        - clean.onehot_encode_target
         - clean.combine_files
         - clean.percentage_zeros_threshold
         - clean.correlation_metric

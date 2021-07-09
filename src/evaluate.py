@@ -84,6 +84,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     params_train = yaml.safe_load(open("params.yaml"))["train"]
     params_split = yaml.safe_load(open("params.yaml"))["split"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
+    onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"]["onehot_encode_target"]
 
     test = np.load(test_filepath)
     X_test = test["X"]
@@ -164,7 +165,8 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     else:
         model = models.load_model(model_filepath)
 
-        if classification:
+        if onehot_encode_target:
+        # if classification:
             # y_pred = model.predict_classes(X_test)
             y_pred = np.argmax(model.predict(X_test), axis=-1)
         else:
@@ -172,7 +174,8 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
     if classification:
 
-        y_test = np.argmax(y_test, axis=-1)
+        if onehot_encode_target:
+            y_test = np.argmax(y_test, axis=-1)
         # test_loss, test_acc = model.evaluate(X_test,  y_test,
         #         verbose=2)
 
