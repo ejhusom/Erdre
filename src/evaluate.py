@@ -189,7 +189,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         accuracy = accuracy_score(y_test, y_pred)
         print(f"(Accuracy: {accuracy}")
 
-        plot_prediction(y_test, y_pred, inputs=X_test, 
+        plot_prediction(y_test, y_pred, #inputs=X_test, 
                 info="(Accuracy: {})".format(accuracy))
 
         plot_confusion(y_test, y_pred)

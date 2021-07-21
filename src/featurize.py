@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from scipy.signal import find_peaks
 from sklearn.preprocessing import OneHotEncoder
 import yaml
 
@@ -109,7 +110,7 @@ def featurize(dir_path):
             if not is_numeric_dtype(df[col]):
                 del df[col]
 
-        df = add_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
+        # df = add_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
 
         # Save data
         df.to_csv(
@@ -168,9 +169,34 @@ def add_rolling_features(df, window_size, ignore_columns=None):
         df[f"{col}_slope_cos"] = np.cos(slope)
         df[f"{col}_standard_deviation"] = df[col].rolling(window_size).std()
         df[f"{col}_variance"] = np.var(df[col])
+        df[f"{col}_peak_frequency"] = calculate_peak_frequency(df[col])
 
     df = df.dropna()
     return df 
+
+def calculate_peak_frequency(series, rolling_mean_window=200):
+
+    peaks_indices = find_peaks(series, distance=5)[0]
+    peaks = np.zeros(len(series))
+    peaks[peaks_indices] = 1
+
+    freq = []
+    f = 0
+    counter = 0
+
+    for i, p in enumerate(peaks):
+
+        if p == 1:
+            f = 10 / counter
+            counter = 0
+        else:
+            counter += 1
+
+        freq.append(f)
+
+    freq = pd.Series(freq).rolling(rolling_mean_window).mean()
+
+    return freq
 
 def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
     """Calculate slope.

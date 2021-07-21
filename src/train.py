@@ -90,11 +90,14 @@ def train(filepath):
                 output_activation=output_activation, loss=loss,
                 metrics=metrics)
     elif net == "dt":
-        # model = DecisionTreeClassifier()
+        model = DecisionTreeClassifier()
         # model = RandomForestClassifier(n_estimators=300)
-        model = xgb.XGBClassifier(n_estimators=300)
-    # elif net == "lstm":
-    #     pass
+        # model = xgb.XGBClassifier(n_estimators=300)
+    elif net == "lstm":
+        hist_size = X_train.shape[-2]
+        model = lstm(hist_size, n_features, n_steps_out=output_length,
+                output_activation=output_activation,
+                loss=loss, metrics=metrics)
     # elif net == "cnndnn":
     #     pass
     else:
@@ -112,8 +115,8 @@ def train(filepath):
         y_score = model.predict(X_test)
         print("Trained on {0} observations and scoring with {1} test samples.".format(len(X_train), len(X_test)))
         print("Accuracy: {0:0.4f}".format(accuracy_score(y_test, y_score)))
-        print("F1 Score: {0:0.4f}".format(f1_score(y_test, y_score)))
-        print("Area under ROC curve: {0:0.4f}".format(roc_auc_score(y_test, y_score)))
+        # print("F1 Score: {0:0.4f}".format(f1_score(y_test, y_score)))
+        # print("Area under ROC curve: {0:0.4f}".format(roc_auc_score(y_test, y_score)))
 
         confusion = confusion_matrix(y_test, y_score, normalize="true")
         print(confusion)

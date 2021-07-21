@@ -2,18 +2,18 @@ profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
     # 'assets/data/raw/'.
-    # dataset: wesad
+    dataset: wesad
     # dataset: data01
-    dataset: cnc_toolwear
+    # dataset: cnc_toolwear
     # dataset: hartest
 
 clean:
     # target: Name of target variable.
     # target: "3"
-    # target: label
+    target: label
     # target: X1_ActualPosition
     # target: Machining_Process
-    target: tool_condition
+    # target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
 
     # classification: Indicates if we are dealing with a classification case
@@ -22,8 +22,8 @@ clean:
     # classification: False
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
-    onehot_encode_target: False
-    # onehot_encode_target: True
+    # onehot_encode_target: False
+    onehot_encode_target: True
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
@@ -83,7 +83,7 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    input:
+    input: minmax
     
     # output: Scaling method for output variable. Not applicable for
     # classification.
@@ -91,7 +91,7 @@ scale:
 
 sequentialize:
     # History window sample size
-    hist_size: 1
+    hist_size: 128
 
     # target_size: Number of points in prediction sequence. For classification
     # cases, this number will be overridden to 1.
@@ -102,20 +102,20 @@ train:
     # net: Which type of neural network to use. Choose from:
     # - dnn (dense neural network)
     # - cnn (convolutional neural network
-    net: dt
+    net: cnn
 
     # n_epochs: Number of epochs to perform during training. If early_stopping
     # is set to True, training may be stopped before n_epochs is reached.
-    n_epochs: 100
+    n_epochs: 10
 
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 3
+    kernel_size: 6
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
-    early_stopping: True
+    early_stopping: False
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
