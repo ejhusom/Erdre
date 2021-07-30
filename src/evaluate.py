@@ -24,6 +24,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 from sklearn.base import RegressorMixin
 from sklearn.neighbors import KNeighborsRegressor
+from tensorflow.keras import metrics
 from tensorflow.keras import models
 import yaml
 
@@ -171,9 +172,10 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
             model = models.load_model(model_filepath)
 
         if onehot_encode_target:
-        # if classification:
-            # y_pred = model.predict_classes(X_test)
             y_pred = np.argmax(model.predict(X_test), axis=-1)
+        elif classification:
+            y_pred = model.predict(X_test)
+            # y_pred = np.array((y_pred > 0.5), dtype=np.int)
         else:
             y_pred = model.predict(X_test)
 
@@ -181,21 +183,31 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         if onehot_encode_target:
             y_test = np.argmax(y_test, axis=-1)
-        # test_loss, test_acc = model.evaluate(X_test,  y_test,
-        #         verbose=2)
+
         y_test = y_test.reshape(-1)
         y_pred = y_pred.reshape(-1)
 
         accuracy = accuracy_score(y_test, y_pred)
-        print(f"(Accuracy: {accuracy}")
+        print(f"Accuracy: {accuracy}")
 
-        plot_prediction(y_test, y_pred, #inputs=X_test, 
-                info="(Accuracy: {})".format(accuracy))
+        plot_prediction(y_test, y_pred,
+                info="Accuracy: {})".format(accuracy))
 
         plot_confusion(y_test, y_pred)
 
         with open(METRICS_FILE_PATH, "w") as f:
             json.dump(dict(accuracy=accuracy), f)
+
+        # feature_importances = model.feature_importances_
+        # imp = list()
+        # for i, f in enumerate(feature_importances):
+        #     imp.append((f,i))
+
+        # sorted_feature_importances = sorted(imp)
+
+        # print("Feature importances")
+        # print(sorted_feature_importances)
+
     else:
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
@@ -227,11 +239,7 @@ def plot_confusion(y_test, y_pred):
 
     print(confusion)
 
-    df_confusion = pd.DataFrame(
-            confusion,
-            # columns=indeces,
-            # index=indeces
-    )
+    df_confusion = pd.DataFrame(confusion)
 
     df_confusion.index.name = 'True'
     df_confusion.columns.name = 'Pred'
@@ -385,15 +393,10 @@ def plot_sequence_predictions(y_true, y_pred):
 
     n_pred_curves = len(pred_curve_idcs)
 
-    # plt.figure()
-    # plt.gca().set_prop_cycle(plt.cycler(
-    #     'color', plt.cm.jet(np.linspace(0, 1, n_pred_curves))
-    # ))
     fig = go.Figure()
 
     y_true_df = pd.DataFrame(y_true[:,0])
 
-    # plt.plot(y_true_df, label="true", linewidth = 0.5)
     fig.add_trace(
             go.Scatter(x=y_indeces, y=y_true[:,0].reshape(-1), name="true")
     )
@@ -410,19 +413,14 @@ def plot_sequence_predictions(y_true, y_pred):
         
         predictions.append(y_pred_df)
 
-        # plt.plot(y_pred_df, alpha=0.6, linewidth = 0.4)
         fig.add_trace(
                 go.Scatter(x=indeces, y=y_pred[i,:].reshape(-1),
                     showlegend=False,
-                    # line=dict(color='green'),
                     mode="lines")
         )
 
     PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    # plt.title("Predictions", wrap=True)
-    # plt.savefig(str(PLOTS_PATH / "prediction_sequences.png"))
-    # plt.show()
     fig.write_html(str(PLOTS_PATH / "prediction_sequences.html"))
 
 if __name__ == "__main__":

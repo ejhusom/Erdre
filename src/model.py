@@ -11,6 +11,7 @@ Date:
 """
 from tensorflow.keras import layers
 from tensorflow.keras import models
+from tensorflow.keras import optimizers
 
 from tensorflow.random import set_seed
 
@@ -52,23 +53,26 @@ def cnn(input_x, input_y,
             name="input_layer"
         )
     )
-    # model.add(layers.Conv1D(filters=128, kernel_size=kernel_size,
-    #     activation="elu", name="conv1d_1"))
-    # model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
-    #     activation="relu", name="conv1d_2"))
+    model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+        activation="elu", name="conv1d_1"))
+    model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
+        activation="relu", name="conv1d_2"))
     # model.add(layers.MaxPooling1D(pool_size=4, name="pool_1"))
     # model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
     #     activation="relu", name="conv1d_3"))
     # model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
     #     activation="relu", name="conv1d_4"))
-    # model.add(layers.Dropout(rate=0.1))
+    model.add(layers.Dropout(rate=0.1))
     model.add(layers.Flatten(name="flatten"))
-    model.add(layers.Dense(128, activation="relu", name="dense_1"))
-    # model.add(layers.Dense(64, activation="relu", name="dense_2"))
-    # model.add(layers.Dense(32, activation="relu", name="dense_3"))
+    # model.add(layers.Dense(128, activation="relu", name="dense_1"))
+    model.add(layers.Dense(64, activation="relu", name="dense_2"))
+    model.add(layers.Dense(32, activation="relu", name="dense_3"))
+    # model.add(layers.Dropout(rate=0.1))
     model.add(layers.Dense(output_length, activation=output_activation,
         name="output_layer"))
-    model.compile(optimizer="adam", loss=loss, metrics=metrics)
+    # model.compile(optimizer="adam", loss=loss, metrics=metrics)
+    model.compile(optimizer=optimizers.Adam(lr=1e-8, beta_1=0.9, beta_2=0.999, 
+        epsilon=1e-8, decay=0.0001), loss=loss, metrics=metrics)
 
     return model
 
@@ -96,7 +100,8 @@ def dnn(input_x,
     model = models.Sequential()
     model.add(layers.Dense(32, activation='relu', input_dim=input_x))
     # model.add(layers.Dense(256, activation='relu', input_dim=input_x))
-    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dense(32, activation='relu'))
+    # model.add(layers.Dense(16, activation='relu'))
     # model.add(layers.Dense(32, activation='relu'))
     model.add(layers.Dense(output_length, activation=output_activation))
     model.compile(optimizer='adam', loss=loss, metrics=metrics)
@@ -125,7 +130,7 @@ def lstm(hist_size,
 
     model = models.Sequential()
     model.add(layers.LSTM(100, input_shape=(hist_size, n_features)))#, return_sequences=True))
-    model.add(Dropout(0.5))
+    model.add(layers.Dropout(0.5))
     # model.add(layers.LSTM(32, activation='relu'))
     # model.add(layers.LSTM(16, activation='relu'))
     model.add(layers.Dense(100, activation='relu'))

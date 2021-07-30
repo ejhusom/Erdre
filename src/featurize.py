@@ -35,6 +35,8 @@ def featurize(dir_path):
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["featurize"]
     features = params["features"]
+    remove_features = params["remove_features"]
+    add_rolling_features = params["add_rolling_features"]
     rolling_window_size = params["rolling_window_size"]
     target = yaml.safe_load(open("params.yaml"))["clean"]["target"]
 
@@ -101,16 +103,18 @@ def featurize(dir_path):
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
             # should not be a part of the input.
-            # if col not in features and col != target:
-            #     del df[col]
+            if col not in features and col != target:
+                del df[col]
             
             # Remove feature if it is non-numeric
-            # elif not is_numeric_dtype(df[col]):
-            #     del df[col]
-            if not is_numeric_dtype(df[col]):
+            elif not is_numeric_dtype(df[col]):
                 del df[col]
 
-        # df = add_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
+        if add_rolling_features:
+            df = compute_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
+
+        for col in remove_features:
+            del df[col]
 
         # Save data
         df.to_csv(
@@ -123,7 +127,7 @@ def featurize(dir_path):
     input_columns = [col for col in df.columns if col not in output_columns]
     pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
 
-def add_rolling_features(df, window_size, ignore_columns=None):
+def compute_rolling_features(df, window_size, ignore_columns=None):
     """
     This function adds features to the input data, based on the arguments
     given in the features-list.
@@ -146,15 +150,11 @@ def add_rolling_features(df, window_size, ignore_columns=None):
         df (pandas DataFrame): Data frame with added features.
 
     """
-    # Stop function of features is not a list
-    # if type(features) != list:
-    #     return df
 
-    # if "frequency" in features:
-    #     df["frequency"] = 0
     columns = [col for col in df.columns if col not in ignore_columns]
 
     for col in columns:
+        df[f"{col}_sum"] = df[col].rolling(window_size).sum()
         df[f"{col}_gradient"] = np.gradient(df[col])
         df[f"{col}_mean"] = df[col].rolling(window_size).mean()
         maximum = df[col].rolling(window_size).max()
@@ -164,7 +164,6 @@ def add_rolling_features(df, window_size, ignore_columns=None):
         df[f"{col}_min_max_range"] = maximum - minimum
         slope = calculate_slope(df[col])
         df[f"{col}_slope"] = slope
-        df[f"{col}_slope"] = calculate_slope(df[col])
         df[f"{col}_slope_sin"] = np.sin(slope)
         df[f"{col}_slope_cos"] = np.cos(slope)
         df[f"{col}_standard_deviation"] = df[col].rolling(window_size).std()

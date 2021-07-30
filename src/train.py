@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix
@@ -63,12 +64,15 @@ def train(filepath):
 
     hist_size = X_train.shape[-2]
     target_size = y_train.shape[-1]
-    print(f"y_train.shape: {y_train.shape}")
 
     if classification:
-        output_activation = "softmax"
+        if len(np.unique(y_train)) > 2:
+            output_activation = "softmax"
+            loss = "categorical_crossentropy"
+        else:
+            output_activation = "sigmoid"
+            loss = "binary_crossentropy"
         output_length = n_output_cols
-        loss = "categorical_crossentropy"
         metrics = "accuracy"
         monitor_metric = "accuracy"
     else:
@@ -90,36 +94,21 @@ def train(filepath):
                 output_activation=output_activation, loss=loss,
                 metrics=metrics)
     elif net == "dt":
-        model = DecisionTreeClassifier()
-        # model = RandomForestClassifier(n_estimators=300)
-        # model = xgb.XGBClassifier(n_estimators=300)
+        # model = DecisionTreeClassifier()
+        # model = RandomForestClassifier()
+        # model = xgb.XGBClassifier(n_estimators=300, max_depth=5)
+        # model = xgb.XGBClassifier()
+        model = LinearDiscriminantAnalysis()
     elif net == "lstm":
         hist_size = X_train.shape[-2]
         model = lstm(hist_size, n_features, n_steps_out=output_length,
                 output_activation=output_activation,
                 loss=loss, metrics=metrics)
-    # elif net == "cnndnn":
-    #     pass
     else:
         raise NotImplementedError("Only 'cnn' is implemented.")
 
     if net == "dt":
         model.fit(X_train, y_train)
-
-        # Load training set
-        test = np.load("assets/data/combined/test.npz")
-
-        X_test = test["X"]
-        y_test = test["y"]
-
-        y_score = model.predict(X_test)
-        print("Trained on {0} observations and scoring with {1} test samples.".format(len(X_train), len(X_test)))
-        print("Accuracy: {0:0.4f}".format(accuracy_score(y_test, y_score)))
-        # print("F1 Score: {0:0.4f}".format(f1_score(y_test, y_score)))
-        # print("Area under ROC curve: {0:0.4f}".format(roc_auc_score(y_test, y_score)))
-
-        confusion = confusion_matrix(y_test, y_score, normalize="true")
-        print(confusion)
         dump(model, MODELS_FILE_PATH)
     else: 
         print(model.summary())
@@ -151,8 +140,7 @@ def train(filepath):
                 monitor="val_" + monitor_metric,
                 save_best_only=True
         )
-        
-        print(y_train.shape)
+
         if use_early_stopping:
             # Train model for 10 epochs before adding early stopping
             history = model.fit(
@@ -188,6 +176,20 @@ def train(filepath):
             val_loss = history.history['val_loss']
 
             model.save(MODELS_FILE_PATH)
+
+        # history = model.fit(
+        #     X_train, y_train, 
+        #     epochs=params["n_epochs"],
+        #     batch_size=params["batch_size"],
+        #     validation_split=0.25,
+        #     callbacks=callbacks,
+        #     shuffle=True
+        # )
+
+        # loss = history.history['loss']
+        # val_loss = history.history['val_loss']
+
+        # model.save(MODELS_FILE_PATH)
 
         TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 

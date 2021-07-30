@@ -15,10 +15,11 @@ clean:
     # target: Machining_Process
     # target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
-    
+
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
     classification: True
+    # classification: False
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
     onehot_encode_target: False
@@ -71,14 +72,6 @@ featurize:
         - wrist_eda
         - wrist_bvp
 
-
-    # add_rolling_features (bool): Add engineered features based on rolling
-    # sequence.
-    add_rolling_features: True
-
-    # remove_features (list): Features to be removed. Only useful if some of
-    # the features specified above are used to create rolling features, but the
-    # raw feature itself should not be included as an input.
     remove_features:
         - wrist_acc_x
         - wrist_acc_y
@@ -86,6 +79,8 @@ featurize:
         - wrist_temp
         - wrist_eda
         - wrist_bvp
+
+    add_rolling_features: True
 
     # rolling_window_size: Window size for calculating rolling features.
     rolling_window_size: 50
@@ -112,15 +107,15 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    input: 
+    input: minmax
     
     # output: Scaling method for output variable. Not applicable for
     # classification.
-    output: 
+    output: minmax
 
 sequentialize:
     # History window sample size
-    hist_size: 1
+    hist_size: 64
 
     # target_size: Number of points in prediction sequence. For classification
     # cases, this number will be overridden to 1.
@@ -135,12 +130,12 @@ train:
 
     # n_epochs: Number of epochs to perform during training. If early_stopping
     # is set to True, training may be stopped before n_epochs is reached.
-    n_epochs: 10
+    n_epochs: 40
 
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 3
+    kernel_size: 6
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
@@ -148,6 +143,6 @@ train:
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
-    patience: 5
+    patience: 10
 
 evaluate:

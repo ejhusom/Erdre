@@ -40,7 +40,10 @@ stages:
         - assets/data/input_columns.csv
         params:
         - featurize.features
+        - featurize.add_rolling_features
+        - featurize.remove_features
         - featurize.rolling_window_size
+        - featurize.target_min_correlation_threshold
         - clean.target
 
     split:
@@ -52,6 +55,7 @@ stages:
         - assets/data/split
         params:
         - split.train_split
+        - split.shuffle_files
         - split.calibrate_split
 
     scale:
@@ -105,6 +109,8 @@ stages:
         - train.n_epochs
         - train.batch_size
         - train.kernel_size
+        - train.early_stopping
+        - train.patience
 
     evaluate:
         cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz

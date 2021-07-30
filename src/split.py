@@ -9,6 +9,7 @@ Date:
 
 """
 import os
+import random
 import sys
 
 import numpy as np
@@ -30,10 +31,13 @@ def split(dir_path):
     """
 
     params = yaml.safe_load(open("params.yaml"))["split"]
+    shuffle_files = params["shuffle_files"]
 
     DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
 
     filepaths = find_files(dir_path, file_extension=".csv")
+
+
 
     # Handle special case where there is only one workout file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
@@ -77,6 +81,10 @@ def split(dir_path):
             )
 
     else:
+
+        if shuffle_files:
+            random.shuffle(filepaths)
+
         # Parameter 'train_split' is used to find out no. of files in training set
         file_split = int(len(filepaths) * params["train_split"])
         file_split_calibrate = int(len(filepaths) * params["calibrate_split"])

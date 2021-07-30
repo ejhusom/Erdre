@@ -65,6 +65,10 @@ def clean(dir_path):
         # Read csv
         df = pd.read_csv(filepath)
 
+        # If the first column is an index column, remove it.
+        if df.iloc[:,0].is_monotonic:
+            df = df.iloc[:,1:]
+
         for c in removable_variables:
             del df[c]
         
