@@ -2,18 +2,18 @@ profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
     # 'assets/data/raw/'.
-    dataset: wesad
+    # dataset: wesad
     # dataset: data01
-    # dataset: cnc_toolwear
+    dataset: cnc_toolwear
     # dataset: hartest
 
 clean:
     # target: Name of target variable.
     # target: "3"
-    target: label
+    # target: label
     # target: X1_ActualPosition
     # target: Machining_Process
-    # target: tool_condition
+    target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
     
     # classification: Indicates if we are dealing with a classification case
@@ -21,8 +21,8 @@ clean:
     classification: True
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
+    # onehot_encode_target: False
     onehot_encode_target: False
-    # onehot_encode_target: True
 
     # combine_files: Whether to combine the data from all files into one file
     # after cleaning.
@@ -61,34 +61,40 @@ featurize:
         # - feature1
         # - feature2
         # - Z1_ActualPosition
+        # - X1_ActualVelocity
+        # - X1_CurrentFeedback
+        # - S1_ActualAcceleration
+        # - Y1_ActualAcceleration
+        # - Y1_CurrentFeedback
+        # - X1_OutputPower
         # - Z1_CommandPosition
         # - X1_OutputCurrent
         # - S1_DCBusVoltage
-        - wrist_acc_x
-        - wrist_acc_y
-        - wrist_acc_z
-        - wrist_temp
-        - wrist_eda
-        - wrist_bvp
+        # - wrist_acc_x
+        # - wrist_acc_y
+        # - wrist_acc_z
+        # - wrist_temp
+        # - wrist_eda
+        # - wrist_bvp
 
 
     # add_rolling_features (bool): Add engineered features based on rolling
     # sequence.
-    add_rolling_features: True
+    add_rolling_features: False
 
     # remove_features (list): Features to be removed. Only useful if some of
     # the features specified above are used to create rolling features, but the
     # raw feature itself should not be included as an input.
     remove_features:
-        - wrist_acc_x
-        - wrist_acc_y
-        - wrist_acc_z
-        - wrist_temp
-        - wrist_eda
-        - wrist_bvp
+        # - wrist_acc_x
+        # - wrist_acc_y
+        # - wrist_acc_z
+        # - wrist_temp
+        # - wrist_eda
+        # - wrist_bvp
 
     # rolling_window_size: Window size for calculating rolling features.
-    rolling_window_size: 50
+    rolling_window_size: 100
 
     # target_min_correlation_threshold: Minimum correlation between target and
     # an input feature to include the feature in the model. If set to 0.0, no
@@ -112,15 +118,15 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    input: 
+    input: minmax
     
     # output: Scaling method for output variable. Not applicable for
     # classification.
-    output: 
+    output: minmax
 
 sequentialize:
     # History window sample size
-    hist_size: 1
+    hist_size: 256
 
     # target_size: Number of points in prediction sequence. For classification
     # cases, this number will be overridden to 1.
@@ -131,23 +137,23 @@ train:
     # net: Which type of neural network to use. Choose from:
     # - dnn (dense neural network)
     # - cnn (convolutional neural network
-    net: dt
+    net: cnn
 
     # n_epochs: Number of epochs to perform during training. If early_stopping
     # is set to True, training may be stopped before n_epochs is reached.
-    n_epochs: 10
+    n_epochs: 100
 
-    batch_size: 128
+    batch_size: 256
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 3
+    kernel_size: 9
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
-    early_stopping: False
+    early_stopping: True
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.
-    patience: 5
+    patience: 10
 
 evaluate:

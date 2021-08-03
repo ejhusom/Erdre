@@ -125,7 +125,7 @@ def split(dir_path):
 
 if __name__ == "__main__":
 
-    np.random.seed(2020)
+    np.random.seed(2029)
 
     split(sys.argv[1])
 

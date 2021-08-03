@@ -20,6 +20,7 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix
 from tensorflow.keras.utils import plot_model
@@ -95,10 +96,11 @@ def train(filepath):
                 metrics=metrics)
     elif net == "dt":
         # model = DecisionTreeClassifier()
-        # model = RandomForestClassifier()
+        # model = RandomForestClassifier(50)
         # model = xgb.XGBClassifier(n_estimators=300, max_depth=5)
-        # model = xgb.XGBClassifier()
-        model = LinearDiscriminantAnalysis()
+        model = xgb.XGBClassifier(n_estimators=800, max_depth=5)
+        # model = LinearDiscriminantAnalysis()
+        # model = SVC()
     elif net == "lstm":
         hist_size = X_train.shape[-2]
         model = lstm(hist_size, n_features, n_steps_out=output_length,
@@ -176,20 +178,6 @@ def train(filepath):
             val_loss = history.history['val_loss']
 
             model.save(MODELS_FILE_PATH)
-
-        # history = model.fit(
-        #     X_train, y_train, 
-        #     epochs=params["n_epochs"],
-        #     batch_size=params["batch_size"],
-        #     validation_split=0.25,
-        #     callbacks=callbacks,
-        #     shuffle=True
-        # )
-
-        # loss = history.history['loss']
-        # val_loss = history.history['val_loss']
-
-        # model.save(MODELS_FILE_PATH)
 
         TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 

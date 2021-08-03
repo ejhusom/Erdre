@@ -34,7 +34,7 @@ pip3 install -r requirements.txt
 As an alternative you can install the required modules by running:
 
 ```
-pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc nonconformist
+pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly pyyaml dvc nonconformist shap
 ```
 
 To get a plot of the neural network architecture, the following software needs

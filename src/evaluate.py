@@ -20,6 +20,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sn
+import shap
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 from sklearn.base import RegressorMixin
@@ -175,7 +176,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
             y_pred = np.argmax(model.predict(X_test), axis=-1)
         elif classification:
             y_pred = model.predict(X_test)
-            # y_pred = np.array((y_pred > 0.5), dtype=np.int)
+            y_pred = np.array((y_pred > 0.5), dtype=np.int)
         else:
             y_pred = model.predict(X_test)
 
@@ -197,6 +198,17 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         with open(METRICS_FILE_PATH, "w") as f:
             json.dump(dict(accuracy=accuracy), f)
+
+        # explainer = shap.TreeExplainer(model, X_test[:10])
+        # shap_values = explainer.shap_values(X_test[:10])
+        # plt.figure()
+        # shap.summary_plot(shap_values[0][:,0,:], X_test[:10][:,0,:])
+        # shap.image_plot([shap_values[i][0] for i in range(len(shap_values))], X_test[:10])
+        # input_columns = pd.read_csv(DATA_PATH / "input_columns.csv").iloc[:,-1]
+        # print(input_columns)
+        # shap.force_plot(explainer.expected_value[0], shap_values[0][0])
+
+        # plt.savefig("test.png")
 
         # feature_importances = model.feature_importances_
         # imp = list()
