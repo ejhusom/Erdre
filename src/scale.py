@@ -83,6 +83,12 @@ def scale(dir_path):
         X = data[:, n_output_cols:].copy()
         y = data[:, 0:n_output_cols].copy()
 
+        # If we have a one-hot encoding of categorical labels, shape of y stays
+        # the same, otherwise it is reshaped.
+        # TODO: Make a better test
+        # if classification and len(np.unique(y, axis=-1)) > 2:
+        #     pass
+        # else:
         if not onehot_encode_target:
             y = y.reshape(-1, 1)
 

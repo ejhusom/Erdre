@@ -46,7 +46,8 @@ def featurize(dir_path):
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0,
+                dtype=str)
     ).reshape(-1)
 
     #===============================================
@@ -110,8 +111,6 @@ def featurize(dir_path):
             if feature not in df.columns:
                 print(f"Feature {feature} not found!")
 
-
-
         for col in df.columns:
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
@@ -140,7 +139,6 @@ def featurize(dir_path):
             os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
             df.to_numpy()
         )
-
 
     # Save list of features used
     input_columns = [col for col in df.columns if col not in output_columns]

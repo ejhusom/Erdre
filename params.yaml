@@ -4,19 +4,23 @@ profile:
     # 'assets/data/raw/'.
     # dataset: data01
     dataset: cnc_toolwear
+    # dataset: har3
 
 clean:
     # target: Name of target variable.
-    target: X1_ActualPosition
+    # target: X1_ActualPosition
+    # target: "4"
     # target: Machining_Process
-    # target: tool_condition
+    target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
     
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
-    classification: False
+    classification: True
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
+    # If the classification is binary, this variable will be ignored and set to
+    # False.
     onehot_encode_target: False
 
     # combine_files: Whether to combine the data from all files into one file
@@ -33,8 +37,7 @@ clean:
     # percentage_zeros_threshold: If the fraction of zeros in a column is
     # larger than this threshold, the column is removed. If this parameter is
     # set to 1.0, only columns consisting solely of zeros will be removed.
-    # zeros.
-    percentage_zeros_threshold: 0.1
+    percentage_zeros_threshold: 1.0
 
     # correlation_metric: Which metric to measure correlation by. Choose from:
     # - pearson
@@ -53,6 +56,9 @@ featurize:
     # from input files are used (except those that are removed during
     # cleaning).
     features:
+        # - "1"
+        # - "2"
+        # - "3"
         # - feature1
         # - feature2
 
@@ -82,7 +88,7 @@ split:
 
     # shuffle_files: If data resides in multiple files, this parameter can be
     # set to True in order to shuffle the order of the files
-    shuffle_files: True
+    shuffle_files: False
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
@@ -101,11 +107,11 @@ scale:
     # - standard
     # - minmax
     # - robust
-    output: robust
+    output: minmax
 
 sequentialize:
     # window_size (int): The number of input samples in each input sequence.
-    window_size: 2
+    window_size: 10
 
     # target_size (int): Number of points in prediction sequence. For classification
     # cases, this number will have no effect, and the output size will always
@@ -116,7 +122,7 @@ sequentialize:
     # shuffle_samples (bool): Shuffle samples in data set. If
     # clean.combines_files is set to False, samples will not be shuffled across
     # files.
-    shuffle_samples: True
+    shuffle_samples: False
 
 train:
     # learning_method (str): Which type of machine learning method to use.
@@ -133,21 +139,21 @@ train:
     # Classifiers:
     # - lda     (linear discriminant analysis) 
     # - qda     (quadratic discriminant analysis)
-    learning_method: cnn
+    learning_method: xgboost
 
     # n_epochs (int): Number of epochs to perform during training. If
     # early_stopping is set to True, training may be stopped before n_epochs is
     # reached.
-    n_epochs: 100
+    n_epochs: 5
 
     batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 5
+    kernel_size: 4
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.
-    early_stopping: True
+    early_stopping: False
 
     # patience: The number of epochs to wait for validation loss to improve,
     # before stopping training early.

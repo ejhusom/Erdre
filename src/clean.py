@@ -80,9 +80,11 @@ def clean(dir_path):
 
     if classification:
 
-        if onehot_encode_target:
+        if onehot_encode_target and len(np.unique(combined_df[target])) > 2:
             encoder = LabelBinarizer()
         else:
+            if onehot_encode_target:
+                raise ValueError("Parameter 'onehot_encode_target' is set to True, but target is binary. Change parameter to False in order to use this pipeline.")
             encoder = LabelEncoder()
 
         target_col = np.array(combined_df[target]).reshape(-1)

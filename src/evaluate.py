@@ -38,7 +38,7 @@ from nonconformist.nc import RegressorNc
 from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH
 from config import PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH
 from config import INTERVALS_PLOT_PATH,  NON_DL_METHODS
-from models import cnn, dnn, lstm, cnndnn
+import neural_networks as nn
 
 
 # class ConformalPredictionModel(RegressorMixin):
@@ -107,7 +107,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         # conformal_pred_model = ConformalPredictionModel(model_filepath)
         conformal_pred_model = ConformalPredictionModel(trained_model)
 
-        m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
+        m = nn.cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
                 kernel_size=params_train["kernel_size"]
         )
 
@@ -175,21 +175,52 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         else:
             model = models.load_model(model_filepath)
 
+        # train = np.load(train_filepath)
+        # X_train = train["X"]
+        # y_train = train["y"]
+        # plt.plot(y_train)
+        # plt.plot(y_test)
+        # plt.show()
+
+        # X_test = X_train
+        # y_test = y_train
+
+        y_pred = model.predict(X_test)
+        print("============================================")
+        print("y_pred directly from predict")
+        print(y_pred)
+        print("============================================")
+
+        # if classification and len(np.unique(y_test, axis=-1)) > 2:
+        #     # Processing y_pred when label is one-hot encoded
+        #     y_pred = np.argmax(y_pred, axis=-1)
+        # elif classification:
+        #     y_pred = np.array((y_pred > 0.5), dtype=np.int)
+
         if onehot_encode_target:
-            y_pred = np.argmax(model.predict(X_test), axis=-1)
+            y_pred = np.argmax(y_pred, axis=-1)
         elif classification:
-            y_pred = model.predict(X_test)
             y_pred = np.array((y_pred > 0.5), dtype=np.int)
-        else:
-            y_pred = model.predict(X_test)
+
+        print("============================================")
+        print("y_pred post")
+        print(y_pred)
+        print("============================================")
 
     if classification:
 
+        # if classification and len(np.unique(y_test, axis=-1)) > 2:
         if onehot_encode_target:
             y_test = np.argmax(y_test, axis=-1)
 
+        # print("y_test post")
+        # print(y_test)
+        print(y_test.shape)
+        print(y_pred.shape)
         y_test = y_test.reshape(-1)
         y_pred = y_pred.reshape(-1)
+        # print(y_test.shape)
+        # print(y_pred.shape)
 
         accuracy = accuracy_score(y_test, y_pred)
         print(f"Accuracy: {accuracy}")
@@ -202,6 +233,8 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         with open(METRICS_FILE_PATH, "w") as f:
             json.dump(dict(accuracy=accuracy), f)
 
+        #==========================================
+        # TODO: Fix SHAP code
         # explainer = shap.TreeExplainer(model, X_test[:10])
         # shap_values = explainer.shap_values(X_test[:10])
         # plt.figure()
@@ -222,7 +255,9 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         # print("Feature importances")
         # print(sorted_feature_importances)
+        #==========================================
 
+    # Regression:
     else:
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)

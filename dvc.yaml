@@ -108,7 +108,7 @@ stages:
         - assets/data/combined
         - assets/data/output_columns.csv
         - src/train.py
-        - src/models.py
+        - src/neural_networks.py
         - src/config.py
         outs:
         - assets/models

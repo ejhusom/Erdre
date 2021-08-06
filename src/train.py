@@ -21,9 +21,10 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.svm import SVC, SVR
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.svm import SVC, SVR
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 import yaml
@@ -31,7 +32,7 @@ import xgboost as xgb
 
 from config import DATA_PATH, MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
 from config import PLOTS_PATH, NON_DL_METHODS
-from models import cnn, dnn, lstm, cnndnn
+import neural_networks as nn
 
 def train(filepath):
     """Train model to estimate power.
@@ -49,6 +50,7 @@ def train(filepath):
     use_early_stopping = params["early_stopping"]
     patience = params["patience"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
+    onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"]["onehot_encode_target"]
 
     output_columns = np.array(
             pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
@@ -68,7 +70,8 @@ def train(filepath):
     target_size = y_train.shape[-1]
 
     if classification:
-        if len(np.unique(y_train)) > 2:
+        # if len(np.unique(y_train, axis=-1)) > 2:
+        if onehot_encode_target:
             output_activation = "softmax"
             loss = "categorical_crossentropy"
         else:
@@ -87,17 +90,17 @@ def train(filepath):
     # Build model
     if learning_method == "cnn":
         hist_size = X_train.shape[-2]
-        model = cnn(hist_size, n_features, output_length=output_length,
+        model = nn.cnn1(hist_size, n_features, output_length=output_length,
                 kernel_size=params["kernel_size"],
                 output_activation=output_activation, loss=loss, metrics=metrics
         )
     elif learning_method == "dnn":
-        model = dnn(n_features, output_length=output_length,
+        model = nn.dnn(n_features, output_length=output_length,
                 output_activation=output_activation, loss=loss,
                 metrics=metrics)
     elif learning_method == "lstm":
         hist_size = X_train.shape[-2]
-        model = lstm(hist_size, n_features, n_steps_out=output_length,
+        model = nn.lstm(hist_size, n_features, n_steps_out=output_length,
                 output_activation=output_activation,
                 loss=loss, metrics=metrics)
     elif learning_method == "dt":
@@ -110,8 +113,6 @@ def train(filepath):
     elif learning_method == "xgboost":
         if classification:
             model = xgb.XGBClassifier()
-            # model = xgb.XGBClassifier(n_estimators=300, max_depth=5)
-            # model = xgb.XGBClassifier(n_estimators=800, max_depth=5)
         else:
             model = xgb.XGBRegressor()
     elif learning_method == "lda":
