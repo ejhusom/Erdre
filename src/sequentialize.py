@@ -41,9 +41,6 @@ def sequentialize(dir_path):
     else:
         target_size = params["target_size"]
 
-    if target_size > window_size:
-        raise ValueError("target_size cannot be larger than window_size.")
-
     output_columns = np.array(
             pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
     ).reshape(-1)
@@ -69,17 +66,8 @@ def sequentialize(dir_path):
 
         if params["shuffle_samples"]:
             permutation = np.random.permutation(X.shape[0])
-            # print(permutation)
-            # print("PRE====================")
-            # print(X[permutation[0]])
-            # print(y[permutation[0]])
-            # print("========================")
             X = np.take(X, permutation, axis=0)
             y = np.take(y, permutation, axis=0)
-            # print("POST====================")
-            # print(X[0])
-            # print(y[0])
-            # print("========================")
 
 
         # Save X and y into a binary file
