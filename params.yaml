@@ -25,7 +25,7 @@ clean:
     # Sometimes it is desirable to not combine the data into a single file,
     # for example when:
     # - Some specific files contain data that should be reserved for the test set.
-    # - We are going to use sequences of data points as input samples, and do
+    # - You want to use sequences of data points as input samples, and do
     #   not want sequences to overlap across files.
     #
     combine_files: True
@@ -82,12 +82,7 @@ split:
 
     # shuffle_files: If data resides in multiple files, this parameter can be
     # set to True in order to shuffle the order of the files
-    shuffle_files: False
-
-    # shuffle_samples (bool): Shuffle samples in data set. If
-    # clean.combines_files is set to False, samples will not be shuffled across
-    # files.
-    shuffle_samples: False
+    shuffle_files: True
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
@@ -110,13 +105,18 @@ scale:
 
 sequentialize:
     # window_size (int): The number of input samples in each input sequence.
-    window_size: 10
+    window_size: 2
 
     # target_size (int): Number of points in prediction sequence. For classification
     # cases, this number will have no effect, and the output size will always
     # be 1. Currently, a target_size greater than 1 is not supported if
     # calibrate_split > 0.
     target_size: 1
+    
+    # shuffle_samples (bool): Shuffle samples in data set. If
+    # clean.combines_files is set to False, samples will not be shuffled across
+    # files.
+    shuffle_samples: True
 
 train:
     # learning_method (str): Which type of machine learning method to use.
@@ -133,7 +133,7 @@ train:
     # Classifiers:
     # - lda     (linear discriminant analysis) 
     # - qda     (quadratic discriminant analysis)
-    learning_method: dnn
+    learning_method: cnn
 
     # n_epochs (int): Number of epochs to perform during training. If
     # early_stopping is set to True, training may be stopped before n_epochs is

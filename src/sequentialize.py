@@ -67,6 +67,21 @@ def sequentialize(dir_path):
         if learning_method == "dnn" or learning_method in NON_DL_METHODS:
             X = flatten_sequentialized(X)
 
+        if params["shuffle_samples"]:
+            permutation = np.random.permutation(X.shape[0])
+            # print(permutation)
+            # print("PRE====================")
+            # print(X[permutation[0]])
+            # print(y[permutation[0]])
+            # print("========================")
+            X = np.take(X, permutation, axis=0)
+            y = np.take(y, permutation, axis=0)
+            # print("POST====================")
+            # print(X[0])
+            # print(y[0])
+            # print("========================")
+
+
         # Save X and y into a binary file
         np.savez(
             DATA_SEQUENTIALIZED_PATH

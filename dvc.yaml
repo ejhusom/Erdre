@@ -60,7 +60,6 @@ stages:
         params:
         - split.train_split
         - split.shuffle_files
-        - split.shuffle_samples
         - split.calibrate_split
 
     scale:
@@ -91,6 +90,7 @@ stages:
         - clean.classification
         - sequentialize.window_size
         - sequentialize.target_size
+        - sequentialize.shuffle_samples
         - train.learning_method
 
     combine:

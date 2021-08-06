@@ -33,60 +33,10 @@ def split(dir_path):
 
     params = yaml.safe_load(open("params.yaml"))["split"]
     shuffle_files = params["shuffle_files"]
-    shuffle_samples = params["shuffle_samples"]
 
     DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
 
     filepaths = find_files(dir_path, file_extension=".npy")
-
-    """
-    filepaths = find_files(dir_path, file_extension=".csv")
-
-    # Handle special case where there is only one data file.
-    if isinstance(filepaths, str) or len(filepaths) == 1:
-        filepath = filepaths[0]
-
-        df = pd.read_csv(filepath, index_col=0)
-
-        if shuffle_samples:
-            df = df.sample(frac=1).reset_index(drop=True)
-        
-        train_size = int(len(df) * params["train_split"])
-
-        # This is used when using conformal predictors.
-        # It specifies the calibration set size.
-        # Set to 0 in params.yml if no calibration is to be done.
-        calibrate_size = int(len(df) * params["calibrate_split"])
-
-        df_train = None
-        df_test = None
-        df_calibrate = None
-
-        if params["calibrate_split"] == 0:
-            df_train = df.iloc[:train_size]
-            df_test = df.iloc[train_size:]
-        else:
-            df_train = df.iloc[:train_size]
-            df_calibrate = df.iloc[train_size:train_size + calibrate_size]
-            df_test = df.iloc[train_size + calibrate_size:]
-
-        df_train.to_csv(
-            DATA_SPLIT_PATH
-            / (os.path.basename(filepath).replace("featurized", "train"))
-        )
-
-        df_test.to_csv(
-            DATA_SPLIT_PATH
-            / (os.path.basename(filepath).replace("featurized", "test"))
-        )
-
-        if params["calibrate_split"] != 0:
-            df_calibrate.to_csv(
-                DATA_SPLIT_PATH
-                / (os.path.basename(filepath).replace("featurized", "calibrate"))
-            )
-
-        """
 
     # Handle special case where there is only one data file.
     if isinstance(filepaths, str) or len(filepaths) == 1:
@@ -155,21 +105,7 @@ def split(dir_path):
 
         for filepath in filepaths:
 
-            # df = pd.read_csv(filepath, index_col=0)
-
-            # if shuffle_samples:
-            #     df = df.sample(frac=1).reset_index(drop=True)
-
             if filepath in training_files:
-                # df.to_csv(
-                #     DATA_SPLIT_PATH
-                #     / (os.path.basename(filepath).replace("featurized", "train"))
-                # )
-                # np.save( 
-                #     DATA_SPLIT_PATH /
-                #     os.path.basename(filepath).replace("featurized", "train.npy"),
-                #     df_train.to_numpy()
-                # )
                 shutil.copyfile(
                     filepath,
                     DATA_SPLIT_PATH /
@@ -177,30 +113,12 @@ def split(dir_path):
                 )
 
             elif filepath in test_files:
-                # df.to_csv(
-                #     DATA_SPLIT_PATH
-                #     / (os.path.basename(filepath).replace("featurized", "test"))
-                # )
-                # np.save( 
-                #     DATA_SPLIT_PATH /
-                #     os.path.basename(filepath).replace("featurized", "test.npy"),
-                #     df_test.to_numpy()
-                # )
                 shutil.copyfile(
                     filepath,
                     DATA_SPLIT_PATH /
                     os.path.basename(filepath).replace("featurized", "test")
                 )
             elif filepath in calibrate_files:
-                # df.to_csv(
-                #     DATA_SPLIT_PATH
-                #     / (os.path.basename(filepath).replace("featurized", "calibrate"))
-                # )
-                # np.save( 
-                #     DATA_SPLIT_PATH /
-                #     os.path.basename(filepath).replace("featurized", "calibrate.npy"),
-                #     df_calibrate.to_numpy()
-                # )
                 shutil.copyfile(
                     filepath,
                     DATA_SPLIT_PATH /

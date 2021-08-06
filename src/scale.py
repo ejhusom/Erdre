@@ -33,7 +33,6 @@ def scale(dir_path):
     """
 
     filepaths = find_files(dir_path, file_extension=".npy")
-    # filepaths = find_files(dir_path, file_extension=".csv")
 
     DATA_SCALED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -77,11 +76,6 @@ def scale(dir_path):
     n_output_cols = len(output_columns)
 
     for filepath in filepaths:
-
-        # df = pd.read_csv(filepath, index_col=0)
-        
-        # # Convert to numpy
-        # data = df.to_numpy()
 
         data = np.load(filepath)
 
