@@ -175,52 +175,17 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         else:
             model = models.load_model(model_filepath)
 
-        # train = np.load(train_filepath)
-        # X_train = train["X"]
-        # y_train = train["y"]
-        # plt.plot(y_train)
-        # plt.plot(y_test)
-        # plt.show()
-
-        # X_test = X_train
-        # y_test = y_train
-
         y_pred = model.predict(X_test)
-        print("============================================")
-        print("y_pred directly from predict")
-        print(y_pred)
-        print("============================================")
-
-        # if classification and len(np.unique(y_test, axis=-1)) > 2:
-        #     # Processing y_pred when label is one-hot encoded
-        #     y_pred = np.argmax(y_pred, axis=-1)
-        # elif classification:
-        #     y_pred = np.array((y_pred > 0.5), dtype=np.int)
 
         if onehot_encode_target:
             y_pred = np.argmax(y_pred, axis=-1)
         elif classification:
             y_pred = np.array((y_pred > 0.5), dtype=np.int)
 
-        print("============================================")
-        print("y_pred post")
-        print(y_pred)
-        print("============================================")
-
     if classification:
 
-        # if classification and len(np.unique(y_test, axis=-1)) > 2:
         if onehot_encode_target:
             y_test = np.argmax(y_test, axis=-1)
-
-        # print("y_test post")
-        # print(y_test)
-        print(y_test.shape)
-        print(y_pred.shape)
-        y_test = y_test.reshape(-1)
-        y_pred = y_pred.reshape(-1)
-        # print(y_test.shape)
-        # print(y_pred.shape)
 
         accuracy = accuracy_score(y_test, y_pred)
         print(f"Accuracy: {accuracy}")
