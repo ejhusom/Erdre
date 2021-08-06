@@ -51,35 +51,41 @@ def featurize(dir_path):
 
     #===============================================
     # Read all data to fit one-hot encoder
-    # dfs = []
+    dfs = []
 
-    # for filepath in filepaths:
-    #     df = pd.read_csv(filepath, index_col=0)
-    #     dfs.append(df)
+    for filepath in filepaths:
+        df = pd.read_csv(filepath, index_col=0)
+        dfs.append(df)
         
-    # combined_df = pd.concat(dfs, ignore_index=True)
+    combined_df = pd.concat(dfs, ignore_index=True)
+
     # ct = ColumnTransformer([('encoder', OneHotEncoder(), [38])],
     #         remainder='passthrough')
 
     # ct.fit(combined_df)
 
-    # categorical_variables = find_categorical_variables()
+    categorical_variables = find_categorical_variables()
 
-    # print(f"Columns: {combined_df.columns}")
-    # print(f"Cat: {categorical_variables}")
+    # Remove target and variables that was removed in the cleaning process
+    categorical_variables = [
+            var for var in categorical_variables if 
+                var in combined_df.columns and
+                var != target
+    ]
 
-    # Check if some categorical variables have been removed in the cleaning
-    # process, and if so, remove them from the list
-    # removables = []
-    # for v in categorical_variables:
-    #     if v not in combined_df.columns:
-    #         removables.append(v)
-    #         # categorical_variables.remove(v)
-    # print(removables)
-    # categorical_variables.remove(removables)
+    print(f"Cat: {categorical_variables}")
+    print(combined_df[categorical_variables])
 
-    # print(f"Cat: {categorical_variables}")
+    column_transformer = ColumnTransformer(
+            [('encoder', OneHotEncoder(), categorical_variables)],
+            remainder='passthrough'
+    )
+
+    # combined_df = column_transformer.fit_transform(combined_df)
+
     # print(combined_df[categorical_variables])
+    # print(combined_df)
+
     # categorical_encoder = OneHotEncoder()
     # categorical_encoder.fit(combined_df)
     #===============================================
@@ -110,7 +116,7 @@ def featurize(dir_path):
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
             # should not be a part of the input.
-            if col not in features and not col.startswith(target):
+            if (col not in features) and (col not in output_columns):
                 del df[col]
             
             # Remove feature if it is non-numeric
@@ -124,10 +130,15 @@ def featurize(dir_path):
             for col in remove_features:
                 del df[col]
 
-        # Save data
-        df.to_csv(
-            DATA_FEATURIZED_PATH
-            / (os.path.basename(filepath).replace(".", "-featurized."))
+        # # Save data
+        # df.to_csv(
+        #     DATA_FEATURIZED_PATH
+        #     / (os.path.basename(filepath).replace(".", "-featurized."))
+        # )
+        np.save(
+            DATA_FEATURIZED_PATH /
+            os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
+            df.to_numpy()
         )
 
 

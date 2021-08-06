@@ -32,7 +32,8 @@ def scale(dir_path):
 
     """
 
-    filepaths = find_files(dir_path, file_extension=".csv")
+    filepaths = find_files(dir_path, file_extension=".npy")
+    # filepaths = find_files(dir_path, file_extension=".csv")
 
     DATA_SCALED_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -77,14 +78,14 @@ def scale(dir_path):
 
     for filepath in filepaths:
 
-        df = pd.read_csv(filepath, index_col=0)
+        # df = pd.read_csv(filepath, index_col=0)
         
-        # Convert to numpy
-        data = df.to_numpy()
+        # # Convert to numpy
+        # data = df.to_numpy()
+
+        data = np.load(filepath)
 
         # Split into input (X) and output/target (y)
-        # X = data[:, 1:].copy()
-        # y = data[:, 0].copy().reshape(-1, 1)
         X = data[:, n_output_cols:].copy()
         y = data[:, 0:n_output_cols].copy()
 
@@ -130,17 +131,13 @@ def scale(dir_path):
             DATA_SCALED_PATH
             / (
                 os.path.basename(filepath).replace(
-                    data_overview[filepath]["category"] + ".csv", 
+                    data_overview[filepath]["category"] + ".npy", 
                     data_overview[filepath]["category"] + "-scaled.npz"
                 )
             ),
             X = X, 
             y = y
         )
-
-        # import matplotlib.pyplot as plt
-        # plt.plot(y)
-        # plt.show()
 
 if __name__ == "__main__":
 

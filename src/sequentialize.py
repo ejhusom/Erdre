@@ -72,7 +72,7 @@ def sequentialize(dir_path):
             DATA_SEQUENTIALIZED_PATH
             / (
                 os.path.basename(filepath).replace(
-                    "scaled.csv", "sequentialized.npz"
+                    "scaled.npz", "sequentialized.npz"
                 )
             ),
             X=X,

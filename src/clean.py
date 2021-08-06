@@ -23,7 +23,7 @@ from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 from sklearn.utils import shuffle
 import yaml
 
-from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
+from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH, NON_DL_METHODS
 from preprocess_utils import move_column, find_files
 from profiling import profile
 
@@ -40,11 +40,11 @@ def clean(dir_path):
     """Name of data set, which must be the name of subfolder of
     'assets/data/raw', in where to look for data.""" 
 
-    params = yaml.safe_load(open("params.yaml"))["clean"]
-    combine_files = params["combine_files"]
-    target = params["target"]
-    classification = params["classification"]
-    onehot_encode_target = params["onehot_encode_target"]
+    params = yaml.safe_load(open("params.yaml"))
+    combine_files = params["clean"]["combine_files"]
+    target = params["clean"]["target"]
+    classification = params["clean"]["classification"]
+    onehot_encode_target = params["clean"]["onehot_encode_target"]
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
@@ -69,8 +69,8 @@ def clean(dir_path):
         if df.iloc[:,0].is_monotonic:
             df = df.iloc[:,1:]
 
-        # for c in removable_variables:
-        #     del df[c]
+        for c in removable_variables:
+            del df[c]
         
         df.dropna(inplace=True)
 
@@ -174,20 +174,26 @@ def parse_profile_warnings():
 
         if warning == "[CONSTANT]":
             removable_variables.append(variable)
+            print(f"Removed variable '{variable}' because it is constant.")
         if warning == "[ZEROS]":
             p_zeros = profile_json["variables"][variable]["p_zeros"]
             if p_zeros > percentage_zeros_threshold:
                 removable_variables.append(variable)
+                print(f"Removed variable '{variable}' because % of zeros exceeds {percentage_zeros_threshold*100}%.")
         if warning == "[HIGH_CORRELATION]":
             try:
                 correlation_scores = correlations[variables.index(variable)]
                 for correlated_variable in correlation_scores:
-                    if (correlation_scores[correlated_variable] > input_max_correlation_threshold and
+                    if (
+                        correlation_scores[correlated_variable] > input_max_correlation_threshold and
                         variable != correlated_variable and
-                        variable not in removable_variables):
+                        variable != target and
+                        correlated_variable != target and
+                        variable not in removable_variables
+                    ):
 
                         removable_variables.append(correlated_variable)
-                        # print(f"{variable} is correlated with {correlated_variable}: {correlation_scores[correlated_variable]}")
+                        print(f"Removed variable '{correlated_variable}' because of high correlation ({correlation_scores[correlated_variable]:.2f}) with variable '{variable}'.")
             except:
                 # Pandas profiling might not be able to compute correlation
                 # score for some variables, for example some categorical

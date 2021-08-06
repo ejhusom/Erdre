@@ -34,7 +34,7 @@ clean:
     # larger than this threshold, the column is removed. If this parameter is
     # set to 1.0, only columns consisting solely of zeros will be removed.
     # zeros.
-    percentage_zeros_threshold: 1.0
+    percentage_zeros_threshold: 0.1
 
     # correlation_metric: Which metric to measure correlation by. Choose from:
     # - pearson
@@ -106,11 +106,11 @@ scale:
     # - standard
     # - minmax
     # - robust
-    output: minmax
+    output: robust
 
 sequentialize:
     # window_size (int): The number of input samples in each input sequence.
-    window_size: 1
+    window_size: 10
 
     # target_size (int): Number of points in prediction sequence. For classification
     # cases, this number will have no effect, and the output size will always
