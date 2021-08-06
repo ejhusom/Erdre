@@ -51,6 +51,7 @@ def featurize(dir_path):
     ).reshape(-1)
 
     #===============================================
+    # TODO: Automatic encoding of categorical input variables
     # Read all data to fit one-hot encoder
     dfs = []
 
@@ -74,6 +75,7 @@ def featurize(dir_path):
                 var != target
     ]
 
+    print(combined_df)
     print(f"Cat: {categorical_variables}")
     print(combined_df[categorical_variables])
 
@@ -84,8 +86,9 @@ def featurize(dir_path):
 
     # combined_df = column_transformer.fit_transform(combined_df)
 
-    # print(combined_df[categorical_variables])
     # print(combined_df)
+    # print(combined_df.shape)
+    # print(combined_df[categorical_variables])
 
     # categorical_encoder = OneHotEncoder()
     # categorical_encoder.fit(combined_df)
