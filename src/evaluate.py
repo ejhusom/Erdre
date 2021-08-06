@@ -7,6 +7,7 @@ Author:
 Created:  
     2020-09-17
 
+
 """
 import json
 import os
@@ -34,12 +35,14 @@ from nonconformist.nc import NcFactory, AbsErrorErrFunc
 from nonconformist.base import RegressorAdapter
 from nonconformist.nc import RegressorNc
 
-from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH, PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH, INTERVALS_PLOT_PATH
-from model import cnn, dnn, lstm, cnndnn
+from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH
+from config import PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH
+from config import INTERVALS_PLOT_PATH,  NON_DL_METHODS
+from models import cnn, dnn, lstm, cnndnn
 
 
-# class MyCustomModel(RegressorMixin):
-class MyCustomModel(RegressorAdapter):
+# class ConformalPredictionModel(RegressorMixin):
+class ConformalPredictionModel(RegressorAdapter):
     """Implement custom sklearn model to use with the nonconformist library.
 
         Args:
@@ -53,8 +56,8 @@ class MyCustomModel(RegressorAdapter):
         # self.model = models.load_model(model_filepath)
         # self.model_filepath = model_filepath
 
-        # super(MyCustomModel, self).__init__(models.load_model(model_filepath), fit_params=None)
-        super(MyCustomModel, self).__init__(model)
+        # super(ConformalPredictionModel, self).__init__(models.load_model(model_filepath), fit_params=None)
+        super(ConformalPredictionModel, self).__init__(model)
 
     def fit(self, X=None, y=None):
         # We don't do anything here because we are loading an already trained model in __init__().
@@ -88,7 +91,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     params_split = yaml.safe_load(open("params.yaml"))["split"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
     onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"]["onehot_encode_target"]
-    net = params_train["net"]
+    learning_method = params_train["learning_method"]
 
     test = np.load(test_filepath)
     X_test = test["X"]
@@ -101,20 +104,20 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
     if params_split["calibrate_split"] > 0 and not classification:
         trained_model = models.load_model(model_filepath)
-        # mycustommodel = MyCustomModel(model_filepath)
-        mycustommodel = MyCustomModel(trained_model)
+        # conformal_pred_model = ConformalPredictionModel(model_filepath)
+        conformal_pred_model = ConformalPredictionModel(trained_model)
 
         m = cnn(X_test.shape[-2], X_test.shape[-1], output_length=1,
                 kernel_size=params_train["kernel_size"]
         )
 
-        nc = RegressorNc(mycustommodel,
+        nc = RegressorNc(conformal_pred_model,
             err_func=AbsErrorErrFunc(),  # non-conformity function
             # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
             # normalizer=m
         )
 
-        # nc = NcFactory.create_nc(mycustommodel,
+        # nc = NcFactory.create_nc(conformal_pred_model,
         #     err_func=AbsErrorErrFunc(),  # non-conformity function
         #     # normalizer_model=KNeighborsRegressor(n_neighbors=15)  # normalizer
         #     normalizer_model=m
@@ -164,10 +167,10 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
         save_predictions(df_predictions)
 
-        plot_intervals(df_predictions)
+        plot_confidence_intervals(df_predictions)
 
     else:
-        if net == "dt":
+        if learning_method in NON_DL_METHODS:
             model = load(model_filepath)
         else:
             model = models.load_model(model_filepath)
@@ -273,7 +276,7 @@ def save_predictions(df_predictions):
     df_predictions.to_csv(PREDICTIONS_FILE_PATH, index=False)
 
 
-def plot_intervals(df):
+def plot_confidence_intervals(df):
     """Plot the confidence intervals generated with conformal prediction.
 
         Args:
@@ -436,8 +439,6 @@ def plot_sequence_predictions(y_true, y_pred):
     fig.write_html(str(PLOTS_PATH / "prediction_sequences.html"))
 
 if __name__ == "__main__":
-
-    np.random.seed(2020)
 
     if len(sys.argv) < 3:
         try:

@@ -17,10 +17,11 @@ from joblib import dump, load
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.svm import SVC, SVR
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.metrics import confusion_matrix
 from tensorflow.keras.utils import plot_model
@@ -29,8 +30,8 @@ import yaml
 import xgboost as xgb
 
 from config import DATA_PATH, MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
-from config import PLOTS_PATH
-from model import cnn, dnn, lstm, cnndnn
+from config import PLOTS_PATH, NON_DL_METHODS
+from models import cnn, dnn, lstm, cnndnn
 
 def train(filepath):
     """Train model to estimate power.
@@ -44,7 +45,7 @@ def train(filepath):
 
     # Load parameters
     params = yaml.safe_load(open("params.yaml"))["train"]
-    net = params["net"]
+    learning_method = params["learning_method"]
     use_early_stopping = params["early_stopping"]
     patience = params["patience"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
@@ -84,32 +85,54 @@ def train(filepath):
         monitor_metric = "loss"
 
     # Build model
-    if net == "cnn":
+    if learning_method == "cnn":
         hist_size = X_train.shape[-2]
         model = cnn(hist_size, n_features, output_length=output_length,
                 kernel_size=params["kernel_size"],
                 output_activation=output_activation, loss=loss, metrics=metrics
         )
-    elif net == "dnn":
+    elif learning_method == "dnn":
         model = dnn(n_features, output_length=output_length,
                 output_activation=output_activation, loss=loss,
                 metrics=metrics)
-    elif net == "dt":
-        # model = DecisionTreeClassifier()
-        # model = RandomForestClassifier(50)
-        # model = xgb.XGBClassifier(n_estimators=300, max_depth=5)
-        model = xgb.XGBClassifier(n_estimators=800, max_depth=5)
-        # model = LinearDiscriminantAnalysis()
-        # model = SVC()
-    elif net == "lstm":
+    elif learning_method == "lstm":
         hist_size = X_train.shape[-2]
         model = lstm(hist_size, n_features, n_steps_out=output_length,
                 output_activation=output_activation,
                 loss=loss, metrics=metrics)
+    elif learning_method == "dt":
+        if classification:
+            model = DecisionTreeClassifier()
+        else:
+            model = DecisionTreeRegressor()
+    elif learning_method == "rf":
+        model = RandomForestClassifier()
+    elif learning_method == "xgboost":
+        if classification:
+            model = xgb.XGBClassifier()
+            # model = xgb.XGBClassifier(n_estimators=300, max_depth=5)
+            # model = xgb.XGBClassifier(n_estimators=800, max_depth=5)
+        else:
+            model = xgb.XGBRegressor()
+    elif learning_method == "lda":
+        if classification:
+            model = LinearDiscriminantAnalysis()
+        else:
+            raise ValueError(f"Learning method {learning_method} only works with classification.")
+    elif learning_method == "qda":
+        if classification:
+            model = QuadraticDiscriminantAnalysis()
+        else:
+            raise ValueError(f"Learning method {learning_method} only works with classification.")
+    elif learning_method == "svm":
+        if classification:
+            model = SVC()
+        else:
+            model = SVR()
     else:
-        raise NotImplementedError("Only 'cnn' is implemented.")
+        raise NotImplementedError(f"Learning method {learning_method} not implemented.")
 
-    if net == "dt":
+    if learning_method in NON_DL_METHODS:
         model.fit(X_train, y_train)
         dump(model, MODELS_FILE_PATH)
     else: 
@@ -129,7 +152,7 @@ def train(filepath):
                 dpi=96
             )
         except:
-            print("Failed saving plot of the network architecture.")
+            print("Failed saving plot of the network architecture, Graphviz must be installed to do that.")
 
         early_stopping = EarlyStopping(
                 monitor="val_" + monitor_metric,

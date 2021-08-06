@@ -32,6 +32,7 @@ def split(dir_path):
 
     params = yaml.safe_load(open("params.yaml"))["split"]
     shuffle_files = params["shuffle_files"]
+    shuffle_samples = params["shuffle_samples"]
 
     DATA_SPLIT_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -44,6 +45,9 @@ def split(dir_path):
         filepath = filepaths[0]
 
         df = pd.read_csv(filepath, index_col=0)
+
+        if shuffle_samples:
+            df = df.sample(frac=1).reset_index(drop=True)
         
         train_size = int(len(df) * params["train_split"])
 
@@ -104,6 +108,9 @@ def split(dir_path):
         for filepath in filepaths:
 
             df = pd.read_csv(filepath, index_col=0)
+
+            if shuffle_samples:
+                df = df.sample(frac=1).reset_index(drop=True)
 
             if filepath in training_files:
                 df.to_csv(

@@ -2,26 +2,21 @@ profile:
     # dataset: Name of data set, which is the name of the subfolder in which the data
     # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
     # 'assets/data/raw/'.
-    # dataset: wesad
     # dataset: data01
     dataset: cnc_toolwear
-    # dataset: hartest
 
 clean:
     # target: Name of target variable.
-    # target: "3"
-    # target: label
-    # target: X1_ActualPosition
+    target: X1_ActualPosition
     # target: Machining_Process
-    target: tool_condition
+    # target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
     
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
-    classification: True
+    classification: False
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
-    # onehot_encode_target: False
     onehot_encode_target: False
 
     # combine_files: Whether to combine the data from all files into one file
@@ -33,13 +28,13 @@ clean:
     # - We are going to use sequences of data points as input samples, and do
     #   not want sequences to overlap across files.
     #
-    combine_files: False
+    combine_files: True
 
     # percentage_zeros_threshold: If the fraction of zeros in a column is
     # larger than this threshold, the column is removed. If this parameter is
-    # set to 1.0, we will only remove the columns that solely consists of
+    # set to 1.0, only columns consisting solely of zeros will be removed.
     # zeros.
-    percentage_zeros_threshold: 0.7
+    percentage_zeros_threshold: 1.0
 
     # correlation_metric: Which metric to measure correlation by. Choose from:
     # - pearson
@@ -60,41 +55,20 @@ featurize:
     features:
         # - feature1
         # - feature2
-        # - Z1_ActualPosition
-        # - X1_ActualVelocity
-        # - X1_CurrentFeedback
-        # - S1_ActualAcceleration
-        # - Y1_ActualAcceleration
-        # - Y1_CurrentFeedback
-        # - X1_OutputPower
-        # - Z1_CommandPosition
-        # - X1_OutputCurrent
-        # - S1_DCBusVoltage
-        # - wrist_acc_x
-        # - wrist_acc_y
-        # - wrist_acc_z
-        # - wrist_temp
-        # - wrist_eda
-        # - wrist_bvp
-
 
     # add_rolling_features (bool): Add engineered features based on rolling
     # sequence.
     add_rolling_features: False
 
+    # rolling_window_size: Window size for calculating rolling features.
+    rolling_window_size: 100
+    #
     # remove_features (list): Features to be removed. Only useful if some of
     # the features specified above are used to create rolling features, but the
     # raw feature itself should not be included as an input.
     remove_features:
-        # - wrist_acc_x
-        # - wrist_acc_y
-        # - wrist_acc_z
-        # - wrist_temp
-        # - wrist_eda
-        # - wrist_bvp
-
-    # rolling_window_size: Window size for calculating rolling features.
-    rolling_window_size: 100
+        # - feature1
+        # - feature2
 
     # target_min_correlation_threshold: Minimum correlation between target and
     # an input feature to include the feature in the model. If set to 0.0, no
@@ -104,11 +78,16 @@ featurize:
 
 split:
     # train_split: Fraction of data set to use for training.
-    train_split: 0.7
+    train_split: 0.6
 
     # shuffle_files: If data resides in multiple files, this parameter can be
     # set to True in order to shuffle the order of the files
-    shuffle_files: True
+    shuffle_files: False
+
+    # shuffle_samples (bool): Shuffle samples in data set. If
+    # clean.combines_files is set to False, samples will not be shuffled across
+    # files.
+    shuffle_samples: False
 
     # calibrate_split: Fraction of data set to use for calibration. If set to
     # 0, no conformal prediction is performed.
@@ -118,35 +97,53 @@ scale:
     # Current available scaling methods are:
     # - standard
     # - minmax
-    input: minmax
+    # - robust
+    input: standard
     
     # output: Scaling method for output variable. Not applicable for
     # classification.
+    # Current available scaling methods are:
+    # - standard
+    # - minmax
+    # - robust
     output: minmax
 
 sequentialize:
-    # History window sample size
-    hist_size: 256
+    # window_size (int): The number of input samples in each input sequence.
+    window_size: 1
 
-    # target_size: Number of points in prediction sequence. For classification
-    # cases, this number will be overridden to 1.
-    # Currently, a target_size greater than 1 is not supported if calibrate_split > 0
+    # target_size (int): Number of points in prediction sequence. For classification
+    # cases, this number will have no effect, and the output size will always
+    # be 1. Currently, a target_size greater than 1 is not supported if
+    # calibrate_split > 0.
     target_size: 1
 
 train:
-    # net: Which type of neural network to use. Choose from:
-    # - dnn (dense neural network)
-    # - cnn (convolutional neural network
-    net: cnn
+    # learning_method (str): Which type of machine learning method to use.
+    #
+    # Regressors/classifiers:
+    # - dnn     (dense neural network)
+    # - cnn     (convolutional neural network) 
+    # - lstm    (long short-term memory network)
+    # - dt      (decision tree)
+    # - rf      (random forest)
+    # - svm     (support vector machine)
+    # - xgboost
+    #
+    # Classifiers:
+    # - lda     (linear discriminant analysis) 
+    # - qda     (quadratic discriminant analysis)
+    learning_method: dnn
 
-    # n_epochs: Number of epochs to perform during training. If early_stopping
-    # is set to True, training may be stopped before n_epochs is reached.
+    # n_epochs (int): Number of epochs to perform during training. If
+    # early_stopping is set to True, training may be stopped before n_epochs is
+    # reached.
     n_epochs: 100
 
-    batch_size: 256
+    batch_size: 128
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 9
+    kernel_size: 5
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.

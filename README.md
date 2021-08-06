@@ -118,7 +118,7 @@ clean:
     target: TargetVar
 ```
 
-The rest of the parameters can also be adjusted.  Documentation of the
+The rest of the parameters can also be adjusted. Documentation of the
 parameters is found in
 [`params.yaml`](https://github.com/SINTEF-9012/Erdre/blob/master/params.yaml).
 

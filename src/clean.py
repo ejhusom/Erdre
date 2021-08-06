@@ -69,8 +69,8 @@ def clean(dir_path):
         if df.iloc[:,0].is_monotonic:
             df = df.iloc[:,1:]
 
-        for c in removable_variables:
-            del df[c]
+        # for c in removable_variables:
+        #     del df[c]
         
         df.dropna(inplace=True)
 

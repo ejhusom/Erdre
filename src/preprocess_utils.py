@@ -82,7 +82,6 @@ def find_files(dir_path, file_extension=""):
 
     return filepaths
 
-
 def print_dataframe(df, message=""):
     """Print dataframe to terminal, with boundary and message.
 
@@ -96,7 +95,6 @@ def print_dataframe(df, message=""):
 
     print(message)
     print(df)
-
 
 def move_column(df, column_name, new_idx):
     """
@@ -118,14 +116,13 @@ def move_column(df, column_name, new_idx):
 
     return df[reordered_columns]
 
-
-def split_sequences(sequences, hist_size, target_size=1, n_target_columns=1):
+def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
     """Split data sequence into samples with matching input and targets.
 
     Args:
         sequences (array): The matrix containing the sequences, with the
             targets in the first columns.
-        hist_size (int): Number of time steps to include in each sample, i.e.
+        window_size (int): Number of time steps to include in each sample, i.e.
             how much history should be matched with a given target.
         target_size (int): Size of target window. Default=1, i.e. only one
             value is used as target.
@@ -141,7 +138,7 @@ def split_sequences(sequences, hist_size, target_size=1, n_target_columns=1):
     for i in range(len(sequences)):
 
         # find the end of this pattern
-        end_ix = i + hist_size
+        end_ix = i + window_size
 
         # find start of target window
         target_start_ix = end_ix - target_size
@@ -172,17 +169,16 @@ def flatten_sequentialized(X):
     """Flatten sequentialized data.
 
     Args:
-        X (array): Array of shape [num_sequences, hist_size, num_features].
+        X (array): Array of shape [num_sequences, window_size, num_features].
 
     Returns:
-        X_flat (array): Array of shape [num_sequences, hist_size*num_features].
+        X_flat (array): Array of shape [num_sequences, window_size*num_features].
 
     """
 
     X_flat = X.reshape(X.shape[0], X.shape[1]*X.shape[2])
 
     return X_flat
-
 
 def merge_time_series_and_added_features(X):
     """
@@ -194,7 +190,7 @@ def merge_time_series_and_added_features(X):
     ----------
     X : list
         This must be a list of two elements:
-        1. 2D-array of shape [hist_size, num_features], which contains the time
+        1. 2D-array of shape [window_size, num_features], which contains the time
            series data.
         2. 1D-array of shape [num_added_features], which contains the added
            features.
@@ -220,7 +216,6 @@ def merge_time_series_and_added_features(X):
 
     else:
         raise TypeError("X must be a list of two elements.")
-
 
 def scale_data(train_data, val_data, scaler_type="minmax"):
     """Scale train and test data.
@@ -253,7 +248,6 @@ def scale_data(train_data, val_data, scaler_type="minmax"):
     val_data = scaler.transform(val_data)
 
     return train_data, val_data, scaler
-
 
 def split_time_series_and_added_features(X, input_columns, added_features):
     """

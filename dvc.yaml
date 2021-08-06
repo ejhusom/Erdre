@@ -6,6 +6,7 @@ stages:
         - assets/data/raw
         - src/profiling.py
         - src/profile.yaml
+        - src/config.py
         outs:
         - assets/profile
         params:
@@ -15,8 +16,9 @@ stages:
         cmd: python3 src/clean.py assets/data/raw/
         deps:
         - assets/data/raw
-        - src/clean.py
         - assets/profile
+        - src/clean.py
+        - src/config.py
         outs:
         - assets/data/cleaned
         - assets/data/output_columns.csv
@@ -35,14 +37,15 @@ stages:
         - assets/data/cleaned
         - assets/data/output_columns.csv
         - src/featurize.py
+        - src/config.py
         outs:
         - assets/data/featurized
         - assets/data/input_columns.csv
         params:
         - featurize.features
         - featurize.add_rolling_features
-        - featurize.remove_features
         - featurize.rolling_window_size
+        - featurize.remove_features
         - featurize.target_min_correlation_threshold
         - clean.target
 
@@ -51,11 +54,13 @@ stages:
         deps:
         - assets/data/featurized
         - src/split.py
+        - src/config.py
         outs:
         - assets/data/split
         params:
         - split.train_split
         - split.shuffle_files
+        - split.shuffle_samples
         - split.calibrate_split
 
     scale:
@@ -64,6 +69,7 @@ stages:
         - assets/data/split
         - assets/data/output_columns.csv
         - src/scale.py
+        - src/config.py
         outs:
         - assets/data/scaled
         params:
@@ -78,19 +84,21 @@ stages:
         - assets/data/output_columns.csv
         - src/sequentialize.py
         - src/preprocess_utils.py
+        - src/config.py
         outs:
         - assets/data/sequentialized
         params:
         - clean.classification
-        - sequentialize.hist_size
+        - sequentialize.window_size
         - sequentialize.target_size
-        - train.net
+        - train.learning_method
 
     combine:
         cmd: python3 src/combine.py assets/data/sequentialized/
         deps:
         - assets/data/sequentialized
         - src/combine.py
+        - src/config.py
         outs:
         - assets/data/combined
 
@@ -100,12 +108,13 @@ stages:
         - assets/data/combined
         - assets/data/output_columns.csv
         - src/train.py
-        - src/model.py
+        - src/models.py
+        - src/config.py
         outs:
         - assets/models
         params:
         - clean.classification
-        - train.net
+        - train.learning_method
         - train.n_epochs
         - train.batch_size
         - train.kernel_size
@@ -119,8 +128,9 @@ stages:
         - assets/data/output_columns.csv
         - assets/models/model.h5
         - src/evaluate.py
+        - src/config.py
         params:
         - clean.classification
         metrics:
-        - assets/metrics/metrics.json:
-            cache: false
+        - assets/metrics/metrics.json
+

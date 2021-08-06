@@ -100,10 +100,10 @@ def dnn(input_x,
     set_seed(seed)
 
     model = models.Sequential()
-    model.add(layers.Dense(32, activation='relu', input_dim=input_x))
+    model.add(layers.Dense(16, activation='relu', input_dim=input_x))
     # model.add(layers.Dense(256, activation='relu', input_dim=input_x))
-    model.add(layers.Dense(32, activation='relu'))
-    # model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dense(16, activation='relu'))
+    # model.add(layers.Dense(32, activation='relu'))
     # model.add(layers.Dense(32, activation='relu'))
     model.add(layers.Dense(output_length, activation=output_activation))
     model.compile(optimizer='adam', loss=loss, metrics=metrics)

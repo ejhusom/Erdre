@@ -13,6 +13,11 @@ Created:  2020-09-16
 
 from pathlib import Path
 
+# PARAMETERS
+
+NON_DL_METHODS = ["dt", "rf", "xgboost", "lda", "qda", "svm"]
+
+# PATHS
 
 ASSETS_PATH = Path("./assets")
 """Path to all assets of project."""

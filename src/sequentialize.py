@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH
+from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH, NON_DL_METHODS
 from preprocess_utils import flatten_sequentialized, read_csv
 from preprocess_utils import find_files, split_sequences
 
@@ -31,18 +31,18 @@ def sequentialize(dir_path):
     DATA_SEQUENTIALIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     params = yaml.safe_load(open("params.yaml"))["sequentialize"]
-    net = yaml.safe_load(open("params.yaml"))["train"]["net"]
+    learning_method = yaml.safe_load(open("params.yaml"))["train"]["learning_method"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
 
-    hist_size = params["hist_size"]
+    window_size = params["window_size"]
 
     if classification:
         target_size = 1
     else:
         target_size = params["target_size"]
 
-    if target_size > hist_size:
-        raise ValueError("target_size cannot be larger than hist_size.")
+    if target_size > window_size:
+        raise ValueError("target_size cannot be larger than window_size.")
 
     output_columns = np.array(
             pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
@@ -61,10 +61,10 @@ def sequentialize(dir_path):
         data = np.hstack((y, X))
 
         # Split into sequences
-        X, y = split_sequences(data, hist_size, target_size=target_size,
+        X, y = split_sequences(data, window_size, target_size=target_size,
                 n_target_columns=n_output_cols)
 
-        if net == "dnn" or net == "dt":
+        if learning_method == "dnn" or learning_method in NON_DL_METHODS:
             X = flatten_sequentialized(X)
 
         # Save X and y into a binary file
@@ -81,7 +81,5 @@ def sequentialize(dir_path):
 
 
 if __name__ == "__main__":
-
-    np.random.seed(2020)
 
     sequentialize(sys.argv[1])

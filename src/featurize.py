@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 from scipy.signal import find_peaks
+from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 import yaml
 
@@ -53,10 +54,15 @@ def featurize(dir_path):
     # dfs = []
 
     # for filepath in filepaths:
-    #     df = pd.read_csv(filepath)
+    #     df = pd.read_csv(filepath, index_col=0)
     #     dfs.append(df)
         
     # combined_df = pd.concat(dfs, ignore_index=True)
+    # ct = ColumnTransformer([('encoder', OneHotEncoder(), [38])],
+    #         remainder='passthrough')
+
+    # ct.fit(combined_df)
+
     # categorical_variables = find_categorical_variables()
 
     # print(f"Columns: {combined_df.columns}")
@@ -99,11 +105,12 @@ def featurize(dir_path):
                 print(f"Feature {feature} not found!")
 
 
+
         for col in df.columns:
             # Remove feature from input. This is useful in the case that a raw
             # feature is used to engineer a feature, but the raw feature itself
             # should not be a part of the input.
-            if col not in features and col != target:
+            if col not in features and not col.startswith(target):
                 del df[col]
             
             # Remove feature if it is non-numeric
