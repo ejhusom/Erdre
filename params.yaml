@@ -3,20 +3,22 @@ profile:
     # files resides: 'assets/data/raw/[dataset]/. If empty, put data files in
     # 'assets/data/raw/'.
     # dataset: data01
-    dataset: cnc_toolwear
+    # dataset: cnc_toolwear
     # dataset: har3
+    dataset: automotive
 
 clean:
     # target: Name of target variable.
     # target: X1_ActualPosition
     # target: "4"
     # target: Machining_Process
-    target: tool_condition
+    # target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
+    target: Axis_X_True_Power
     
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
-    classification: True
+    classification: False
 
     # onehot_encode_target: Whether to one-hot encode target variable or not.
     # If the classification is binary, this variable will be ignored and set to
@@ -111,7 +113,7 @@ scale:
 
 sequentialize:
     # window_size (int): The number of input samples in each input sequence.
-    window_size: 10
+    window_size: 20
 
     # target_size (int): Number of points in prediction sequence. For classification
     # cases, this number will have no effect, and the output size will always
@@ -139,17 +141,17 @@ train:
     # Classifiers:
     # - lda     (linear discriminant analysis) 
     # - qda     (quadratic discriminant analysis)
-    learning_method: xgboost
+    learning_method: cnn
 
     # n_epochs (int): Number of epochs to perform during training. If
     # early_stopping is set to True, training may be stopped before n_epochs is
     # reached.
-    n_epochs: 5
+    n_epochs: 10
 
-    batch_size: 128
+    batch_size: 512
     
     # kernel_size: Only applicable for CNN
-    kernel_size: 4
+    kernel_size: 5
 
     # early_stopping: Stop training if validation loss does not improve after
     # [patience] number of epochs.

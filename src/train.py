@@ -90,7 +90,7 @@ def train(filepath):
     # Build model
     if learning_method == "cnn":
         hist_size = X_train.shape[-2]
-        model = nn.cnn1(hist_size, n_features, output_length=output_length,
+        model = nn.cnn(hist_size, n_features, output_length=output_length,
                 kernel_size=params["kernel_size"],
                 output_activation=output_activation, loss=loss, metrics=metrics
         )

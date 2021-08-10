@@ -230,7 +230,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         print("MSE: {}".format(mse))
         print("R2: {}".format(r2))
 
-        plot_prediction(y_test, y_pred, inputs=X_test, info="(R2: {})".format(r2))
+        plot_prediction(y_test, y_pred, inputs=None, info="(R2: {})".format(r2))
 
         # Only plot predicted sequences if the output samples are sequences.
         if len(y_test.shape) > 1 and y_test.shape[1] > 1:

@@ -42,21 +42,21 @@ def cnn(input_x, input_y,
     model = models.Sequential()
     model.add(
         layers.Conv1D(
-            filters=128,
+            filters=32,
             kernel_size=kernel_size,
             activation="relu",
             input_shape=(input_x, input_y),
             name="input_layer"
         )
     )
-    model.add(layers.MaxPooling1D(pool_size=4, name="pool_1"))
-    model.add(layers.Conv1D(filters=64, kernel_size=kernel_size,
+    # model.add(layers.MaxPooling1D(pool_size=4, name="pool_1"))
+    model.add(layers.Conv1D(filters=16, kernel_size=kernel_size,
         activation="relu", name="conv1d_2"))
-    model.add(layers.MaxPooling1D(pool_size=4, name="pool_2"))
-    model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
-        activation="relu", name="conv1d_3"))
+    # model.add(layers.MaxPooling1D(pool_size=4, name="pool_2"))
+    # model.add(layers.Conv1D(filters=32, kernel_size=kernel_size,
+        # activation="relu", name="conv1d_3"))
     model.add(layers.Flatten(name="flatten"))
-    model.add(layers.Dense(64, activation="relu", name="dense_2"))
+    # model.add(layers.Dense(64, activation="relu", name="dense_2"))
     model.add(layers.Dense(32, activation="relu", name="dense_3"))
     model.add(layers.Dense(output_length, activation=output_activation,
         name="output_layer"))
