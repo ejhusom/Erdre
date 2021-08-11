@@ -13,7 +13,7 @@ from preprocess_utils import find_files
 
 def profile(dir_path):
     """Creates a profile report of a data set.
-    
+
     Reads data from a set of input files, and creates a report containing
     profiling of the data. This profiling consists of various statistical
     properties. The report is stored in two formats:
@@ -28,7 +28,7 @@ def profile(dir_path):
 
     dataset = yaml.safe_load(open("params.yaml"))["profile"]["dataset"]
     """Name of data set, which must be the name of subfolder of
-    'assets/data/raw', in where to look for data.""" 
+    'assets/data/raw', in where to look for data."""
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
@@ -46,11 +46,11 @@ def profile(dir_path):
 
     # Generate report.
     profile = ProfileReport(
-            combined_df, 
-            title="Profiling Analysis", 
-            config_file="src/profile.yaml", 
-            lazy=False,
-            sort=None
+        combined_df,
+        title="Profiling Analysis",
+        config_file="src/profile.yaml",
+        lazy=False,
+        sort=None,
     )
 
     # Create folder for profiling report
@@ -61,6 +61,6 @@ def profile(dir_path):
     profile.to_file(PROFILE_PATH / "profile.json")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     profile(sys.argv[1])

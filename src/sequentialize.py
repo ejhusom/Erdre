@@ -20,8 +20,12 @@ import pandas as pd
 import yaml
 
 from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH, NON_DL_METHODS
-from preprocess_utils import (find_files, flatten_sequentialized, read_csv,
-                              split_sequences)
+from preprocess_utils import (
+    find_files,
+    flatten_sequentialized,
+    read_csv,
+    split_sequences,
+)
 
 
 def sequentialize(dir_path):
@@ -42,7 +46,7 @@ def sequentialize(dir_path):
         target_size = params["target_size"]
 
     output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
     ).reshape(-1)
 
     n_output_cols = len(output_columns)
@@ -58,8 +62,9 @@ def sequentialize(dir_path):
         data = np.hstack((y, X))
 
         # Split into sequences
-        X, y = split_sequences(data, window_size, target_size=target_size,
-                n_target_columns=n_output_cols)
+        X, y = split_sequences(
+            data, window_size, target_size=target_size, n_target_columns=n_output_cols
+        )
 
         if learning_method == "dnn" or learning_method in NON_DL_METHODS:
             X = flatten_sequentialized(X)
@@ -69,15 +74,10 @@ def sequentialize(dir_path):
             X = np.take(X, permutation, axis=0)
             y = np.take(y, permutation, axis=0)
 
-
         # Save X and y into a binary file
         np.savez(
             DATA_SEQUENTIALIZED_PATH
-            / (
-                os.path.basename(filepath).replace(
-                    "scaled.npz", "sequentialized.npz"
-                )
-            ),
+            / (os.path.basename(filepath).replace("scaled.npz", "sequentialized.npz")),
             X=X,
             y=y,
         )

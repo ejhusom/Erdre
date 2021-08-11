@@ -46,11 +46,10 @@ def featurize(dir_path):
     DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
     output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0,
-                dtype=str)
+        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0, dtype=str)
     ).reshape(-1)
 
-    #===============================================
+    # ===============================================
     # TODO: Automatic encoding of categorical input variables
     # Read all data to fit one-hot encoder
     dfs = []
@@ -58,7 +57,7 @@ def featurize(dir_path):
     for filepath in filepaths:
         df = pd.read_csv(filepath, index_col=0)
         dfs.append(df)
-        
+
     combined_df = pd.concat(dfs, ignore_index=True)
 
     # ct = ColumnTransformer([('encoder', OneHotEncoder(), [38])],
@@ -70,9 +69,9 @@ def featurize(dir_path):
 
     # Remove target and variables that was removed in the cleaning process
     categorical_variables = [
-            var for var in categorical_variables if 
-                var in combined_df.columns and
-                var != target
+        var
+        for var in categorical_variables
+        if var in combined_df.columns and var != target
     ]
 
     print(combined_df)
@@ -80,8 +79,7 @@ def featurize(dir_path):
     print(combined_df[categorical_variables])
 
     column_transformer = ColumnTransformer(
-            [('encoder', OneHotEncoder(), categorical_variables)],
-            remainder='passthrough'
+        [("encoder", OneHotEncoder(), categorical_variables)], remainder="passthrough"
     )
 
     # combined_df = column_transformer.fit_transform(combined_df)
@@ -92,8 +90,7 @@ def featurize(dir_path):
 
     # categorical_encoder = OneHotEncoder()
     # categorical_encoder.fit(combined_df)
-    #===============================================
-
+    # ===============================================
 
     for filepath in filepaths:
 
@@ -106,7 +103,7 @@ def featurize(dir_path):
 
         # If no features are specified, use all columns as features
         # TODO: Maybe not the most robust way to test this
-        if type(params["features"]) != list:  
+        if type(params["features"]) != list:
             features = df.columns
 
         # Check if wanted features from params.yaml exists in the data
@@ -120,13 +117,15 @@ def featurize(dir_path):
             # should not be a part of the input.
             if (col not in features) and (col not in output_columns):
                 del df[col]
-            
+
             # Remove feature if it is non-numeric
             elif not is_numeric_dtype(df[col]):
                 del df[col]
 
         if add_rolling_features:
-            df = compute_rolling_features(df, rolling_window_size, ignore_columns=output_columns)
+            df = compute_rolling_features(
+                df, rolling_window_size, ignore_columns=output_columns
+            )
 
         if type(remove_features) is list:
             for col in remove_features:
@@ -138,14 +137,15 @@ def featurize(dir_path):
         #     / (os.path.basename(filepath).replace(".", "-featurized."))
         # )
         np.save(
-            DATA_FEATURIZED_PATH /
-            os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
-            df.to_numpy()
+            DATA_FEATURIZED_PATH
+            / os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
+            df.to_numpy(),
         )
 
     # Save list of features used
     input_columns = [col for col in df.columns if col not in output_columns]
     pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
+
 
 def compute_rolling_features(df, window_size, ignore_columns=None):
     """
@@ -191,7 +191,8 @@ def compute_rolling_features(df, window_size, ignore_columns=None):
         df[f"{col}_peak_frequency"] = calculate_peak_frequency(df[col])
 
     df = df.dropna()
-    return df 
+    return df
+
 
 def calculate_peak_frequency(series, rolling_mean_window=200):
 
@@ -216,6 +217,7 @@ def calculate_peak_frequency(series, rolling_mean_window=200):
     freq = pd.Series(freq).rolling(rolling_mean_window).mean()
 
     return freq
+
 
 def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
     """Calculate slope.
@@ -244,6 +246,7 @@ def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
     slope = slope.rolling(rolling_mean_window).mean()
 
     return slope
+
 
 # def filter_inputs_by_correlation():
 #     """Filter the input features based on the correlation between the features
@@ -301,6 +304,7 @@ def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
 
 #     return removable_variables
 
+
 def find_categorical_variables():
     """Find categorical variables based on profiling report.
 
@@ -326,7 +330,6 @@ def find_categorical_variables():
         except:
             pass
 
-
     # categorical_variables = list(set(categorical_variables))
 
     # if target in categorical_variables:
@@ -341,4 +344,3 @@ if __name__ == "__main__":
     np.random.seed(2020)
 
     featurize(sys.argv[1])
-

@@ -27,9 +27,6 @@ from utils import *
 # plt.rcParams['figure.dpi'] = 300
 
 
-
-
-
 def read_csv(filename, delete_columns=[], verbose=False):
     """Read csv file, and make proper adjustment to the resulting dataframe.
 
@@ -63,6 +60,7 @@ def read_csv(filename, delete_columns=[], verbose=False):
 
     return df, index
 
+
 def find_files(dir_path, file_extension=""):
     """Find files in directory.
 
@@ -84,6 +82,7 @@ def find_files(dir_path, file_extension=""):
 
     return filepaths
 
+
 def print_dataframe(df, message=""):
     """Print dataframe to terminal, with boundary and message.
 
@@ -97,6 +96,7 @@ def print_dataframe(df, message=""):
 
     print(message)
     print(df)
+
 
 def move_column(df, column_name, new_idx):
     """
@@ -117,6 +117,7 @@ def move_column(df, column_name, new_idx):
     reordered_columns.insert(0, reordered_columns.pop(old_idx))
 
     return df[reordered_columns]
+
 
 def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
     """Split data sequence into samples with matching input and targets.
@@ -148,24 +149,25 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
         # check if we are beyond the dataset
         if end_ix > len(sequences):
             break
-       
+
         # Select all cols from sequences except target col, which leaves inputs
         seq_x = sequences[i:end_ix, n_target_columns:]
 
         # Extract targets from sequences
         if n_target_columns > 1:
-            seq_y = sequences[target_start_ix: end_ix, 0:n_target_columns]
+            seq_y = sequences[target_start_ix:end_ix, 0:n_target_columns]
             seq_y = seq_y.reshape(-1)
         else:
-            seq_y = sequences[target_start_ix: end_ix, 0]
+            seq_y = sequences[target_start_ix:end_ix, 0]
 
         X.append(seq_x)
         y.append(seq_y)
 
     X = np.array(X)
     y = np.array(y)
-    
+
     return X, y
+
 
 def flatten_sequentialized(X):
     """Flatten sequentialized data.
@@ -178,9 +180,10 @@ def flatten_sequentialized(X):
 
     """
 
-    X_flat = X.reshape(X.shape[0], X.shape[1]*X.shape[2])
+    X_flat = X.reshape(X.shape[0], X.shape[1] * X.shape[2])
 
     return X_flat
+
 
 def merge_time_series_and_added_features(X):
     """
@@ -219,6 +222,7 @@ def merge_time_series_and_added_features(X):
     else:
         raise TypeError("X must be a list of two elements.")
 
+
 def scale_data(train_data, val_data, scaler_type="minmax"):
     """Scale train and test data.
 
@@ -250,6 +254,7 @@ def scale_data(train_data, val_data, scaler_type="minmax"):
     val_data = scaler.transform(val_data)
 
     return train_data, val_data, scaler
+
 
 def split_time_series_and_added_features(X, input_columns, added_features):
     """

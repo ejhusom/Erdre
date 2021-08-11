@@ -56,30 +56,28 @@ def split(dir_path):
         data_calibrate = None
 
         if params["calibrate_split"] == 0:
-            data_train = data[:train_size,:]
-            data_test = data[train_size:,:]
+            data_train = data[:train_size, :]
+            data_test = data[train_size:, :]
         else:
-            data_train = data[:train_size,:]
-            data_calibrate = data[train_size:train_size + calibrate_size,:]
-            data_test = data[train_size + calibrate_size:,:]
+            data_train = data[:train_size, :]
+            data_calibrate = data[train_size : train_size + calibrate_size, :]
+            data_test = data[train_size + calibrate_size :, :]
 
-        np.save( 
-            DATA_SPLIT_PATH /
-            os.path.basename(filepath).replace("featurized", "train"),
-            data_train
+        np.save(
+            DATA_SPLIT_PATH / os.path.basename(filepath).replace("featurized", "train"),
+            data_train,
         )
 
-        np.save( 
-            DATA_SPLIT_PATH /
-            os.path.basename(filepath).replace("featurized", "test"),
-            data_test
+        np.save(
+            DATA_SPLIT_PATH / os.path.basename(filepath).replace("featurized", "test"),
+            data_test,
         )
 
         if params["calibrate_split"] != 0:
-            np.save( 
-                DATA_SPLIT_PATH /
-                os.path.basename(filepath).replace("featurized", "calibrate"),
-                data_calibrate
+            np.save(
+                DATA_SPLIT_PATH
+                / os.path.basename(filepath).replace("featurized", "calibrate"),
+                data_calibrate,
             )
 
     else:
@@ -100,31 +98,30 @@ def split(dir_path):
             test_files = filepaths[file_split:]
         else:
             training_files = filepaths[:file_split]
-            calibrate_files = filepaths[file_split:file_split + file_split_calibrate]
-            test_files = filepaths[file_split + file_split_calibrate:]
+            calibrate_files = filepaths[file_split : file_split + file_split_calibrate]
+            test_files = filepaths[file_split + file_split_calibrate :]
 
         for filepath in filepaths:
 
             if filepath in training_files:
                 shutil.copyfile(
                     filepath,
-                    DATA_SPLIT_PATH /
-                    os.path.basename(filepath).replace("featurized", "train")
+                    DATA_SPLIT_PATH
+                    / os.path.basename(filepath).replace("featurized", "train"),
                 )
 
             elif filepath in test_files:
                 shutil.copyfile(
                     filepath,
-                    DATA_SPLIT_PATH /
-                    os.path.basename(filepath).replace("featurized", "test")
+                    DATA_SPLIT_PATH
+                    / os.path.basename(filepath).replace("featurized", "test"),
                 )
             elif filepath in calibrate_files:
                 shutil.copyfile(
                     filepath,
-                    DATA_SPLIT_PATH /
-                    os.path.basename(filepath).replace("featurized", "calibrate")
+                    DATA_SPLIT_PATH
+                    / os.path.basename(filepath).replace("featurized", "calibrate"),
                 )
-
 
 
 if __name__ == "__main__":
@@ -132,4 +129,3 @@ if __name__ == "__main__":
     np.random.seed(2029)
 
     split(sys.argv[1])
-

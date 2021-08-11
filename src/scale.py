@@ -41,8 +41,10 @@ def scale(dir_path):
     input_method = params["input"]
     output_method = params["output"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
-    onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"]["onehot_encode_target"]
-    
+    onehot_encode_target = yaml.safe_load(open("params.yaml"))["clean"][
+        "onehot_encode_target"
+    ]
+
     if input_method == "standard":
         scaler = StandardScaler()
     elif input_method == "minmax":
@@ -71,7 +73,7 @@ def scale(dir_path):
     data_overview = {}
 
     output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
     ).reshape(-1)
 
     n_output_cols = len(output_columns)
@@ -101,7 +103,7 @@ def scale(dir_path):
             category = "test"
         elif "calibrate" in filepath:
             category = "calibrate"
-            
+
         data_overview[filepath] = {"X": X, "y": y, "category": category}
 
     X_train = np.concatenate(train_inputs)
@@ -117,7 +119,7 @@ def scale(dir_path):
 
         # Scale inputs
         if input_method == None:
-            X=data_overview[filepath]["X"]
+            X = data_overview[filepath]["X"]
         else:
             X = scaler.transform(data_overview[filepath]["X"])
 
@@ -132,17 +134,17 @@ def scale(dir_path):
             DATA_SCALED_PATH
             / (
                 os.path.basename(filepath).replace(
-                    data_overview[filepath]["category"] + ".npy", 
-                    data_overview[filepath]["category"] + "-scaled.npz"
+                    data_overview[filepath]["category"] + ".npy",
+                    data_overview[filepath]["category"] + "-scaled.npz",
                 )
             ),
-            X = X, 
-            y = y
+            X=X,
+            y=y,
         )
+
 
 if __name__ == "__main__":
 
     np.random.seed(2020)
 
     scale(sys.argv[1])
-

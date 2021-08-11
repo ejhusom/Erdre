@@ -39,7 +39,7 @@ def combine(dir_path):
 
     for filepath in filepaths:
         infile = np.load(filepath)
-        
+
         if "train" in filepath:
             train_inputs.append(infile["X"])
             train_outputs.append(infile["y"])

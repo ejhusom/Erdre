@@ -22,16 +22,14 @@ from preprocess_utils import find_files, move_column
 
 
 def segment(dir_path):
-    """Create segments of time series.
-
-    """
+    """Create segments of time series."""
 
     target = yaml.safe_load(open("params.yaml"))["clean"]["target"]
 
     filepaths = find_files(dir_path, file_extension=".csv")
 
     output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
     ).reshape(-1)
 
     dfs = []
@@ -49,12 +47,12 @@ def segment(dir_path):
     n_rows = len(combined_df)
     segment_size = 100
     n_segments = int(n_rows / segment_size)
-    ids = np.arange(1, n_segments+1, 1)
+    ids = np.arange(1, n_segments + 1, 1)
 
     idlist = np.ones(segment_size)
 
     for i in ids[1:]:
-        idlist = np.concatenate((idlist, np.ones(segment_size)*i))
+        idlist = np.concatenate((idlist, np.ones(segment_size) * i))
 
     idlist = np.array(idlist, dtype=np.int32)
 
@@ -87,10 +85,13 @@ def segment(dir_path):
 
     # print(features_filtered_direct)
 
+
 def try_cesium(df):
 
     from cesium import featurize
-    features_to_use = ["amplitude",
+
+    features_to_use = [
+        "amplitude",
         "percent_beyond_1_std",
         "maximum",
         "max_slope",
@@ -100,14 +101,17 @@ def try_cesium(df):
         "minimum",
         "skew",
         "std",
-        "weighted_average"]
-    fset_cesium = featurize.featurize_time_series(times=eeg["times"],
+        "weighted_average",
+    ]
+    fset_cesium = featurize.featurize_time_series(
+        times=eeg["times"],
         values=eeg["measurements"],
         errors=None,
-        features_to_use=features_to_use)
+        features_to_use=features_to_use,
+    )
     print(fset_cesium.head())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     segment(sys.argv[1])
