@@ -359,10 +359,8 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
 
     if len(y_true.shape) > 1:
         y_true = y_true[:, -1].reshape(-1)
+    if len(y_pred.shape) > 1:
         y_pred = y_pred[:, -1].reshape(-1)
-    else:
-        y = y_true
-        y = y_pred
 
     fig.add_trace(
         go.Scatter(x=x, y=y_true, name="true"),

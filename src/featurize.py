@@ -33,12 +33,14 @@ def featurize(dir_path):
     """
 
     # Load parameters
-    params = yaml.safe_load(open("params.yaml"))["featurize"]
-    features = params["features"]
-    remove_features = params["remove_features"]
-    add_rolling_features = params["add_rolling_features"]
-    rolling_window_size = params["rolling_window_size"]
-    target = yaml.safe_load(open("params.yaml"))["clean"]["target"]
+    with open("params.yaml", "r") as params_file:
+        params = yaml.safe_load(params_file)
+
+    features = params["featurize"]["features"]
+    remove_features = params["featurize"]["remove_features"]
+    add_rolling_features = params["featurize"]["add_rolling_features"]
+    rolling_window_size = params["featurize"]["rolling_window_size"]
+    target = params["clean"]["target"]
 
     filepaths = find_files(dir_path, file_extension=".csv")
 
@@ -101,8 +103,7 @@ def featurize(dir_path):
             df = move_column(df, column_name=col, new_idx=0)
 
         # If no features are specified, use all columns as features
-        # TODO: Maybe not the most robust way to test this
-        if not isistance(params["features"], list)
+        if not isinstance(features, list):
             features = df.columns
 
         # Check if wanted features from params.yaml exists in the data
