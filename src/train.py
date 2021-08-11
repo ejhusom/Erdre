@@ -13,26 +13,27 @@ Created:
 import sys
 import time
 
-from joblib import dump, load
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+import xgboost as xgb
+import yaml
+from joblib import dump, load
+from sklearn.discriminant_analysis import (LinearDiscriminantAnalysis,
+                                           QuadraticDiscriminantAnalysis)
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
+                             roc_auc_score)
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.svm import SVC, SVR
-from tensorflow.keras.utils import plot_model
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import yaml
-import xgboost as xgb
+from tensorflow.keras.utils import plot_model
 
-from config import DATA_PATH, MODELS_PATH, MODELS_FILE_PATH, TRAININGLOSS_PLOT_PATH
-from config import PLOTS_PATH, NON_DL_METHODS
 import neural_networks as nn
+from config import (DATA_PATH, MODELS_FILE_PATH, MODELS_PATH, NON_DL_METHODS,
+                    PLOTS_PATH, TRAININGLOSS_PLOT_PATH)
+
 
 def train(filepath):
     """Train model to estimate power.

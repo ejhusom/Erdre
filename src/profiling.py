@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os 
+import os
 import sys
 
 import pandas as pd
-from pandas_profiling import ProfileReport
 import yaml
+from pandas_profiling import ProfileReport
 
 from config import PROFILE_PATH
 from preprocess_utils import find_files
+
 
 def profile(dir_path):
     """Creates a profile report of a data set.

@@ -9,10 +9,9 @@ Date:
     2020-09-16
 
 """
-from tensorflow.keras import layers
-from tensorflow.keras import models
-from tensorflow.keras import optimizers
+from tensorflow.keras import layers, models, optimizers
 from tensorflow.random import set_seed
+
 
 def cnn(input_x, input_y, 
         output_length=1, 

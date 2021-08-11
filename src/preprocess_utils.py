@@ -7,25 +7,27 @@
 # Description:
 # Utilities for data preprocessing.
 # ============================================================================
+import datetime
 import glob
 import os
+import pickle
 import shutil
+import string
 import sys
+import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
+
+from utils import *
 
 # plt.rcParams['figure.figsize'] = [5.0, 3.0]
 # plt.rcParams['figure.dpi'] = 300
 
-import datetime
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import pickle
-import string
-import time
 
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 
-from utils import *
 
 
 def read_csv(filename, delete_columns=[], verbose=False):

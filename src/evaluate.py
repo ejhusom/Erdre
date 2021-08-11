@@ -14,31 +14,28 @@ import os
 import shutil
 import sys
 
-from joblib import dump, load
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import seaborn as sn
 import shap
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
-from sklearn.base import RegressorMixin
-from sklearn.neighbors import KNeighborsRegressor
-from tensorflow.keras import metrics
-from tensorflow.keras import models
 import yaml
-
-from nonconformist.cp import IcpRegressor
-from nonconformist.nc import NcFactory, AbsErrorErrFunc
+from joblib import dump, load
 from nonconformist.base import RegressorAdapter
-from nonconformist.nc import RegressorNc
+from nonconformist.cp import IcpRegressor
+from nonconformist.nc import AbsErrorErrFunc, NcFactory, RegressorNc
+from plotly.subplots import make_subplots
+from sklearn.base import RegressorMixin
+from sklearn.metrics import (accuracy_score, confusion_matrix,
+                             mean_squared_error, r2_score)
+from sklearn.neighbors import KNeighborsRegressor
+from tensorflow.keras import metrics, models
 
-from config import METRICS_FILE_PATH, PREDICTIONS_PATH, PREDICTIONS_FILE_PATH
-from config import PLOTS_PATH, PREDICTION_PLOT_PATH, DATA_PATH
-from config import INTERVALS_PLOT_PATH,  NON_DL_METHODS
 import neural_networks as nn
+from config import (DATA_PATH, INTERVALS_PLOT_PATH, METRICS_FILE_PATH,
+                    NON_DL_METHODS, PLOTS_PATH, PREDICTION_PLOT_PATH,
+                    PREDICTIONS_FILE_PATH, PREDICTIONS_PATH)
 
 
 # class ConformalPredictionModel(RegressorMixin):

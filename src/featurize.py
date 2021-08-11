@@ -8,21 +8,21 @@ Date:
     2020-09-16
 
 """
+import json
 import os
 import sys
 
-import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import yaml
 from pandas.api.types import is_numeric_dtype
 from scipy.signal import find_peaks
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
-import yaml
 
 from config import DATA_FEATURIZED_PATH, DATA_PATH, PROFILE_PATH
-from preprocess_utils import move_column, find_files
+from preprocess_utils import find_files, move_column
 
 
 def featurize(dir_path):

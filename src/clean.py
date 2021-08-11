@@ -11,20 +11,20 @@ Created:
     2021-06-30
 
 """
+import json
 import os
 import sys
 
-import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import yaml
 from pandas.api.types import is_numeric_dtype
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 from sklearn.utils import shuffle
-import yaml
 
-from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH, NON_DL_METHODS
-from preprocess_utils import move_column, find_files
+from config import DATA_CLEANED_PATH, DATA_PATH, NON_DL_METHODS, PROFILE_PATH
+from preprocess_utils import find_files, move_column
 from profiling import profile
 
 

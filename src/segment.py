@@ -13,12 +13,12 @@ import sys
 
 import numpy as np
 import pandas as pd
+import yaml
 from tsfresh import extract_relevant_features
 from tsfresh.utilities.dataframe_functions import roll_time_series
-import yaml
 
 from config import DATA_PATH
-from preprocess_utils import move_column, find_files
+from preprocess_utils import find_files, move_column
 
 
 def segment(dir_path):

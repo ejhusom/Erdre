@@ -18,11 +18,12 @@ import sys
 
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 import yaml
+from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 
 from config import DATA_PATH, DATA_SCALED_PATH
 from preprocess_utils import find_files, scale_data
+
 
 def scale(dir_path):
     """Scale training and test data.

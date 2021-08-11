@@ -20,8 +20,8 @@ import pandas as pd
 import yaml
 
 from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH, NON_DL_METHODS
-from preprocess_utils import flatten_sequentialized, read_csv
-from preprocess_utils import find_files, split_sequences
+from preprocess_utils import (find_files, flatten_sequentialized, read_csv,
+                              split_sequences)
 
 
 def sequentialize(dir_path):
