@@ -9,15 +9,16 @@ Created:
     2021-08-11
 
 """
+import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import unittest
+from pathlib import Path
 
-import json
 import pandas as pd
 import yaml
+
 
 class TestCNCMilling(unittest.TestCase):
     """Test ML pipeline using the CNC Milling Tool Wear data set.
@@ -31,10 +32,10 @@ class TestCNCMilling(unittest.TestCase):
         """Test pipeline on CNC milling data with classification and CNN."""
 
         experiment = RunExperiment(
-                target="tool_condition",
-                classification=True,
-                onehot_encode_target=False,
-                learning_method="cnn"
+            target="tool_condition",
+            classification=True,
+            onehot_encode_target=False,
+            learning_method="cnn",
         )
 
         accuracy = experiment.run()
@@ -45,10 +46,10 @@ class TestCNCMilling(unittest.TestCase):
         """Test pipeline on CNC milling data with classification and XGBoost."""
 
         experiment = RunExperiment(
-                target="tool_condition",
-                classification=True, 
-                onehot_encode_target=False,
-                learning_method="cnn"
+            target="tool_condition",
+            classification=True,
+            onehot_encode_target=False,
+            learning_method="cnn",
         )
 
         accuracy = experiment.run()
@@ -59,31 +60,30 @@ class TestCNCMilling(unittest.TestCase):
         """Test pipeline on CNC milling data with regression and CNN."""
 
         experiment = RunExperiment(
-                target="X1_ActualPosition",
-                classification=False,
-                onehot_encode_target=False,
-                learning_method="cnn"
+            target="X1_ActualPosition",
+            classification=False,
+            onehot_encode_target=False,
+            learning_method="cnn",
         )
 
         r2_score = experiment.run()
 
         assert r2_score > 0.8
 
-class RunExperiment():
 
+class RunExperiment:
     def __init__(
-            self,
-            target,
-            classification=False,
-            onehot_encode_target=False,
-            learning_method="cnn"
-        ):
+        self,
+        target,
+        classification=False,
+        onehot_encode_target=False,
+        learning_method="cnn",
+    ):
 
         self.target = target
         self.learning_method = learning_method
         self.classification = classification
         self.onehot_encode_target = onehot_encode_target
-
 
     def run(self):
         """Run ML pipeline for test case.
@@ -111,7 +111,6 @@ class RunExperiment():
             metric = metrics["r2"]
 
         return metric
-
 
     def create_params_file(self):
         """Create parameter file for test cases."""
@@ -175,7 +174,7 @@ evaluate:
         with open("../params.yaml", "w") as outfile:
             yaml.dump(params, outfile)
 
-    
+
 def prepare_dataset():
     """Download data set and place it in correct folder.
 
@@ -211,8 +210,6 @@ def restore_params_file():
     shutil.move("../params.yaml.bak", "../params.yaml")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     unittest.main()
-
-
