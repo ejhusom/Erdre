@@ -14,7 +14,8 @@ clean:
     # target: Machining_Process
     # target: tool_condition
     # target: M1_CURRENT_PROGRAM_NUMBER
-    target: Axis_X_True_Power
+    # target: Axis_X_True_Power
+    target: Axis_X_Position_Diff
     
     # classification: Indicates if we are dealing with a classification case
     # (if False, a regression model will be produced).
@@ -77,6 +78,10 @@ featurize:
     remove_features:
         # - feature1
         # - feature2
+        - Axis_Y_Position_Diff
+        - Axis_Z_Position_Diff
+        - Axis_B_Position_Diff
+        - Abs_Sum_Position_Diff
 
     # target_min_correlation_threshold: Minimum correlation between target and
     # an input feature to include the feature in the model. If set to 0.0, no
@@ -119,7 +124,7 @@ sequentialize:
     # cases, this number will have no effect, and the output size will always
     # be 1. Currently, a target_size greater than 1 is not supported if
     # calibrate_split > 0.
-    target_size: 1
+    target_size: 10
     
     # shuffle_samples (bool): Shuffle samples in data set. If
     # clean.combines_files is set to False, samples will not be shuffled across

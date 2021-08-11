@@ -4,10 +4,10 @@
 
 TODO: Remove features with high correlation
 
-Author:   
+Author:
     Erik Johannes Husom
 
-Created:  
+Created:
     2021-06-30
 
 """
@@ -27,6 +27,7 @@ from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH, NON_DL_METHODS
 from preprocess_utils import move_column, find_files
 from profiling import profile
 
+
 def clean(dir_path):
     """Clean up inputs.
 
@@ -38,7 +39,7 @@ def clean(dir_path):
     # Load parameters
     dataset = yaml.safe_load(open("params.yaml"))["profile"]["dataset"]
     """Name of data set, which must be the name of subfolder of
-    'assets/data/raw', in where to look for data.""" 
+    'assets/data/raw', in where to look for data."""
 
     params = yaml.safe_load(open("params.yaml"))
     combine_files = params["clean"]["combine_files"]
@@ -48,7 +49,7 @@ def clean(dir_path):
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
-    if dataset != None:
+    if dataset is not None:
         dir_path += "/" + dataset
 
     filepaths = find_files(dir_path, file_extension=".csv")
@@ -66,16 +67,16 @@ def clean(dir_path):
         df = pd.read_csv(filepath)
 
         # If the first column is an index column, remove it.
-        if df.iloc[:,0].is_monotonic:
-            df = df.iloc[:,1:]
+        if df.iloc[:, 0].is_monotonic:
+            df = df.iloc[:, 1:]
 
         for c in removable_variables:
             del df[c]
-        
+
         df.dropna(inplace=True)
 
         dfs.append(df)
-        
+
     combined_df = pd.concat(dfs, ignore_index=True)
 
     if classification:
@@ -114,6 +115,7 @@ def clean(dir_path):
 
     pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
 
+
 def encode_target(encoder, df, target):
     """Encode a target variable based on a fitted encoder.
 
@@ -135,11 +137,11 @@ def encode_target(encoder, df, target):
     target_encoded = encoder.transform(target_col)
 
     del df[target]
-    
+
     if len(target_encoded.shape) > 1:
         for i in range(target_encoded.shape[-1]):
             column_name = f"{target}_{i}"
-            df[column_name] = target_encoded[:,i]
+            df[column_name] = target_encoded[:, i]
             output_columns.append(column_name)
     else:
         df[target] = target_encoded
@@ -211,9 +213,7 @@ def parse_profile_warnings():
 
     return removable_variables
 
+
 if __name__ == "__main__":
 
-    np.random.seed(2020)
-
     clean(sys.argv[1])
-
