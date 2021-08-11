@@ -3,22 +3,21 @@
 """Train deep learning model to estimate power from breathing data.
 
 
-Author:   
+Author:
     Erik Johannes Husom
 
-Created:  
+Created:
     2020-09-16  
 
 """
 import sys
-import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import xgboost as xgb
 import yaml
-from joblib import dump, load
+from joblib import dump
 from sklearn.discriminant_analysis import (
     LinearDiscriminantAnalysis,
     QuadraticDiscriminantAnalysis,
@@ -69,10 +68,10 @@ def train(filepath):
     n_output_cols = len(output_columns)
 
     # Load training set
-    train = np.load(filepath)
+    train_data = np.load(filepath)
 
-    X_train = train["X"]
-    y_train = train["y"]
+    X_train = train_data["X"]
+    y_train = train_data["y"]
 
     n_features = X_train.shape[-1]
 
@@ -133,7 +132,10 @@ def train(filepath):
         else:
             model = DecisionTreeRegressor()
     elif learning_method == "rf":
-        model = RandomForestClassifier()
+        if classification:
+            model = RandomForestClassifier()
+        else:
+            model = RandomForestRegressor()
     elif learning_method == "xgboost":
         if classification:
             model = xgb.XGBClassifier()

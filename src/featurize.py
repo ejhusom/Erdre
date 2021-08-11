@@ -12,7 +12,6 @@ import json
 import os
 import sys
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml
@@ -103,7 +102,7 @@ def featurize(dir_path):
 
         # If no features are specified, use all columns as features
         # TODO: Maybe not the most robust way to test this
-        if type(params["features"]) != list:
+        if not isistance(params["features"], list)
             features = df.columns
 
         # Check if wanted features from params.yaml exists in the data
@@ -322,11 +321,11 @@ def find_categorical_variables():
 
     categorical_variables = []
 
-    for v in variables:
+    for var in variables:
 
         try:
-            n_categories = profile_json["variables"][v]["n_category"]
-            categorical_variables.append(v)
+            n_categories = profile_json["variables"][var]["n_category"]
+            categorical_variables.append(var)
         except:
             pass
 

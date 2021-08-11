@@ -51,6 +51,7 @@ def profile(dir_path):
         config_file="src/profile.yaml",
         lazy=False,
         sort=None,
+        minimal=True
     )
 
     # Create folder for profiling report

@@ -15,17 +15,13 @@ import json
 import os
 import sys
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import yaml
-from pandas.api.types import is_numeric_dtype
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder
-from sklearn.utils import shuffle
 
-from config import DATA_CLEANED_PATH, DATA_PATH, NON_DL_METHODS, PROFILE_PATH
-from preprocess_utils import find_files, move_column
-from profiling import profile
+from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
+from preprocess_utils import find_files
 
 
 def clean(dir_path):
@@ -38,9 +34,6 @@ def clean(dir_path):
 
     # Load parameters
     dataset = yaml.safe_load(open("params.yaml"))["profile"]["dataset"]
-    """Name of data set, which must be the name of subfolder of
-    'assets/data/raw', in where to look for data."""
-
     params = yaml.safe_load(open("params.yaml"))
     combine_files = params["clean"]["combine_files"]
     target = params["clean"]["target"]
@@ -70,8 +63,8 @@ def clean(dir_path):
         if df.iloc[:, 0].is_monotonic:
             df = df.iloc[:, 1:]
 
-        for c in removable_variables:
-            del df[c]
+        for column in removable_variables:
+            del df[column]
 
         df.dropna(inplace=True)
 
@@ -172,10 +165,10 @@ def parse_profile_warnings():
     percentage_zeros_threshold = params["percentage_zeros_threshold"]
     input_max_correlation_threshold = params["input_max_correlation_threshold"]
 
-    for m in messages:
-        m = m.split()
-        warning = m[0]
-        variable = m[-1]
+    for message in messages:
+        message = message.split()
+        warning = message[0]
+        variable = message[-1]
 
         if warning == "[CONSTANT]":
             removable_variables.append(variable)

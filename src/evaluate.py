@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """Evaluate deep learning model.
 
-Author:   
+Author:
     Erik Johannes Husom
 
-Created:  
+Created:
     2020-09-17
 
 
 """
 import json
-import os
 import shutil
 import sys
 
@@ -21,7 +20,7 @@ import plotly.graph_objects as go
 import seaborn as sn
 import shap
 import yaml
-from joblib import dump, load
+from joblib import load
 from nonconformist.base import RegressorAdapter
 from nonconformist.cp import IcpRegressor
 from nonconformist.nc import AbsErrorErrFunc, NcFactory, RegressorNc
@@ -44,8 +43,7 @@ from config import (
     NON_DL_METHODS,
     PLOTS_PATH,
     PREDICTION_PLOT_PATH,
-    PREDICTIONS_FILE_PATH,
-    PREDICTIONS_PATH,
+    PREDICTIONS_FILE_PATH
 )
 
 
@@ -358,7 +356,6 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
 
     x = np.linspace(0, y_true.shape[0] - 1, y_true.shape[0])
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    config = dict({"scrollZoom": True})
 
     if len(y_true.shape) > 1:
         y_true = y_true[:, -1].reshape(-1)
@@ -432,7 +429,7 @@ def plot_sequence_predictions(y_true, y_pred):
     predictions = []
 
     for i in pred_curve_idcs:
-        indeces = y_indeces[i : i + target_size]
+        indeces = y_indeces[i: i + target_size]
 
         if len(indeces) < target_size:
             break

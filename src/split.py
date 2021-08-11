@@ -14,7 +14,6 @@ import shutil
 import sys
 
 import numpy as np
-import pandas as pd
 import yaml
 
 from config import DATA_SPLIT_PATH

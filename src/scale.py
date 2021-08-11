@@ -6,10 +6,10 @@ Possible scaling methods
 TODO:
     Implement scaling when there is only one workout file.
 
-Author:   
+Author:
     Erik Johannes Husom
 
-Created:  
+Created:
     2020-09-16
 
 """
@@ -22,7 +22,7 @@ import yaml
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 
 from config import DATA_PATH, DATA_SCALED_PATH
-from preprocess_utils import find_files, scale_data
+from preprocess_utils import find_files
 
 
 def scale(dir_path):
@@ -51,7 +51,7 @@ def scale(dir_path):
         scaler = MinMaxScaler()
     elif input_method == "robust":
         scaler = RobustScaler()
-    elif input_method == None:
+    elif input_method is None:
         scaler = StandardScaler()
     else:
         raise NotImplementedError(f"{input_method} not implemented.")
@@ -62,7 +62,7 @@ def scale(dir_path):
         output_scaler = MinMaxScaler()
     elif output_method == "robust":
         output_scaler = RobustScaler()
-    elif output_method == None:
+    elif output_method is None:
         output_scaler = StandardScaler()
     else:
         raise NotImplementedError(f"{output_method} not implemented.")

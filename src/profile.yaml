@@ -86,7 +86,7 @@ correlations:
       warn_high_correlations: True
       threshold: 0.9
     spearman:
-      calculate: True
+      calculate: False
       warn_high_correlations: False
       threshold: 0.9
     kendall:
@@ -94,11 +94,11 @@ correlations:
       warn_high_correlations: False
       threshold: 0.9
     phi_k:
-      calculate: True
+      calculate: False
       warn_high_correlations: False
       threshold: 0.9
     cramers:
-      calculate: True
+      calculate: False
       warn_high_correlations: True
       threshold: 0.9
 

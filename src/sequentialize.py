@@ -23,12 +23,12 @@ from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH, NON_DL_METHODS
 from preprocess_utils import (
     find_files,
     flatten_sequentialized,
-    read_csv,
     split_sequences,
 )
 
 
 def sequentialize(dir_path):
+    """Make sequences out of tabular data."""
 
     filepaths = find_files(dir_path, file_extension=".npz")
 
