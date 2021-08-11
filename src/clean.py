@@ -85,7 +85,9 @@ def clean(dir_path):
             encoder = LabelBinarizer()
         else:
             if onehot_encode_target:
-                raise ValueError("Parameter 'onehot_encode_target' is set to True, but target is binary. Change parameter to False in order to use this pipeline.")
+                raise ValueError(
+                    "Parameter 'onehot_encode_target' is set to True, but target is binary. Change parameter to False in order to use this pipeline."
+                )
             encoder = LabelEncoder()
 
         target_col = np.array(combined_df[target]).reshape(-1)
@@ -103,8 +105,7 @@ def clean(dir_path):
 
     if combine_files:
         combined_df.to_csv(
-            DATA_CLEANED_PATH
-            / (os.path.basename(dataset + "-cleaned.csv"))
+            DATA_CLEANED_PATH / (os.path.basename(dataset + "-cleaned.csv"))
         )
     else:
         for filepath, df in zip(filepaths, dfs):
@@ -183,21 +184,26 @@ def parse_profile_warnings():
             p_zeros = profile_json["variables"][variable]["p_zeros"]
             if p_zeros > percentage_zeros_threshold:
                 removable_variables.append(variable)
-                print(f"Removed variable '{variable}' because % of zeros exceeds {percentage_zeros_threshold*100}%.")
+                print(
+                    f"Removed variable '{variable}' because % of zeros exceeds {percentage_zeros_threshold*100}%."
+                )
         if warning == "[HIGH_CORRELATION]":
             try:
                 correlation_scores = correlations[variables.index(variable)]
                 for correlated_variable in correlation_scores:
                     if (
-                        correlation_scores[correlated_variable] > input_max_correlation_threshold and
-                        variable != correlated_variable and
-                        variable != target and
-                        correlated_variable != target and
-                        variable not in removable_variables
+                        correlation_scores[correlated_variable]
+                        > input_max_correlation_threshold
+                        and variable != correlated_variable
+                        and variable != target
+                        and correlated_variable != target
+                        and variable not in removable_variables
                     ):
 
                         removable_variables.append(correlated_variable)
-                        print(f"Removed variable '{correlated_variable}' because of high correlation ({correlation_scores[correlated_variable]:.2f}) with variable '{variable}'.")
+                        print(
+                            f"Removed variable '{correlated_variable}' because of high correlation ({correlation_scores[correlated_variable]:.2f}) with variable '{variable}'."
+                        )
             except:
                 # Pandas profiling might not be able to compute correlation
                 # score for some variables, for example some categorical
