@@ -16,18 +16,23 @@ import subprocess
 import unittest
 
 import json
-import numpy as np
 import pandas as pd
 import yaml
 
 class TestCNCMilling(unittest.TestCase):
+    """Test ML pipeline using the CNC Milling Tool Wear data set.
+
+    Asserts that the accuracy / R2-score is above a certain threshold for
+    simple test cases.
+
+    """
 
     def test_cnc_milling_classification_cnn(self):
         """Test pipeline on CNC milling data with classification and CNN."""
 
         experiment = RunExperiment(
                 target="tool_condition",
-                classification=True, 
+                classification=True,
                 onehot_encode_target=False,
                 learning_method="cnn"
         )
@@ -55,7 +60,7 @@ class TestCNCMilling(unittest.TestCase):
 
         experiment = RunExperiment(
                 target="X1_ActualPosition",
-                classification=False, 
+                classification=False,
                 onehot_encode_target=False,
                 learning_method="cnn"
         )
@@ -79,15 +84,23 @@ class RunExperiment():
         self.classification = classification
         self.onehot_encode_target = onehot_encode_target
 
-    def run(self):
 
-        self.prepare_dataset()
+    def run(self):
+        """Run ML pipeline for test case.
+
+        Returns:
+            metric (float): The evaluation metric for the performance of the
+                model created using the test case.
+
+        """
+
+        prepare_dataset()
         self.create_params_file()
 
         run_experiment = subprocess.Popen(["dvc", "repro"], cwd="../")
         run_experiment.wait()
 
-        self.restore_params_file()
+        restore_params_file()
 
         with open("../assets/metrics/metrics.json", "r") as infile:
             metrics = json.load(infile)
@@ -100,30 +113,8 @@ class RunExperiment():
         return metric
 
 
-    def prepare_dataset(self):
-        dataset_name = "cnc_milling"
-        dataset_path = Path("../assets/data/raw/" + dataset_name)
-        cnc_milling_url = "https://raw.githubusercontent.com/ejhusom/cnc_milling_tool_wear/master/data/experiment_{:02d}.csv"
-        n_files = 10
-
-        dataset_present = False
-        files_missing = []
-
-        for i in range(1, n_files + 1):
-            if os.path.exists(dataset_path / "{:02d}.csv".format(i)):
-                files_missing.append(False)
-            else:
-                files_missing.append(True)
-
-        if any(files_missing):
-            print("Data set not present, downloading files...")
-            dataset_path.mkdir(parents=True, exist_ok=True)
-
-            for i in range(1, n_files + 1):
-                df = pd.read_csv(cnc_milling_url.format(i))
-                df.to_csv(dataset_path / "{:02d}.csv".format(i))
-
-    def create_params_file( self):
+    def create_params_file(self):
+        """Create parameter file for test cases."""
 
         params_string = """
 profile:
@@ -184,9 +175,40 @@ evaluate:
         with open("../params.yaml", "w") as outfile:
             yaml.dump(params, outfile)
 
-    def restore_params_file(self):
+    
+def prepare_dataset():
+    """Download data set and place it in correct folder.
 
-        shutil.move("../params.yaml.bak", "../params.yaml")
+    Will skip downloading if data set already exists in correct folder.
+
+    """
+
+    dataset_name = "cnc_milling"
+    dataset_path = Path("../assets/data/raw/" + dataset_name)
+    cnc_milling_url = "https://raw.githubusercontent.com/ejhusom/cnc_milling_tool_wear/master/data/experiment_{:02d}.csv"
+    n_files = 10
+
+    files_missing = []
+
+    for i in range(1, n_files + 1):
+        if os.path.exists(dataset_path / "{:02d}.csv".format(i)):
+            files_missing.append(False)
+        else:
+            files_missing.append(True)
+
+    if any(files_missing):
+        print("Data set not present, downloading files...")
+        dataset_path.mkdir(parents=True, exist_ok=True)
+
+        for i in range(1, n_files + 1):
+            df = pd.read_csv(cnc_milling_url.format(i))
+            df.to_csv(dataset_path / "{:02d}.csv".format(i))
+
+
+def restore_params_file():
+    """Restore original params file."""
+
+    shutil.move("../params.yaml.bak", "../params.yaml")
 
 
 if __name__ == '__main__':
