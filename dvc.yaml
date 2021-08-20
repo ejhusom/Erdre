@@ -91,6 +91,7 @@ stages:
         - sequentialize.window_size
         - sequentialize.target_size
         - sequentialize.shuffle_samples
+        - sequentialize.future_predict
         - train.learning_method
 
     combine:

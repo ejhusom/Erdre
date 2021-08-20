@@ -119,7 +119,8 @@ def move_column(df, column_name, new_idx):
     return df[reordered_columns]
 
 
-def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
+def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
+        future_predict=False):
     """Split data sequence into samples with matching input and targets.
 
     Args:
@@ -130,6 +131,9 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
         target_size (int): Size of target window. Default=1, i.e. only one
             value is used as target.
         n_target_columns: Number of target columns. Default=1.
+        future_predict (bool): Whether to predict target values backwards or
+        forward from the last time step in the input sequence. Default=False,
+        which means that the number of target values will be counted backwards.
 
     Returns:
         X (array): The input samples.
@@ -144,10 +148,16 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
         end_ix = i + window_size
 
         # find start of target window
-        target_start_ix = end_ix - target_size
+        if future_predict:
+            target_start_ix = end_ix
+            target_end_ix = end_ix + target_size
+        else:
+            target_start_ix = end_ix - target_size
+            target_end_ix = end_ix
 
         # check if we are beyond the dataset
-        if end_ix > len(sequences):
+        # if end_ix > len(sequences):
+        if target_end_ix > len(sequences):
             break
 
         # Select all cols from sequences except target col, which leaves inputs
@@ -155,10 +165,10 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1):
 
         # Extract targets from sequences
         if n_target_columns > 1:
-            seq_y = sequences[target_start_ix:end_ix, 0:n_target_columns]
+            seq_y = sequences[target_start_ix:target_end_ix, 0:n_target_columns]
             seq_y = seq_y.reshape(-1)
         else:
-            seq_y = sequences[target_start_ix:end_ix, 0]
+            seq_y = sequences[target_start_ix:target_end_ix, 0]
 
         X.append(seq_x)
         y.append(seq_y)

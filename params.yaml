@@ -1,9 +1,11 @@
 profile:
     dataset: cnc_toolwear
+    # dataset: automotive
 
 clean:
-    target: tool_condition
-    classification: True
+    target: X1_ActualPosition
+    # target: Axis_X_Position_Diff
+    classification: False
     onehot_encode_target: False
     combine_files: True
     percentage_zeros_threshold: 1.0
@@ -27,25 +29,26 @@ featurize:
     target_min_correlation_threshold: 0.0
 
 split:
-    train_split: 0.6
+    train_split: 0.7
     shuffle_files: False
     calibrate_split: 0.0
 
 scale:
-    input: standard
+    input: minmax
     output: minmax
 
 sequentialize:
     window_size: 20
-    target_size: 1
+    target_size: 20
     shuffle_samples: False
+    future_predict: False
 
 train:
-    learning_method: xgboost
-    n_epochs: 10
-    batch_size: 512
+    learning_method: cnn
+    n_epochs: 100
+    batch_size: 256
     kernel_size: 5
-    early_stopping: False
-    patience: 10
+    early_stopping: True
+    patience: 40
 
 evaluate:
