@@ -89,6 +89,7 @@ stages:
         params:
         - clean.classification
         - sequentialize.window_size
+        - sequentialize.overlap
         - sequentialize.target_size
         - sequentialize.shuffle_samples
         - sequentialize.future_predict

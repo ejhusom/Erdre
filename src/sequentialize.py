@@ -38,6 +38,7 @@ def sequentialize(dir_path):
     learning_method = yaml.safe_load(open("params.yaml"))["train"]["learning_method"]
     classification = yaml.safe_load(open("params.yaml"))["clean"]["classification"]
     future_predict = params["future_predict"]
+    overlap = params["overlap"]
 
     window_size = params["window_size"]
 
@@ -65,7 +66,8 @@ def sequentialize(dir_path):
         # Split into sequences
         X, y = split_sequences(
             data, window_size, target_size=target_size,
-            n_target_columns=n_output_cols, future_predict=future_predict
+            n_target_columns=n_output_cols, future_predict=future_predict,
+            overlap=overlap
         )
 
         if learning_method == "dnn" or learning_method in NON_DL_METHODS:

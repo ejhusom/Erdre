@@ -120,7 +120,7 @@ def move_column(df, column_name, new_idx):
 
 
 def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
-        future_predict=False):
+        future_predict=False, overlap=0):
     """Split data sequence into samples with matching input and targets.
 
     Args:
@@ -132,8 +132,13 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
             value is used as target.
         n_target_columns: Number of target columns. Default=1.
         future_predict (bool): Whether to predict target values backwards or
-        forward from the last time step in the input sequence. Default=False,
-        which means that the number of target values will be counted backwards.
+            forward from the last time step in the input sequence.
+            Default=False, which means that the number of target values will be
+            counted backwards.
+        overlap (int): How many time steps to overlap for each sequence. If
+            overlap is greater than window_size, it will be set to
+            window_size-1, which is the largest overlap possible.  Default=0,
+            which means there will be no overlap. 
 
     Returns:
         X (array): The input samples.
@@ -142,10 +147,16 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
     """
     X, y = list(), list()
 
-    for i in range(len(sequences)):
+    start_idx = 0
+
+    if overlap >= window_size:
+        overlap = window_size - 1
+
+    # for i in range(len(sequences)):
+    while start_idx + window_size <= len(sequences):
 
         # find the end of this pattern
-        end_ix = i + window_size
+        end_ix = start_idx + window_size
 
         # find start of target window
         if future_predict:
@@ -161,7 +172,7 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
             break
 
         # Select all cols from sequences except target col, which leaves inputs
-        seq_x = sequences[i:end_ix, n_target_columns:]
+        seq_x = sequences[start_idx:end_ix, n_target_columns:]
 
         # Extract targets from sequences
         if n_target_columns > 1:
@@ -172,6 +183,8 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
 
         X.append(seq_x)
         y.append(seq_y)
+
+        start_idx += window_size - overlap
 
     X = np.array(X)
     y = np.array(y)

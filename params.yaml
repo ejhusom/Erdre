@@ -38,8 +38,9 @@ scale:
     output: minmax
 
 sequentialize:
-    window_size: 20
-    target_size: 20
+    window_size: 40
+    overlap: 39
+    target_size: 10
     shuffle_samples: False
     future_predict: False
 
