@@ -1,10 +1,10 @@
 profile:
-    dataset: cnc_toolwear
-    # dataset: automotive
+    # dataset: cnc_toolwear
+    dataset: automotive
 
 clean:
-    target: X1_ActualPosition
-    # target: Axis_X_Position_Diff
+    # target: X1_ActualPosition
+    target: Axis_X_Real_Position
     classification: False
     onehot_encode_target: False
     combine_files: True
@@ -39,14 +39,14 @@ scale:
 
 sequentialize:
     window_size: 40
-    overlap: 39
+    overlap: 0
     target_size: 10
     shuffle_samples: False
     future_predict: False
 
 train:
     learning_method: cnn
-    n_epochs: 100
+    n_epochs: 50
     batch_size: 256
     kernel_size: 5
     early_stopping: True
