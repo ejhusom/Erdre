@@ -1,5 +1,7 @@
 # Quickstart
 
+[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+
 First, install Erdre and the requirements as specified here:
 [Installation](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/01_installation.md)
 
