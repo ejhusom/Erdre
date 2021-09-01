@@ -139,3 +139,5 @@ folder `assets/plots/`, and show the following data:
 
 ![Example of sequence predictions.](../../img/prediction_sequences_example.png)
 
+
+Next: [Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)

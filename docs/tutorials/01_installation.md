@@ -21,3 +21,5 @@ pip3 install numpy pandas pandas_profiling matplotlib tensorflow sklearn plotly 
 
 To get a plot of the neural network architecture, the following software needs
 to be installed: [Graphviz](https://graphviz.org/about/).
+
+Next: [Quickstart](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/02_quickstart.md)
