@@ -103,7 +103,7 @@ python3 -m dvc repro
 ```
 
 
-To run single stages of the pipeline, run:
+To run only parts of the pipeline, run:
 ```
 dvc repro [STAGE NAME]
 ```
@@ -112,7 +112,7 @@ For example:
 
 ```
 dvc repro profile     # will only run the profiling stage
-dvc repro featurize   # will only run the featurize stage
+dvc repro featurize   # will only run the stages up until and including the featurize stage
 ```
 
 
@@ -127,7 +127,7 @@ folder `assets/plots/`, and show the following data:
   all of this values are connected and plotted as a line. The features used in
   the model are also plotted.
 
-![Example of prediction.](img/prediction_example.png)
+![Example of prediction.](https://github.com/SINTEF-9012/Erdre/tree/master/img/prediction_example.png)
 
 - `prediction_sequences.html`: Individual predicted target sequences are
   plotted against the true values. The predicted sequences are shown in
@@ -135,5 +135,5 @@ folder `assets/plots/`, and show the following data:
   predicted target sequences are shown, in order to avoid overlapping and make
   the plot easier to interpret.
 
-![Example of sequence predictions.](img/prediction_sequences_example.png)
+![Example of sequence predictions.](https://github.com/SINTEF-9012/Erdre/tree/master/img/prediction_sequences_example.png)
 
