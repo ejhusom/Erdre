@@ -129,7 +129,7 @@ folder `assets/plots/`, and show the following data:
   all of this values are connected and plotted as a line. The features used in
   the model are also plotted.
 
-![Example of prediction.](https://github.com/SINTEF-9012/Erdre/tree/master/img/prediction_example.png)
+![Example of prediction.](../../img/prediction_example.png)
 
 - `prediction_sequences.html`: Individual predicted target sequences are
   plotted against the true values. The predicted sequences are shown in
@@ -137,5 +137,5 @@ folder `assets/plots/`, and show the following data:
   predicted target sequences are shown, in order to avoid overlapping and make
   the plot easier to interpret.
 
-![Example of sequence predictions.](https://github.com/SINTEF-9012/Erdre/tree/master/img/prediction_sequences_example.png)
+![Example of sequence predictions.](../../img/prediction_sequences_example.png)
 

@@ -152,7 +152,8 @@ def parse_profile_warnings():
 
     """
     params = yaml.safe_load(open("params.yaml"))["clean"]
-    correlation_metric = params["correlation_metric"]
+    correlation_metric = "pearson"
+    # correlation_metric = params["correlation_metric"]
     target = params["target"]
 
     profile_json = json.load(open(PROFILE_PATH / "profile.json"))
