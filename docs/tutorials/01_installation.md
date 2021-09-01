@@ -1,6 +1,6 @@
 ## 1. Installation
 
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+Go back to: [Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
 
 Developed using Python3.8. You can install the required modules by creating a
 virtual environment and install the `requirements.txt`-file (run these commands

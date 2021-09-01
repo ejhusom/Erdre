@@ -1,6 +1,6 @@
 # Quickstart
 
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+Go back to: [Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
 
 First, install Erdre and the requirements as specified here:
 [Installation](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/01_installation.md)
@@ -37,11 +37,11 @@ To add your data to the pipeline, you have two options:
 
 - Option A: Place the data files in the folder `assets/data/raw/`. 
 - Option B: If you want to easily swap between several data sets:
-    1. Place the files in a subfolder `assets/data/raw/[dataset]`, where
-      `dataset` is your chosen name of the data
+    1. Place the files in a subfolder `assets/data/raw/[NAME OF DATASET]`, where
+      `[NAME OF DATASET]` is your chosen name of the data.
     2. In `params.yaml`, set the parameter `dataset` to the name of your data set.
 
-Currently only .csv-files are supported.
+NB: Currently only .csv-files are supported.
 
 Example with a data set called `data01` (option B):
 
