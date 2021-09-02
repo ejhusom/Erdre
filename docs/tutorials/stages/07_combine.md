@@ -12,7 +12,5 @@
 
 
 Previous stage: [sequentialize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/06_sequentialize.md)
+
 Next stage: [train](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/08_train.md)
-
-
-

@@ -12,7 +12,5 @@
 
 
 Previous stage: [scale](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/05_scale.md)
+
 Next stage: [combine](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/07_combine.md)
-
-
-

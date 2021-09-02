@@ -9,7 +9,5 @@
 ## Processing
 
 Previous stage: [featurize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/03_featurize.md)
+
 Next stage: [scale](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/05_scale.md)
-
-
-

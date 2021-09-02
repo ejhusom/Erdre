@@ -12,7 +12,5 @@
 
 
 Previous stage: [split](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/04_split.md)
+
 Next stage: [sequentialize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/06_sequentialize.md)
-
-
-

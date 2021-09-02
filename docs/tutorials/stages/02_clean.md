@@ -63,4 +63,5 @@ During this stage, the following operations will be performed:
   variable will be encoded to a number.
 
 Previous stage: [profile](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/01_profile.md)
+
 Next stage: [featurize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/03_featurize.md)
