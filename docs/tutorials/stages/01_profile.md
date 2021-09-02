@@ -1,8 +1,7 @@
+[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+
 # Stage 1: profile
-
-Go back to: [Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
-
-Go back to: [Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
 
 The profile-stage creates a profile report of your data set. The report will
 contain information on the number of variables, number of samples, statistical

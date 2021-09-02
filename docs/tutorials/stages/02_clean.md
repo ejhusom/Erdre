@@ -1,10 +1,8 @@
+[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+
 # Stage 2: clean
 
-Go back to: [Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
-
-Go back to: [Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
-
-Previous stage: [profile](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/01_profile.md)
 
 This stage cleans the data for unwanted variables and samples, in addition to
 encoding the target variable if the case of a classification task.
@@ -63,4 +61,5 @@ During this stage, the following operations will be performed:
   `clean.classification` must be set to `True` in `params.yaml`, the target
   variable will be encoded to a number.
 
+Previous stage: [profile](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/01_profile.md)
 Next stage: [featurize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/03_featurize.md)

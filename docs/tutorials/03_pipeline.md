@@ -1,6 +1,6 @@
-# Overview of pipeline
-
 [Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+
+# Overview of pipeline
 
 Erdre is a machine learning pipeline, which consists of 9 consecutive stages.
 Read more about each stage by clicking the links below:
