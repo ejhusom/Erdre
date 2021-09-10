@@ -61,7 +61,7 @@ def read_csv(filename, delete_columns=[], verbose=False):
     return df, index
 
 
-def find_files(dir_path, file_extension=""):
+def find_files(dir_path, file_extension=[]):
     """Find files in directory.
 
     Args:
@@ -76,9 +76,14 @@ def find_files(dir_path, file_extension=""):
 
     filepaths = []
 
-    for f in sorted(os.listdir(dir_path)):
-        if f.endswith(file_extension):
-            filepaths.append(dir_path + "/" + f)
+    if type(file_extension) is not list:
+        file_extension = [file_extension]
+
+
+    for extension in file_extension:
+        for f in sorted(os.listdir(dir_path)):
+            if f.endswith(file_extension):
+                filepaths.append(dir_path + "/" + f)
 
     return filepaths
 

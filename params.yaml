@@ -4,8 +4,9 @@ profile:
 
 clean:
     # target: X1_ActualPosition
-    target: Axis_X_Real_Position
-    classification: False
+    # target: Axis_X_Real_Position
+    target: PN
+    classification: True
     onehot_encode_target: False
     combine_files: True
     percentage_zeros_threshold: 1.0
@@ -15,8 +16,10 @@ featurize:
     features:
         # - feature1
         # - feature2
-    add_rolling_features: False
-    rolling_window_size: 100
+        - TN
+        - Spindle_Torque
+    add_rolling_features: True
+    rolling_window_size: 4400
     remove_features:
         # - feature1
         # - feature2
@@ -37,14 +40,15 @@ scale:
     output: minmax
 
 sequentialize:
-    window_size: 40
+    window_size: 1
     overlap: 0
-    target_size: 10
+    target_size: 1
     shuffle_samples: False
     future_predict: False
 
 train:
-    learning_method: cnn
+    train: True
+    learning_method: xgboost
     n_epochs: 50
     batch_size: 256
     kernel_size: 5
