@@ -1,26 +1,26 @@
 profile:
-    # dataset: cnc_toolwear
-    dataset: automotive
+    dataset: cnc_toolwear
+    # dataset: automotive
 
 clean:
-    # target: X1_ActualPosition
+    target: X1_CommandPosition
     # target: Axis_X_Real_Position
-    target: PN
-    classification: True
+    # target: PN
+    classification: False
     onehot_encode_target: False
-    combine_files: True
+    combine_files: False
     percentage_zeros_threshold: 1.0
+    correlation_metric: pearson
     input_max_correlation_threshold: 1.0
 
 featurize:
     features:
         # - feature1
         # - feature2
-        - TN
-        - Spindle_Torque
     add_rolling_features: True
-    rolling_window_size: 4400
+    rolling_window_size: 200
     remove_features:
+        # - X1_ActualPosition
         # - feature1
         # - feature2
         # - Axis_Y_Position_Diff
@@ -40,19 +40,19 @@ scale:
     output: minmax
 
 sequentialize:
-    window_size: 1
-    overlap: 0
+    window_size: 100
+    overlap: 50
     target_size: 1
     shuffle_samples: False
     future_predict: False
 
 train:
     train: True
-    learning_method: xgboost
+    learning_method: cnn
     n_epochs: 50
     batch_size: 256
     kernel_size: 5
-    early_stopping: True
-    patience: 40
+    early_stopping: False
+    patience: 10
 
 evaluate:

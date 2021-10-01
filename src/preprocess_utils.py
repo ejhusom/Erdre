@@ -82,7 +82,7 @@ def find_files(dir_path, file_extension=[]):
 
     for extension in file_extension:
         for f in sorted(os.listdir(dir_path)):
-            if f.endswith(file_extension):
+            if f.endswith(extension):
                 filepaths.append(dir_path + "/" + f)
 
     return filepaths
