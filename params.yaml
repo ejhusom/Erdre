@@ -1,11 +1,11 @@
 profile:
-    dataset: cnc_toolwear
-    # dataset: automotive
+    # dataset: ideko
+    dataset: automotive
 
 clean:
-    target: X1_CommandPosition
+    # target: Accel_FFT_Acc1_range1_Amplitudes_1
     # target: Axis_X_Real_Position
-    # target: PN
+    target: Spindle_Torque
     classification: False
     onehot_encode_target: False
     combine_files: False
@@ -15,9 +15,11 @@ clean:
 
 featurize:
     features:
+        # - Accel_FFT_Acc2_range1_Amplitudes_1
+        # - Accel_FFT_Acc2_range1_Amplitudes_2
         # - feature1
         # - feature2
-    add_rolling_features: True
+    add_rolling_features: False
     rolling_window_size: 200
     remove_features:
         # - X1_ActualPosition
@@ -31,7 +33,7 @@ featurize:
     target_min_correlation_threshold: 0.0
 
 split:
-    train_split: 0.7
+    train_split: 0.5
     shuffle_files: False
     calibrate_split: 0.0
 
@@ -40,8 +42,8 @@ scale:
     output: minmax
 
 sequentialize:
-    window_size: 100
-    overlap: 50
+    window_size: 10
+    overlap: 9
     target_size: 1
     shuffle_samples: False
     future_predict: False
@@ -49,10 +51,10 @@ sequentialize:
 train:
     train: True
     learning_method: cnn
-    n_epochs: 50
+    n_epochs: 20
     batch_size: 256
-    kernel_size: 5
-    early_stopping: False
+    kernel_size: 3
+    early_stopping: True
     patience: 10
 
 evaluate:

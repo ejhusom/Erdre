@@ -14,3 +14,5 @@ Main sections:
     7.  [combine](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/07_combine.md)
     8.  [train](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/08_train.md)
     9.  [evaluate](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/09_evaluate.md)
+
+[Demo video](demo.html)
