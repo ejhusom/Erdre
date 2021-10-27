@@ -1,12 +1,9 @@
 profile:
-    # dataset: ideko
-    dataset: automotive
+    dataset: 
 
 clean:
-    # target: Accel_FFT_Acc1_range1_Amplitudes_1
-    # target: Axis_X_Real_Position
-    target: Spindle_Torque
-    classification: False
+    target: 
+    classification: True
     onehot_encode_target: False
     combine_files: False
     percentage_zeros_threshold: 1.0
@@ -15,20 +12,13 @@ clean:
 
 featurize:
     features:
-        # - Accel_FFT_Acc2_range1_Amplitudes_1
-        # - Accel_FFT_Acc2_range1_Amplitudes_2
         # - feature1
         # - feature2
     add_rolling_features: False
-    rolling_window_size: 200
+    rolling_window_size: 100
     remove_features:
-        # - X1_ActualPosition
         # - feature1
         # - feature2
-        # - Axis_Y_Position_Diff
-        # - Axis_Z_Position_Diff
-        # - Axis_B_Position_Diff
-        # - Abs_Sum_Position_Diff
 
     target_min_correlation_threshold: 0.0
 
@@ -39,11 +29,11 @@ split:
 
 scale:
     input: minmax
-    output: minmax
+    output:
 
 sequentialize:
-    window_size: 10
-    overlap: 9
+    window_size: 1
+    overlap: 0
     target_size: 1
     shuffle_samples: False
     future_predict: False
@@ -51,10 +41,10 @@ sequentialize:
 train:
     train: True
     learning_method: cnn
-    n_epochs: 20
+    n_epochs: 200
     batch_size: 256
     kernel_size: 3
     early_stopping: True
-    patience: 10
+    patience: 40
 
 evaluate:

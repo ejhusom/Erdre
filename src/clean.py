@@ -157,7 +157,13 @@ def parse_profile_warnings():
     target = params["target"]
 
     profile_json = json.load(open(PROFILE_PATH / "profile.json"))
-    messages = profile_json["messages"]
+
+    # In some versions of pandas-profiling, 'messages' are called 'alerts'.
+    try:
+        messages = profile_json["messages"]
+    except:
+        messages = profile_json["alerts"]
+
     variables = list(profile_json["variables"].keys())
     correlations = profile_json["correlations"]["pearson"]
 
