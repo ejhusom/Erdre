@@ -19,11 +19,16 @@ NON_DL_METHODS = ["dt", "rf", "xgboost", "lda", "qda", "svm"]
 
 # PATHS
 
+PARAMS_FILE_PATH = Path("./params.yaml")
+
 ASSETS_PATH = Path("./assets")
 """Path to all assets of project."""
 
 PROFILE_PATH = ASSETS_PATH / "profile"
-"""Path to profiling report."""
+"""Path to profiling reports."""
+
+PROFILE_JSON_PATH = PROFILE_PATH / "profile.json"
+"""Path to profiling report in JSON format."""
 
 DATA_PATH = ASSETS_PATH / "data"
 """Path to data."""
@@ -78,3 +83,15 @@ INTERVALS_PLOT_PATH = PLOTS_PATH / "intervals.png"
 
 TRAININGLOSS_PLOT_PATH = PLOTS_PATH / "trainingloss.png"
 """Path to file containing training loss plot."""
+
+SCALER_PATH = ASSETS_PATH / "scalers"
+"""Path to folder containing scalers."""
+
+INPUT_SCALER_PATH = SCALER_PATH / "input_scaler.scl"
+"""Path to input scaler."""
+
+OUTPUT_SCALER_PATH = SCALER_PATH / "output_scaler.scl"
+"""Path to output scaler."""
+
+FEATURE_LISTS_PATH = ASSETS_PATH / "feature_lists"
+"""PAth to files containing feature lists of input and output columns."""
