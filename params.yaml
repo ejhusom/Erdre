@@ -1,5 +1,5 @@
 profile:
-    dataset: cnc_with_target
+    dataset: cnc_milling
 
 clean:
     target: X1_ActualPosition
