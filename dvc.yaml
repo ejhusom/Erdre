@@ -71,6 +71,8 @@ stages:
         - src/config.py
         outs:
         - assets/data/scaled
+        - assets/scalers/input_scaler.z
+        - assets/scalers/output_scaler.z
         params:
         - clean.classification
         - scale.input

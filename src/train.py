@@ -236,7 +236,12 @@ def train(filepath):
 
         TRAININGLOSS_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-        print(f"Best model in epoch: {np.argmax(np.array(val_loss))}")
+        if classification:
+            best_epoch = np.argmax(np.array(val_loss))
+        else:
+            best_epoch = np.argmin(np.array(val_loss))
+
+        print(f"Best model in epoch: {best_epoch}")
 
         n_epochs = range(len(loss))
 

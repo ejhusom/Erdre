@@ -20,16 +20,16 @@ import pandas as pd
 import yaml
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 
-from config import DATA_PATH_RAW, DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
+from config import DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
 from preprocess_utils import find_files
 
 
-def clean(dir_path=DATA_PATH_RAW, inference=False):
+def clean(dir_path, save_results_to_file=True):
     """Clean up inputs.
 
     Args:
         dir_path (str): Path to directory containing files.
-        inference (bool): When creating a virtual sensor, the
+        save_results_to_file (bool): When creating a virtual sensor, the
             results should be saved to file for more efficient reruns of the
             pipeline. When running the virtual sensor, there is no need to save
             these intermediate results to file.
@@ -37,7 +37,7 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
     """
 
     # Load parameters
-    dataset_name = yaml.safe_load(open("params.yaml"))["profile"]["dataset"]
+    dataset = yaml.safe_load(open("params.yaml"))["profile"]["dataset"]
     params = yaml.safe_load(open("params.yaml"))
     combine_files = params["clean"]["combine_files"]
     target = params["clean"]["target"]
@@ -46,61 +46,15 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
-    if dataset_name is not None and not inference:
-        dir_path += "/" + dataset_name
+    if dataset is not None:
+        dir_path += "/" + dataset
 
     filepaths = find_files(dir_path, file_extension=".csv")
 
+    DATA_CLEANED_PATH.mkdir(parents=True, exist_ok=True)
+
     # Find removable variables from profiling report
     removable_variables = parse_profile_warnings()
-
-    dfs = read_data(filepaths, removable_variables)
-    combined_df = pd.concat(dfs, ignore_index=True)
-
-    if inference:
-        return combined_df
-    else:
-        if classification:
-
-            if onehot_encode_target and len(np.unique(combined_df[target])) > 2:
-                encoder = LabelBinarizer()
-            else:
-                if onehot_encode_target:
-                    raise ValueError(
-                        "Parameter 'onehot_encode_target' is set to True, but target is binary. Change parameter to False in order to use this pipeline."
-                    )
-                encoder = LabelEncoder()
-
-            target_col = np.array(combined_df[target]).reshape(-1)
-            encoder.fit(target_col)
-            # print(f"Classes: {encoder.classes_}")
-            # print(f"Encoded classes: {encoder.transform(encoder.classes_)}")
-
-            combined_df, output_columns = encode_target(encoder, combined_df, target)
-
-            for i in range(len(dfs)):
-                dfs[i], _ = encode_target(encoder, dfs[i], target)
-
-        else:
-            output_columns = [target]
-
-        DATA_CLEANED_PATH.mkdir(parents=True, exist_ok=True)
-
-        if combine_files:
-            combined_df.to_csv(
-                DATA_CLEANED_PATH / (os.path.basename("data-cleaned.csv"))
-            )
-        else:
-            for filepath, df in zip(filepaths, dfs):
-                df.to_csv(
-                    DATA_CLEANED_PATH
-                    / (os.path.basename(filepath).replace(".", "-cleaned."))
-                )
-
-        pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
-
-
-def read_data(filepaths, removable_variables):
 
     dfs = []
 
@@ -120,7 +74,44 @@ def read_data(filepaths, removable_variables):
 
         dfs.append(df)
 
-    return dfs
+    combined_df = pd.concat(dfs, ignore_index=True)
+
+    if classification:
+
+        if onehot_encode_target and len(np.unique(combined_df[target])) > 2:
+            encoder = LabelBinarizer()
+        else:
+            if onehot_encode_target:
+                raise ValueError(
+                    "Parameter 'onehot_encode_target' is set to True, but target is binary. Change parameter to False in order to use this pipeline."
+                )
+            encoder = LabelEncoder()
+
+        target_col = np.array(combined_df[target]).reshape(-1)
+        encoder.fit(target_col)
+        # print(f"Classes: {encoder.classes_}")
+        # print(f"Encoded classes: {encoder.transform(encoder.classes_)}")
+
+        combined_df, output_columns = encode_target(encoder, combined_df, target)
+
+        for i in range(len(dfs)):
+            dfs[i], _ = encode_target(encoder, dfs[i], target)
+
+    else:
+        output_columns = [target]
+
+    if combine_files:
+        combined_df.to_csv(
+            DATA_CLEANED_PATH / (os.path.basename("data-cleaned.csv"))
+        )
+    else:
+        for filepath, df in zip(filepaths, dfs):
+            df.to_csv(
+                DATA_CLEANED_PATH
+                / (os.path.basename(filepath).replace(".", "-cleaned."))
+            )
+
+    pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
 
 
 def encode_target(encoder, df, target):
@@ -236,5 +227,3 @@ def parse_profile_warnings():
 if __name__ == "__main__":
 
     clean(sys.argv[1])
-
-

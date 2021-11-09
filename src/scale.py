@@ -16,12 +16,19 @@ Created:
 import os
 import sys
 
+import joblib
 import numpy as np
 import pandas as pd
 import yaml
 from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 
-from config import DATA_PATH, DATA_SCALED_PATH
+from config import (
+    DATA_PATH,
+    DATA_SCALED_PATH,
+    SCALER_PATH,
+    INPUT_SCALER_PATH,
+    OUTPUT_SCALER_PATH,
+)
 from preprocess_utils import find_files
 
 
@@ -36,6 +43,7 @@ def scale(dir_path):
     filepaths = find_files(dir_path, file_extension=".npy")
 
     DATA_SCALED_PATH.mkdir(parents=True, exist_ok=True)
+    SCALER_PATH.mkdir(parents=True, exist_ok=True)
 
     params = yaml.safe_load(open("params.yaml"))["scale"]
     input_method = params["input"]
@@ -46,13 +54,13 @@ def scale(dir_path):
     ]
 
     if input_method == "standard":
-        scaler = StandardScaler()
+        input_scaler = StandardScaler()
     elif input_method == "minmax":
-        scaler = MinMaxScaler()
+        input_scaler = MinMaxScaler()
     elif input_method == "robust":
-        scaler = RobustScaler()
+        input_scaler = RobustScaler()
     elif input_method is None:
-        scaler = StandardScaler()
+        input_scaler = StandardScaler()
     else:
         raise NotImplementedError(f"{input_method} not implemented.")
 
@@ -110,7 +118,7 @@ def scale(dir_path):
     y_train = np.concatenate(train_outputs)
 
     # Fit a scaler to the training data
-    scaler = scaler.fit(X_train)
+    input_scaler = input_scaler.fit(X_train)
 
     if not classification:
         output_scaler = output_scaler.fit(y_train)
@@ -121,7 +129,7 @@ def scale(dir_path):
         if input_method == None:
             X = data_overview[filepath]["X"]
         else:
-            X = scaler.transform(data_overview[filepath]["X"])
+            X = input_scaler.transform(data_overview[filepath]["X"])
 
         # Scale outputs
         if output_method == None or classification:
@@ -141,6 +149,9 @@ def scale(dir_path):
             X=X,
             y=y,
         )
+
+        joblib.dump(input_scaler, INPUT_SCALER_PATH)
+        joblib.dump(output_scaler, OUTPUT_SCALER_PATH)
 
 
 if __name__ == "__main__":

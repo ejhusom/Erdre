@@ -1,9 +1,9 @@
 profile:
-    dataset: 
+    dataset: cnc_with_target
 
 clean:
-    target: 
-    classification: True
+    target: X1_ActualPosition
+    classification: False
     onehot_encode_target: False
     combine_files: False
     percentage_zeros_threshold: 1.0
@@ -32,7 +32,7 @@ scale:
     output:
 
 sequentialize:
-    window_size: 1
+    window_size: 10
     overlap: 0
     target_size: 1
     shuffle_samples: False

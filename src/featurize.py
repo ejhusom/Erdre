@@ -20,15 +20,19 @@ from scipy.signal import find_peaks
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
-from config import DATA_FEATURIZED_PATH, DATA_PATH, PROFILE_PATH
+from config import DATA_CLEANED_PATH, DATA_FEATURIZED_PATH, DATA_PATH, PROFILE_PATH
 from preprocess_utils import find_files, move_column
 
 
-def featurize(dir_path):
+def featurize(dir_path="", inference=False, input_df=None):
     """Clean up inputs and add features to data set.
 
     Args:
         dir_path (str): Path to directory containing files.
+        inference (bool): When creating a virtual sensor, the
+            results should be saved to file for more efficient reruns of the
+            pipeline. When running the virtual sensor, there is no need to save
+            these intermediate results to file.
 
     """
 
@@ -42,110 +46,77 @@ def featurize(dir_path):
     rolling_window_size = params["featurize"]["rolling_window_size"]
     target = params["clean"]["target"]
 
-    filepaths = find_files(dir_path, file_extension=".csv")
 
-    DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
+    if inference:
+        df = _featurize(input_df, features, remove_features, add_rolling_features,
+                rolling_window_size)
+        
+        return df
+    else:
+        filepaths = find_files(dir_path, file_extension=".csv")
 
-    output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0, dtype=str)
-    ).reshape(-1)
+        DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
 
-    # ===============================================
-    # TODO: Automatic encoding of categorical input variables
-    # Read all data to fit one-hot encoder
-    dfs = []
+        output_columns = np.array(
+            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0, dtype=str)
+        ).reshape(-1)
 
-    for filepath in filepaths:
-        df = pd.read_csv(filepath, index_col=0)
-        dfs.append(df)
+        for filepath in filepaths:
 
-    combined_df = pd.concat(dfs, ignore_index=True)
+            # Read csv
+            df = pd.read_csv(filepath, index_col=0)
 
-    # ct = ColumnTransformer([('encoder', OneHotEncoder(), [38])],
-    #         remainder='passthrough')
+            # Move target column(s) to the beginning of dataframe
+            for col in output_columns[::-1]:
+                df = move_column(df, column_name=col, new_idx=0)
 
-    # ct.fit(combined_df)
+            df = _featurize(df, features, remove_features, add_rolling_features,
+                    rolling_window_size)
 
-    categorical_variables = find_categorical_variables()
-
-    # Remove target and variables that was removed in the cleaning process
-    categorical_variables = [
-        var
-        for var in categorical_variables
-        if var in combined_df.columns and var != target
-    ]
-
-    print(combined_df)
-    print(f"Cat: {categorical_variables}")
-    print(combined_df[categorical_variables])
-
-    column_transformer = ColumnTransformer(
-        [("encoder", OneHotEncoder(), categorical_variables)], remainder="passthrough"
-    )
-
-    # combined_df = column_transformer.fit_transform(combined_df)
-
-    # print(combined_df)
-    # print(combined_df.shape)
-    # print(combined_df[categorical_variables])
-
-    # categorical_encoder = OneHotEncoder()
-    # categorical_encoder.fit(combined_df)
-    # ===============================================
-
-    for filepath in filepaths:
-
-        # Read csv
-        df = pd.read_csv(filepath, index_col=0)
-
-        # Move target column(s) to the beginning of dataframe
-        for col in output_columns[::-1]:
-            df = move_column(df, column_name=col, new_idx=0)
-
-        # If no features are specified, use all columns as features
-        if not isinstance(features, list):
-            features = df.columns
-
-        # Check if wanted features from params.yaml exists in the data
-        for feature in features:
-            if feature not in df.columns:
-                print(f"Feature {feature} not found!")
-
-        for col in df.columns:
-            # Remove feature from input. This is useful in the case that a raw
-            # feature is used to engineer a feature, but the raw feature itself
-            # should not be a part of the input.
-            if (col not in features) and (col not in output_columns):
-                del df[col]
-
-            # Remove feature if it is non-numeric
-            elif not is_numeric_dtype(df[col]):
-                del df[col]
-
-        if add_rolling_features:
-            df = compute_rolling_features(
-                df, rolling_window_size, ignore_columns=output_columns
+            np.save(
+                DATA_FEATURIZED_PATH
+                / os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
+                df.to_numpy(),
             )
 
-        if type(remove_features) is list:
-            for col in remove_features:
-                del df[col]
+        # Save list of features used
+        input_columns = [col for col in df.columns if col not in output_columns]
+        pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
 
-        # # Save data
-        # df.to_csv(
-        #     DATA_FEATURIZED_PATH
-        #     / (os.path.basename(filepath).replace(".", "-featurized."))
-        # )
-        np.save(
-            DATA_FEATURIZED_PATH
-            / os.path.basename(filepath).replace("cleaned.csv", "featurized.npy"),
-            df.to_numpy(),
+def _featurize(df, features, remove_features, add_rolling_features,
+        window_size):
+    """Process individual DataFrames."""
+
+    # If no features are specified, use all columns as features
+    if not isinstance(features, list):
+        features = df.columns
+
+    # Check if wanted features from params.yaml exists in the data
+    for feature in features:
+        if feature not in df.columns:
+            print(f"Feature {feature} not found!")
+
+    for col in df.columns:
+        # Remove feature from input. This is useful in the case that a raw
+        # feature is used to engineer a feature, but the raw feature itself
+        # should not be a part of the input.
+        if (col not in features) and (col not in output_columns):
+            del df[col]
+
+        # Remove feature if it is non-numeric
+        elif not is_numeric_dtype(df[col]):
+            del df[col]
+
+    if add_rolling_features:
+        df = compute_rolling_features(
+            df, rolling_window_size, ignore_columns=output_columns
         )
 
-    # Save list of features used
-    input_columns = [col for col in df.columns if col not in output_columns]
-    pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
+    if type(remove_features) is list:
+        for col in remove_features:
+            del df[col]
 
+    return df
 
 def compute_rolling_features(df, window_size, ignore_columns=None):
     """
@@ -247,6 +218,52 @@ def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
 
     return slope
 
+# ===============================================
+# TODO: Automatic encoding of categorical input variables
+"""
+def encode_categorical_input_variables():
+
+    # Read all data to fit one-hot encoder
+    dfs = []
+
+    for filepath in filepaths:
+        df = pd.read_csv(filepath, index_col=0)
+        dfs.append(df)
+
+    combined_df = pd.concat(dfs, ignore_index=True)
+
+    # ct = ColumnTransformer([('encoder', OneHotEncoder(), [38])],
+    #         remainder='passthrough')
+
+    # ct.fit(combined_df)
+
+    categorical_variables = find_categorical_variables()
+
+    # Remove target and variables that was removed in the cleaning process
+    categorical_variables = [
+        var
+        for var in categorical_variables
+        if var in combined_df.columns and var != target
+    ]
+
+    print(combined_df)
+    print(f"Cat: {categorical_variables}")
+    print(combined_df[categorical_variables])
+
+    column_transformer = ColumnTransformer(
+        [("encoder", OneHotEncoder(), categorical_variables)], remainder="passthrough"
+    )
+
+    # combined_df = column_transformer.fit_transform(combined_df)
+
+    # print(combined_df)
+    # print(combined_df.shape)
+    # print(combined_df[categorical_variables])
+
+    # categorical_encoder = OneHotEncoder()
+    # categorical_encoder.fit(combined_df)
+    # ===============================================
+"""
 
 # def filter_inputs_by_correlation():
 #     """Filter the input features based on the correlation between the features

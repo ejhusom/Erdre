@@ -20,6 +20,7 @@ NON_DL_METHODS = ["dt", "rf", "xgboost", "lda", "qda", "svm"]
 # PATHS
 
 PARAMS_FILE_PATH = Path("./params.yaml")
+"""Path to params file."""
 
 ASSETS_PATH = Path("./assets")
 """Path to all assets of project."""
@@ -87,10 +88,10 @@ TRAININGLOSS_PLOT_PATH = PLOTS_PATH / "trainingloss.png"
 SCALER_PATH = ASSETS_PATH / "scalers"
 """Path to folder containing scalers."""
 
-INPUT_SCALER_PATH = SCALER_PATH / "input_scaler.scl"
+INPUT_SCALER_PATH = SCALER_PATH / "input_scaler.z"
 """Path to input scaler."""
 
-OUTPUT_SCALER_PATH = SCALER_PATH / "output_scaler.scl"
+OUTPUT_SCALER_PATH = SCALER_PATH / "output_scaler.z"
 """Path to output scaler."""
 
 FEATURE_LISTS_PATH = ASSETS_PATH / "feature_lists"
