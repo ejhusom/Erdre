@@ -1,0 +1,30 @@
+/* File:        style.css
+ * Author:      Erik Johannes Husom
+ */
+
+/*Body{{{*/
+body {
+    font-family: sans-serif;
+    color: var(--main-font-color);
+    box-sizing: border-box;
+    /* Constraining width, and centering */
+    max-width: 50em;
+    margin: auto;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+table {
+    width: 100%;
+}
+
+thead {
+    background-color: #333;
+    color: white;
+    font-weight: 600;
+}
+
+th, td {
+    padding: 8px
+}
+

@@ -10,6 +10,7 @@ Created:
 
 """
 import os
+import json
 import time
 import subprocess
 import urllib.request
@@ -27,13 +28,31 @@ app = flask.Flask(__name__)
 api = Api(app)
 app.config["DEBUG"] = True
 
+@app.route("/")
+def home():
+    return flask.render_template("index.html")
+
+@app.route("/virtual_sensors")
+def virtual_sensors():
+
+    try:
+        virtual_sensors = json.load(open("virtual_sensors.json"))
+    except:
+        virtual_sensors = {}
+
+
+    return flask.render_template(
+            "virtual_sensors.html",
+            length=len(virtual_sensors),
+            virtual_sensors=virtual_sensors
+    )
+
 class CreateVirtualSensor(Resource):
     def get(self):
 
         try:
-            data = pd.read_csv("virtual_sensors.csv")
-            data = data.to_dict()
-            return {"data": data}, 200
+            virtual_sensors = json.load(open("virtual_sensors.json"))
+            return virtual_sensors, 200
         except:
             return {"message": "No virtual sensors exist."}, 401
 
@@ -47,7 +66,8 @@ class CreateVirtualSensor(Resource):
         virtual_sensor_metadata = {}
         # The ID of the virtual sensor is set to the current Unix time for
         # uniqueness.
-        virtual_sensor_metadata["id"] = int(time.time())
+        virtual_sensor_id = int(time.time())
+        virtual_sensor_metadata["id"] = virtual_sensor_id
         virtual_sensor_metadata["params"] = params
 
         # Save params to be used by DVC when creating virtual sensor.
@@ -55,6 +75,16 @@ class CreateVirtualSensor(Resource):
 
         # Run DVC to create virtual sensor.
         subprocess.run(["dvc", "repro"])
+
+        try:
+            virtual_sensors = json.load(open("virtual_sensors.json"))
+        except:
+            virtual_sensors = {}
+
+        virtual_sensors[virtual_sensor_id] = virtual_sensor_metadata
+        print(virtual_sensors)
+
+        json.dump(virtual_sensors, open("virtual_sensors.json", "w+"))
 
         return 200
 
