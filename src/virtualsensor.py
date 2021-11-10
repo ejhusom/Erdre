@@ -66,9 +66,9 @@ class VirtualSensor:
             self.model_file
         ]
 
-        self.check_assets_existence()
+        self._check_assets_existence()
 
-    def check_assets_existence(self):
+    def _check_assets_existence(self):
         """Check if the needed assets exists."""
 
         check_ok = True
@@ -83,7 +83,7 @@ class VirtualSensor:
         else:
             raise AssertionError("Assets missing.")
 
-    def run_virtual_sensor(self, input_data_file):
+    def run_virtual_sensor(self, input_df):
         """Run virtual sensor.
 
         Args:
@@ -100,8 +100,8 @@ class VirtualSensor:
         output_method = params["scale"]["output"]
         window_size = params["sequentialize"]["window_size"]
         overlap = params["sequentialize"]["overlap"]
-
-        df = clean(dir_path=input_data_file, inference=True)
+        
+        df = clean(input_df=input_df)
         df = featurize(inference=True, input_df=df)
 
         X = np.array(df)
@@ -127,6 +127,7 @@ class VirtualSensor:
         elif classification:
             y_pred = np.array((y_pred > 0.5), dtype=np.int)
 
+        print(y_pred)
         plt.figure()
         plt.plot(y_pred)
         plt.show()
@@ -134,5 +135,7 @@ class VirtualSensor:
             
 if __name__ == '__main__': 
 
+    df = pd.read_csv("./assets/data/raw/cnc_without_target/02.csv")
+
     vs = VirtualSensor()
-    vs.run_virtual_sensor(input_data_file="./assets/data/raw/cnc_without_target/")
+    vs.run_virtual_sensor(input_df=df)

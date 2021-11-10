@@ -24,7 +24,7 @@ from config import DATA_PATH_RAW, DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
 from preprocess_utils import find_files
 
 
-def clean(dir_path=DATA_PATH_RAW, inference=False):
+def clean(dir_path=DATA_PATH_RAW, input_df=None):
     """Clean up inputs.
 
     Args:
@@ -46,18 +46,26 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
-    if dataset_name is not None and not inference:
+    if dataset_name is not None and input_df is None:
         dir_path += "/" + dataset_name
-
-    filepaths = find_files(dir_path, file_extension=".csv")
 
     # Find removable variables from profiling report
     removable_variables = parse_profile_warnings()
 
-    dfs = read_data(filepaths, removable_variables)
+    if input_df is None:
+        filepaths = find_files(dir_path, file_extension=".csv")
+
+        dfs = []
+
+        for filepath in filepaths:
+            dfs.append(pd.read_csv(filepath))
+    else:
+        dfs = [input_df]
+
+    dfs = read_data(dfs, removable_variables)
     combined_df = pd.concat(dfs, ignore_index=True)
 
-    if inference:
+    if input_df is not None:
         return combined_df
     else:
         if classification:
@@ -100,14 +108,11 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
         pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
 
 
-def read_data(filepaths, removable_variables):
+def read_data(dfs, removable_variables):
 
-    dfs = []
+    cleaned_dfs = []
 
-    for filepath in filepaths:
-
-        # Read csv
-        df = pd.read_csv(filepath)
+    for df in dfs:
 
         # If the first column is an index column, remove it.
         if df.iloc[:, 0].is_monotonic:
@@ -118,9 +123,9 @@ def read_data(filepaths, removable_variables):
 
         df.dropna(inplace=True)
 
-        dfs.append(df)
+        cleaned_dfs.append(df)
 
-    return dfs
+    return cleaned_dfs
 
 
 def encode_target(encoder, df, target):

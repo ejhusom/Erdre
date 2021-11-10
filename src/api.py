@@ -12,6 +12,11 @@ Created:
 import flask
 from flask_restful import Resource, Api, reqparse
 import pandas as pd
+import requests
+import urllib.request
+from pathlib import Path
+
+from virtualsensor import VirtualSensor
 
 app = flask.Flask(__name__)
 api = Api(app)
@@ -46,7 +51,7 @@ class VirtualSensors(Resource):
         try:
             data = pd.read_csv("virtual_sensors.csv")
 
-            if 
+            # if 
             data = data.append(new_data, ignore_index=True)
         except:
             # If the file does not exists already, the new data is the only
@@ -57,10 +62,27 @@ class VirtualSensors(Resource):
 
         return {"data": data.to_dict()}, 200
 
+class Infer(Resource):
+
+    def get(self):
+
+        return 200
+            
+    def post(self):
+
+        csv_file = flask.request.files["file"]
+        data = pd.read_csv(csv_file)
+        print(data)
+
+        vs = VirtualSensor()
+        vs.run_virtual_sensor(input_df=data)
+
+        return 200
 
 if __name__ == '__main__': 
 
     api.add_resource(VirtualSensors, "/virtual_sensors")
+    api.add_resource(Infer, "/infer")
     app.run()
 
 
