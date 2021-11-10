@@ -84,10 +84,7 @@ class VirtualSensor:
                 print(f"File {path} not found.")
                 check_ok = False
 
-        if check_ok:
-            print("All assets found.")
-        else:
-            raise AssertionError("Assets missing.")
+        assert check_ok, "Assets missing."
 
     def run_virtual_sensor(self, inference_df):
         """Run virtual sensor.
@@ -106,6 +103,8 @@ class VirtualSensor:
         output_method = params["scale"]["output"]
         window_size = params["sequentialize"]["window_size"]
         overlap = params["sequentialize"]["overlap"]
+
+        self._check_features_existence(inference_df)
 
         df = clean(inference_df=inference_df)
         df = featurize(inference=True, inference_df=df)
@@ -137,10 +136,27 @@ class VirtualSensor:
         plt.plot(y_pred)
         plt.show()
 
+    def _check_features_existence(self, inference_df):
+        """Check that the DataFrame passed for inference contains the necessary
+        features required by the virtual sensor.
+
+        Args:
+            inference_df (DataFrame): DataFrame to perform inference on.
+
+        """
+
+        input_features = pd.read_csv(self.input_features_file)
+
+        for feature in input_features:
+            assert (
+                feature in inference_df.columns
+            ), f"Input data does not contain {feature}, which is required to run virtual sensor."
+
 
 if __name__ == "__main__":
 
-    df = pd.read_csv("./assets/data/raw/cnc_without_target/02.csv")
+    # df = pd.read_csv("./assets/data/raw/cnc_without_target/02.csv")
+    df = pd.read_csv("./assets/data/raw/cnc_milling/02.csv")
 
     vs = VirtualSensor()
     vs.run_virtual_sensor(inference_df=df)

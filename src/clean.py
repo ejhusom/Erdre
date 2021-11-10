@@ -71,6 +71,9 @@ def clean(dir_path=DATA_PATH_RAW, inference_df=None):
     combined_df = pd.concat(dfs, ignore_index=True)
 
     if inference_df is not None:
+        if target in inference_df.columns:
+            del combined_df[target]
+
         return combined_df
     else:
         if classification:

@@ -9,12 +9,16 @@ Created:
     2021-11-10 Wednesday 11:22:39
 
 """
+import os
+import time
+import subprocess
 import urllib.request
 from pathlib import Path
 
 import flask
 import pandas as pd
 import requests
+import yaml
 from flask_restful import Api, Resource, reqparse
 
 from virtualsensor import VirtualSensor
@@ -22,7 +26,6 @@ from virtualsensor import VirtualSensor
 app = flask.Flask(__name__)
 api = Api(app)
 app.config["DEBUG"] = True
-
 
 class CreateVirtualSensor(Resource):
     def get(self):
@@ -35,33 +38,53 @@ class CreateVirtualSensor(Resource):
             return {"message": "No virtual sensors exist."}, 401
 
     def post(self):
-        parser = reqparse.RequestParser()
 
-        parser.add_argument("datasetName", required=True)
-        parser.add_argument("targetVariable", required=True)
+        # Read params file
+        params_file = flask.request.files["file"]
+        params = yaml.safe_load(params_file)
 
-        args = parser.parse_args()
+        # Create dict containing all metadata about virtual sensor
+        virtual_sensor_metadata = {}
+        # The ID of the virtual sensor is set to the current Unix time for
+        # uniqueness.
+        virtual_sensor_metadata["id"] = int(time.time())
+        virtual_sensor_metadata["params"] = params
 
-        new_data = pd.DataFrame(
-            [
-                {
-                    "datasetName": args["datasetName"],
-                    "targetVariable": args["targetVariable"],
-                }
-            ]
-        )
+        # Save params to be used by DVC when creating virtual sensor.
+        yaml.dump(params, open("params.yaml", "w"), allow_unicode=True)
 
-        try:
-            data = pd.read_csv("virtual_sensors.csv")
-            data = data.append(new_data, ignore_index=True)
-        except:
-            # If the file does not exists already, the new data is the only
-            # data.
-            data = new_data
+        # Run DVC to create virtual sensor.
+        subprocess.run(["dvc", "repro"])
 
-        data.to_csv("virtual_sensors.csv", index=False)
+        return 200
 
-        return {"data": data.to_dict()}, 200
+        # parser = reqparse.RequestParser()
+
+        # parser.add_argument("datasetName", required=True)
+        # parser.add_argument("targetVariable", required=True)
+
+        # args = parser.parse_args()
+
+        # new_data = pd.DataFrame(
+        #     [
+        #         {
+        #             "datasetName": args["datasetName"],
+        #             "targetVariable": args["targetVariable"],
+        #         }
+        #     ]
+        # )
+
+        # try:
+        #     data = pd.read_csv("virtual_sensors.csv")
+        #     data = data.append(new_data, ignore_index=True)
+        # except:
+        #     # If the file does not exists already, the new data is the only
+        #     # data.
+        #     data = new_data
+
+        # data.to_csv("virtual_sensors.csv", index=False)
+
+        # return {"data": data.to_dict()}, 200
 
 
 class Infer(Resource):
@@ -82,6 +105,6 @@ class Infer(Resource):
 
 if __name__ == "__main__":
 
-    api.add_resource(CreateVirtualSensor, "/virtual_sensors")
+    api.add_resource(CreateVirtualSensor, "/create_virtual_sensor")
     api.add_resource(Infer, "/infer")
     app.run()

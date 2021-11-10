@@ -32,7 +32,7 @@ from config import (
 from preprocess_utils import find_files, move_column
 
 
-def featurize(dir_path="", inference=False, input_df=None):
+def featurize(dir_path="", inference=False, inference_df=None):
     """Clean up inputs and add features to data set.
 
     Args:
@@ -56,7 +56,7 @@ def featurize(dir_path="", inference=False, input_df=None):
 
     if inference:
         df = _featurize(
-            input_df,
+            inference_df,
             features,
             remove_features,
             add_rolling_features,
@@ -95,7 +95,9 @@ def featurize(dir_path="", inference=False, input_df=None):
 
         # Save list of features used
         input_columns = [col for col in df.columns if col not in output_columns]
-        pd.DataFrame(input_columns).to_csv(INPUT_FEATURES_PATH)
+        pd.DataFrame(input_columns).to_csv(
+            INPUT_FEATURES_PATH, header=False, index=False
+        )
 
 
 def _featurize(df, features, remove_features, add_rolling_features, window_size):
