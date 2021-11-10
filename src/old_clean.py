@@ -101,9 +101,7 @@ def clean(dir_path, save_results_to_file=True):
         output_columns = [target]
 
     if combine_files:
-        combined_df.to_csv(
-            DATA_CLEANED_PATH / (os.path.basename("data-cleaned.csv"))
-        )
+        combined_df.to_csv(DATA_CLEANED_PATH / (os.path.basename("data-cleaned.csv")))
     else:
         for filepath, df in zip(filepaths, dfs):
             df.to_csv(
@@ -111,7 +109,7 @@ def clean(dir_path, save_results_to_file=True):
                 / (os.path.basename(filepath).replace(".", "-cleaned."))
             )
 
-    pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
+    pd.DataFrame(output_columns).to_csv(DATA_PATH / OUTPUT_FEATURES_PATH)
 
 
 def encode_target(encoder, df, target):

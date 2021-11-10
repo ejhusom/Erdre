@@ -29,7 +29,7 @@ def segment(dir_path):
     filepaths = find_files(dir_path, file_extension=".csv")
 
     output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
+        pd.read_csv(DATA_PATH / OUTPUT_FEATURES_PATH, index_col=0)
     ).reshape(-1)
 
     dfs = []

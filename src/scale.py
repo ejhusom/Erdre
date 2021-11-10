@@ -25,9 +25,10 @@ from sklearn.preprocessing import MinMaxScaler, RobustScaler, StandardScaler
 from config import (
     DATA_PATH,
     DATA_SCALED_PATH,
-    SCALER_PATH,
     INPUT_SCALER_PATH,
+    OUTPUT_FEATURES_PATH,
     OUTPUT_SCALER_PATH,
+    SCALER_PATH,
 )
 from preprocess_utils import find_files
 
@@ -80,9 +81,9 @@ def scale(dir_path):
 
     data_overview = {}
 
-    output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
-    ).reshape(-1)
+    output_columns = np.array(pd.read_csv(OUTPUT_FEATURES_PATH, index_col=0)).reshape(
+        -1
+    )
 
     n_output_cols = len(output_columns)
 

@@ -36,6 +36,7 @@ from config import (
     MODELS_FILE_PATH,
     MODELS_PATH,
     NON_DL_METHODS,
+    OUTPUT_FEATURES_PATH,
     PLOTS_PATH,
     TRAININGLOSS_PLOT_PATH,
 )
@@ -61,9 +62,9 @@ def train(filepath):
         "onehot_encode_target"
     ]
 
-    output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
-    ).reshape(-1)
+    output_columns = np.array(pd.read_csv(OUTPUT_FEATURES_PATH, index_col=0)).reshape(
+        -1
+    )
 
     n_output_cols = len(output_columns)
 

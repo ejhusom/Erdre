@@ -20,7 +20,15 @@ from scipy.signal import find_peaks
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
-from config import DATA_CLEANED_PATH, DATA_FEATURIZED_PATH, DATA_PATH, PROFILE_PATH
+from config import (
+    DATA_CLEANED_PATH,
+    DATA_FEATURIZED_PATH,
+    DATA_PATH,
+    FEATURES_PATH,
+    INPUT_FEATURES_PATH,
+    OUTPUT_FEATURES_PATH,
+    PROFILE_PATH,
+)
 from preprocess_utils import find_files, move_column
 
 
@@ -46,19 +54,24 @@ def featurize(dir_path="", inference=False, input_df=None):
     rolling_window_size = params["featurize"]["rolling_window_size"]
     target = params["clean"]["target"]
 
-
     if inference:
-        df = _featurize(input_df, features, remove_features, add_rolling_features,
-                rolling_window_size)
-        
+        df = _featurize(
+            input_df,
+            features,
+            remove_features,
+            add_rolling_features,
+            rolling_window_size,
+        )
+
         return df
     else:
         filepaths = find_files(dir_path, file_extension=".csv")
 
         DATA_FEATURIZED_PATH.mkdir(parents=True, exist_ok=True)
+        FEATURES_PATH.mkdir(parents=True, exist_ok=True)
 
         output_columns = np.array(
-            pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0, dtype=str)
+            pd.read_csv(OUTPUT_FEATURES_PATH, index_col=0, dtype=str)
         ).reshape(-1)
 
         for filepath in filepaths:
@@ -70,8 +83,9 @@ def featurize(dir_path="", inference=False, input_df=None):
             for col in output_columns[::-1]:
                 df = move_column(df, column_name=col, new_idx=0)
 
-            df = _featurize(df, features, remove_features, add_rolling_features,
-                    rolling_window_size)
+            df = _featurize(
+                df, features, remove_features, add_rolling_features, rolling_window_size
+            )
 
             np.save(
                 DATA_FEATURIZED_PATH
@@ -81,10 +95,10 @@ def featurize(dir_path="", inference=False, input_df=None):
 
         # Save list of features used
         input_columns = [col for col in df.columns if col not in output_columns]
-        pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
+        pd.DataFrame(input_columns).to_csv(INPUT_FEATURES_PATH)
 
-def _featurize(df, features, remove_features, add_rolling_features,
-        window_size):
+
+def _featurize(df, features, remove_features, add_rolling_features, window_size):
     """Process individual DataFrames."""
 
     # If no features are specified, use all columns as features
@@ -117,6 +131,7 @@ def _featurize(df, features, remove_features, add_rolling_features,
             del df[col]
 
     return df
+
 
 def compute_rolling_features(df, window_size, ignore_columns=None):
     """
@@ -217,6 +232,7 @@ def calculate_slope(series, shift=2, rolling_mean_window=1, absvalue=False):
     slope = slope.rolling(rolling_mean_window).mean()
 
     return slope
+
 
 # ===============================================
 # TODO: Automatic encoding of categorical input variables

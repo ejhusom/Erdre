@@ -79,7 +79,6 @@ def find_files(dir_path, file_extension=[]):
     if type(file_extension) is not list:
         file_extension = [file_extension]
 
-
     for extension in file_extension:
         for f in sorted(os.listdir(dir_path)):
             if f.endswith(extension):
@@ -124,8 +123,14 @@ def move_column(df, column_name, new_idx):
     return df[reordered_columns]
 
 
-def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
-        future_predict=False, overlap=0):
+def split_sequences(
+    sequences,
+    window_size,
+    target_size=1,
+    n_target_columns=1,
+    future_predict=False,
+    overlap=0,
+):
     """Split data sequence into samples with matching input and targets.
 
     Args:
@@ -143,7 +148,7 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
         overlap (int): How many time steps to overlap for each sequence. If
             overlap is greater than window_size, it will be set to
             window_size-1, which is the largest overlap possible.  Default=0,
-            which means there will be no overlap. 
+            which means there will be no overlap.
 
     Returns:
         X (array): The input samples.
@@ -196,6 +201,7 @@ def split_sequences(sequences, window_size, target_size=1, n_target_columns=1,
 
     return X, y
 
+
 def split_X_sequences(sequences, window_size, overlap=0):
     """Split data sequence into samples with matching input and targets.
 
@@ -207,7 +213,7 @@ def split_X_sequences(sequences, window_size, overlap=0):
         overlap (int): How many time steps to overlap for each sequence. If
             overlap is greater than window_size, it will be set to
             window_size-1, which is the largest overlap possible.  Default=0,
-            which means there will be no overlap. 
+            which means there will be no overlap.
 
     Returns:
         X (array): Sequences from input array.
@@ -235,6 +241,7 @@ def split_X_sequences(sequences, window_size, overlap=0):
     X = np.array(X)
 
     return X
+
 
 def flatten_sequentialized(X):
     """Flatten sequentialized data.

@@ -9,12 +9,13 @@ Created:
     2021-11-10 Wednesday 11:22:39
 
 """
-import flask
-from flask_restful import Resource, Api, reqparse
-import pandas as pd
-import requests
 import urllib.request
 from pathlib import Path
+
+import flask
+import pandas as pd
+import requests
+from flask_restful import Api, Resource, reqparse
 
 from virtualsensor import VirtualSensor
 
@@ -22,8 +23,8 @@ app = flask.Flask(__name__)
 api = Api(app)
 app.config["DEBUG"] = True
 
-class VirtualSensors(Resource):
 
+class CreateVirtualSensor(Resource):
     def get(self):
 
         try:
@@ -31,9 +32,7 @@ class VirtualSensors(Resource):
             data = data.to_dict()
             return {"data": data}, 200
         except:
-            return {
-                    "message": "No virtual sensors exist."
-            }, 401
+            return {"message": "No virtual sensors exist."}, 401
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -43,15 +42,17 @@ class VirtualSensors(Resource):
 
         args = parser.parse_args()
 
-        new_data = pd.DataFrame([{
-            "datasetName": args["datasetName"],
-            "targetVariable": args["targetVariable"]
-        }])
+        new_data = pd.DataFrame(
+            [
+                {
+                    "datasetName": args["datasetName"],
+                    "targetVariable": args["targetVariable"],
+                }
+            ]
+        )
 
         try:
             data = pd.read_csv("virtual_sensors.csv")
-
-            # if 
             data = data.append(new_data, ignore_index=True)
         except:
             # If the file does not exists already, the new data is the only
@@ -62,27 +63,25 @@ class VirtualSensors(Resource):
 
         return {"data": data.to_dict()}, 200
 
-class Infer(Resource):
 
+class Infer(Resource):
     def get(self):
 
         return 200
-            
+
     def post(self):
 
         csv_file = flask.request.files["file"]
         data = pd.read_csv(csv_file)
-        print(data)
 
         vs = VirtualSensor()
-        vs.run_virtual_sensor(input_df=data)
+        vs.run_virtual_sensor(inference_df=data)
 
         return 200
 
-if __name__ == '__main__': 
 
-    api.add_resource(VirtualSensors, "/virtual_sensors")
+if __name__ == "__main__":
+
+    api.add_resource(CreateVirtualSensor, "/virtual_sensors")
     api.add_resource(Infer, "/infer")
     app.run()
-
-
