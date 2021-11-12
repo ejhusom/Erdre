@@ -14,6 +14,7 @@ import os
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
+import yaml
 
 from clean import *
 from combine import *
@@ -52,7 +53,13 @@ class VirtualSensor:
 
         """
 
-        self.params_file = params_file
+        if type(params_file) == dict:
+            yaml.dump(params_file, open("params.yaml", "w"),
+                    allow_unicode=True)
+            self.params_file = "params.yaml"
+        else:
+            self.params_file = params_file
+
         self.profile_file = profile_file
         self.input_features_file = input_features_file
         self.output_features_file = output_features_file
@@ -132,9 +139,11 @@ class VirtualSensor:
             y_pred = np.array((y_pred > 0.5), dtype=np.int)
 
         print(y_pred)
-        plt.figure()
-        plt.plot(y_pred)
-        plt.show()
+        # plt.figure()
+        # plt.plot(y_pred)
+        # plt.show()
+
+        return y_pred
 
     def _check_features_existence(self, inference_df):
         """Check that the DataFrame passed for inference contains the necessary

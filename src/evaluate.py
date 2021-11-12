@@ -15,6 +15,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly
 import plotly.graph_objects as go
 import seaborn as sn
 import shap
@@ -404,6 +405,9 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
 
     fig.write_html(str(PLOTS_PATH / "prediction.html"))
 
+    # return plotly.offline.plot(fig, include_plotlyjs=True, output_type="div")
+    return fig
+
 
 def plot_sequence_predictions(y_true, y_pred):
     """
@@ -447,6 +451,7 @@ def plot_sequence_predictions(y_true, y_pred):
     PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     fig.write_html(str(PLOTS_PATH / "prediction_sequences.html"))
+
 
 
 if __name__ == "__main__":
