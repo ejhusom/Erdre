@@ -42,6 +42,7 @@ from config import (
     NON_DL_METHODS,
     PLOTS_PATH,
     PREDICTION_PLOT_PATH,
+    PREDICTIONS_PATH,
     PREDICTIONS_FILE_PATH
 )
 
@@ -103,6 +104,9 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     test = np.load(test_filepath)
     X_test = test["X"]
     y_test = test["y"]
+
+    PREDICTIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(y_test).to_csv(PREDICTIONS_PATH / "true_values.csv")
 
     # pandas data frame to store predictions and ground truth.
     df_predictions = None
