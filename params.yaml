@@ -23,7 +23,7 @@ featurize:
     target_min_correlation_threshold: 0.0
 
 split:
-    train_split: 0.5
+    train_split: 0.3
     shuffle_files: False
     calibrate_split: 0.0
 
@@ -41,10 +41,10 @@ sequentialize:
 train:
     train: True
     learning_method: cnn
-    n_epochs: 200
+    n_epochs: 50
     batch_size: 256
     kernel_size: 3
     early_stopping: True
-    patience: 40
+    patience: 5
 
 evaluate:

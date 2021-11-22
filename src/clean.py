@@ -188,7 +188,7 @@ def parse_profile_warnings():
     for message in messages:
         message = message.split()
         warning = message[0]
-        variable = message[-1]
+        variable = " ".join(message[message.index("column") + 1:])
 
         if warning == "[CONSTANT]":
             removable_variables.append(variable)
