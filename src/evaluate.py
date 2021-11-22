@@ -104,7 +104,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     X_test = test["X"]
     y_test = test["y"]
 
-    PREDICTIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PREDICTIONS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(y_test).to_csv(PREDICTIONS_PATH / "true_values.csv")
 
     # pandas data frame to store predictions and ground truth.
