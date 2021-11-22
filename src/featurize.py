@@ -71,7 +71,7 @@ def featurize(dir_path="", inference=False, input_df=None):
                 df = move_column(df, column_name=col, new_idx=0)
 
             df = _featurize(df, features, remove_features, add_rolling_features,
-                    rolling_window_size)
+                    rolling_window_size, output_columns)
 
             np.save(
                 DATA_FEATURIZED_PATH
@@ -84,7 +84,7 @@ def featurize(dir_path="", inference=False, input_df=None):
         pd.DataFrame(input_columns).to_csv(DATA_PATH / "input_columns.csv")
 
 def _featurize(df, features, remove_features, add_rolling_features,
-        window_size):
+        window_size, output_columns):
     """Process individual DataFrames."""
 
     # If no features are specified, use all columns as features
