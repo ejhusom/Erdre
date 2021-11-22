@@ -27,8 +27,10 @@ from sklearn.base import RegressorMixin
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
+    explained_variance_score,
+    mean_absolute_percentage_error,
     mean_squared_error,
-    r2_score,
+    r2_score
 )
 from sklearn.neighbors import KNeighborsRegressor
 from tensorflow.keras import metrics, models
@@ -244,9 +246,13 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     # Regression:
     else:
         mse = mean_squared_error(y_test, y_pred)
+        rmse = mean_squared_error(y_test, y_pred, squared=False)
+        mape = mean_absolute_percentage_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
 
         print("MSE: {}".format(mse))
+        print("RMSE: {}".format(rmse))
+        print("MAPE: {}".format(mape))
         print("R2: {}".format(r2))
 
         plot_prediction(y_test, y_pred, inputs=None, info=f"(R2: {r2:.2f})")
@@ -256,7 +262,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
             plot_sequence_predictions(y_test, y_pred)
 
         with open(METRICS_FILE_PATH, "w") as f:
-            json.dump(dict(mse=mse, r2=r2), f)
+            json.dump(dict(mse=mse, rmse=rmse, mape=mape, r2=r2), f)
 
     save_predictions(pd.DataFrame(y_pred))
 
