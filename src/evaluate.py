@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sn
-import shap
 import yaml
 from joblib import load
 from nonconformist.base import RegressorAdapter
