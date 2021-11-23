@@ -20,19 +20,24 @@ import pandas as pd
 import yaml
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 
-from config import DATA_PATH_RAW, DATA_CLEANED_PATH, DATA_PATH, PROFILE_PATH
+from config import (
+    DATA_CLEANED_PATH,
+    DATA_PATH,
+    DATA_PATH_RAW,
+    FEATURES_PATH,
+    OUTPUT_FEATURES_PATH,
+    PROFILE_PATH,
+)
 from preprocess_utils import find_files
 
 
-def clean(dir_path=DATA_PATH_RAW, inference=False):
+def clean(dir_path=DATA_PATH_RAW, inference_df=None):
     """Clean up inputs.
 
     Args:
         dir_path (str): Path to directory containing files.
-        inference (bool): When creating a virtual sensor, the
-            results should be saved to file for more efficient reruns of the
-            pipeline. When running the virtual sensor, there is no need to save
-            these intermediate results to file.
+        inference_df (DataFrame): Dataframe containing data to use for
+            inference.
 
     """
 
@@ -46,18 +51,29 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
 
     # If no name of data set is given, all files present in 'assets/data/raw'
     # will be used.
-    if dataset_name is not None and not inference:
+    if dataset_name is not None and inference_df is None:
         dir_path += "/" + dataset_name
-
-    filepaths = find_files(dir_path, file_extension=".csv")
 
     # Find removable variables from profiling report
     removable_variables = parse_profile_warnings()
 
-    dfs = read_data(filepaths, removable_variables)
+    if inference_df is None:
+        filepaths = find_files(dir_path, file_extension=".csv")
+
+        dfs = []
+
+        for filepath in filepaths:
+            dfs.append(pd.read_csv(filepath))
+    else:
+        dfs = [inference_df]
+
+    dfs = read_data(dfs, removable_variables)
     combined_df = pd.concat(dfs, ignore_index=True)
 
-    if inference:
+    if inference_df is not None:
+        if target in inference_df.columns:
+            del combined_df[target]
+
         return combined_df
     else:
         if classification:
@@ -97,17 +113,15 @@ def clean(dir_path=DATA_PATH_RAW, inference=False):
                     / (os.path.basename(filepath).replace(".", "-cleaned."))
                 )
 
-        pd.DataFrame(output_columns).to_csv(DATA_PATH / "output_columns.csv")
+        FEATURES_PATH.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(output_columns).to_csv(OUTPUT_FEATURES_PATH)
 
 
-def read_data(filepaths, removable_variables):
+def read_data(dfs, removable_variables):
 
-    dfs = []
+    cleaned_dfs = []
 
-    for filepath in filepaths:
-
-        # Read csv
-        df = pd.read_csv(filepath)
+    for df in dfs:
 
         # If the first column is an index column, remove it.
         if df.iloc[:, 0].is_monotonic:
@@ -118,9 +132,9 @@ def read_data(filepaths, removable_variables):
 
         df.dropna(inplace=True)
 
-        dfs.append(df)
+        cleaned_dfs.append(df)
 
-    return dfs
+    return cleaned_dfs
 
 
 def encode_target(encoder, df, target):
@@ -236,5 +250,3 @@ def parse_profile_warnings():
 if __name__ == "__main__":
 
     clean(sys.argv[1])
-
-

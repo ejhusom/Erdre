@@ -31,6 +31,15 @@ PROFILE_PATH = ASSETS_PATH / "profile"
 PROFILE_JSON_PATH = PROFILE_PATH / "profile.json"
 """Path to profiling report in JSON format."""
 
+FEATURES_PATH = ASSETS_PATH / "features"
+"""Path to files containing input and output features."""
+
+INPUT_FEATURES_PATH = FEATURES_PATH / "input_columns.csv"
+"""Path to file containing input features."""
+
+OUTPUT_FEATURES_PATH = FEATURES_PATH / "output_columns.csv"
+"""Path to file containing output features."""
+
 DATA_PATH = ASSETS_PATH / "data"
 """Path to data."""
 
@@ -93,6 +102,3 @@ INPUT_SCALER_PATH = SCALER_PATH / "input_scaler.z"
 
 OUTPUT_SCALER_PATH = SCALER_PATH / "output_scaler.z"
 """Path to output scaler."""
-
-FEATURE_LISTS_PATH = ASSETS_PATH / "feature_lists"
-"""PAth to files containing feature lists of input and output columns."""
