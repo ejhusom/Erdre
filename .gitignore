@@ -26,7 +26,6 @@ __pycache__
 .*~
 *.old
 tmp*
-temp*
 .#*
 \#*
 Session.vim
