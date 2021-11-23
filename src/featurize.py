@@ -83,9 +83,8 @@ def featurize(dir_path="", inference=False, inference_df=None):
             for col in output_columns[::-1]:
                 df = move_column(df, column_name=col, new_idx=0)
 
-            df = _featurize(
-                df, features, remove_features, add_rolling_features, rolling_window_size
-            )
+            df = _featurize(df, features, remove_features, add_rolling_features,
+                    rolling_window_size, output_columns)
 
             np.save(
                 DATA_FEATURIZED_PATH
@@ -100,7 +99,9 @@ def featurize(dir_path="", inference=False, inference_df=None):
         )
 
 
-def _featurize(df, features, remove_features, add_rolling_features, window_size):
+
+def _featurize(df, features, remove_features, add_rolling_features,
+        window_size, output_columns):
     """Process individual DataFrames."""
 
     # If no features are specified, use all columns as features

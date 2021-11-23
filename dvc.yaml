@@ -133,6 +133,9 @@ stages:
         - assets/models/model.h5
         - src/evaluate.py
         - src/config.py
+        outs:
+        - assets/predictions/predictions.csv
+        - assets/predictions/true_values.csv
         params:
         - clean.classification
         metrics:

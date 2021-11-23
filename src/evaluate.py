@@ -18,7 +18,6 @@ import pandas as pd
 import plotly
 import plotly.graph_objects as go
 import seaborn as sn
-import shap
 import yaml
 from joblib import load
 from nonconformist.base import RegressorAdapter
@@ -29,8 +28,10 @@ from sklearn.base import RegressorMixin
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
+    explained_variance_score,
+    mean_absolute_percentage_error,
     mean_squared_error,
-    r2_score,
+    r2_score
 )
 from sklearn.neighbors import KNeighborsRegressor
 from tensorflow.keras import metrics, models
@@ -44,7 +45,8 @@ from config import (
     NON_DL_METHODS,
     PLOTS_PATH,
     PREDICTION_PLOT_PATH,
-    PREDICTIONS_FILE_PATH,
+    PREDICTIONS_PATH,
+    PREDICTIONS_FILE_PATH
 )
 
 
@@ -105,6 +107,9 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     test = np.load(test_filepath)
     X_test = test["X"]
     y_test = test["y"]
+
+    PREDICTIONS_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(y_test).to_csv(PREDICTIONS_PATH / "true_values.csv")
 
     # pandas data frame to store predictions and ground truth.
     df_predictions = None
@@ -243,9 +248,13 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
     # Regression:
     else:
         mse = mean_squared_error(y_test, y_pred)
+        rmse = mean_squared_error(y_test, y_pred, squared=False)
+        mape = mean_absolute_percentage_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
 
         print("MSE: {}".format(mse))
+        print("RMSE: {}".format(rmse))
+        print("MAPE: {}".format(mape))
         print("R2: {}".format(r2))
 
         plot_prediction(y_test, y_pred, inputs=None, info=f"(R2: {r2:.2f})")
@@ -255,7 +264,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
             plot_sequence_predictions(y_test, y_pred)
 
         with open(METRICS_FILE_PATH, "w") as f:
-            json.dump(dict(mse=mse, r2=r2), f)
+            json.dump(dict(mse=mse, rmse=rmse, mape=mape, r2=r2), f)
 
     save_predictions(pd.DataFrame(y_pred))
 
