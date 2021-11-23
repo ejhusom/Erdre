@@ -1,50 +1,38 @@
-profile:
-    dataset: cnc_milling
-
 clean:
-    target: X1_ActualPosition
-    classification: False
-    onehot_encode_target: False
-    combine_files: False
-    percentage_zeros_threshold: 1.0
-    correlation_metric: pearson
-    input_max_correlation_threshold: 1.0
-
+  classification: false
+  combine_files: false
+  correlation_metric: pearson
+  input_max_correlation_threshold: 1.0
+  onehot_encode_target: false
+  percentage_zeros_threshold: 1.0
+  target: Accel_FFT_Acc1_range1_Amplitudes_0
+evaluate: null
 featurize:
-    features:
-        # - feature1
-        # - feature2
-    add_rolling_features: False
-    rolling_window_size: 100
-    remove_features:
-        # - feature1
-        # - feature2
-
-    target_min_correlation_threshold: 0.0
-
-split:
-    train_split: 0.3
-    shuffle_files: False
-    calibrate_split: 0.0
-
+  add_rolling_features: false
+  features: null
+  remove_features: null
+  rolling_window_size: 100
+  target_min_correlation_threshold: 0.0
+profile:
+  dataset: ideko
 scale:
-    input: minmax
-    output:
-
+  input: minmax
+  output: null
 sequentialize:
-    window_size: 10
-    overlap: 0
-    target_size: 1
-    shuffle_samples: False
-    future_predict: False
-
+  future_predict: false
+  overlap: 0
+  shuffle_samples: false
+  target_size: 1
+  window_size: 15
+split:
+  calibrate_split: 0.0
+  shuffle_files: false
+  train_split: 0.7
 train:
-    train: True
-    learning_method: cnn
-    n_epochs: 50
-    batch_size: 256
-    kernel_size: 3
-    early_stopping: True
-    patience: 5
-
-evaluate:
+  batch_size: 256
+  early_stopping: true
+  kernel_size: 3
+  learning_method: cnn
+  n_epochs: 200
+  patience: 40
+  train: true

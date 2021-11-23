@@ -15,6 +15,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly
 import plotly.graph_objects as go
 import seaborn as sn
 import yaml
@@ -38,6 +39,7 @@ from tensorflow.keras import metrics, models
 import neural_networks as nn
 from config import (
     DATA_PATH,
+    INPUT_FEATURES_PATH,
     INTERVALS_PLOT_PATH,
     METRICS_FILE_PATH,
     NON_DL_METHODS,
@@ -226,7 +228,7 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
         # plt.figure()
         # shap.summary_plot(shap_values[0][:,0,:], X_test[:10][:,0,:])
         # shap.image_plot([shap_values[i][0] for i in range(len(shap_values))], X_test[:10])
-        # input_columns = pd.read_csv(DATA_PATH / "input_columns.csv").iloc[:,-1]
+        # input_columns = pd.read_csv(INPUT_FEATURES_PATH).iloc[:,-1]
         # print(input_columns)
         # shap.force_plot(explainer.expected_value[0], shap_values[0][0])
 
@@ -266,12 +268,13 @@ def evaluate(model_filepath, train_filepath, test_filepath, calibrate_filepath):
 
     save_predictions(pd.DataFrame(y_pred))
 
+
 def plot_confusion(y_test, y_pred):
     """Plotting confusion matrix of a classification model."""
 
-    output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
-    ).reshape(-1)
+    output_columns = np.array(pd.read_csv(OUTPUT_FEATURES_PATH, index_col=0)).reshape(
+        -1
+    )
 
     n_output_cols = len(output_columns)
     indeces = np.arange(0, n_output_cols, 1)
@@ -382,7 +385,7 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
     )
 
     if inputs is not None:
-        input_columns = pd.read_csv(DATA_PATH / "input_columns.csv")
+        input_columns = pd.read_csv(INPUT_FEATURES_PATH)
 
         if len(inputs.shape) == 3:
             n_features = inputs.shape[-1]
@@ -411,6 +414,9 @@ def plot_prediction(y_true, y_pred, inputs=None, info=""):
 
     fig.write_html(str(PLOTS_PATH / "prediction.html"))
 
+    # return plotly.offline.plot(fig, include_plotlyjs=True, output_type="div")
+    return fig
+
 
 def plot_sequence_predictions(y_true, y_pred):
     """
@@ -436,7 +442,7 @@ def plot_sequence_predictions(y_true, y_pred):
     predictions = []
 
     for i in pred_curve_idcs:
-        indeces = y_indeces[i: i + target_size]
+        indeces = y_indeces[i : i + target_size]
 
         if len(indeces) < target_size:
             break
@@ -454,6 +460,7 @@ def plot_sequence_predictions(y_true, y_pred):
     PREDICTION_PLOT_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     fig.write_html(str(PLOTS_PATH / "prediction_sequences.html"))
+
 
 
 if __name__ == "__main__":

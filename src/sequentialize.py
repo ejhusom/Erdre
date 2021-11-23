@@ -19,12 +19,13 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from config import DATA_PATH, DATA_SEQUENTIALIZED_PATH, NON_DL_METHODS
-from preprocess_utils import (
-    find_files,
-    flatten_sequentialized,
-    split_sequences,
+from config import (
+    DATA_PATH,
+    DATA_SEQUENTIALIZED_PATH,
+    NON_DL_METHODS,
+    OUTPUT_FEATURES_PATH,
 )
+from preprocess_utils import find_files, flatten_sequentialized, split_sequences
 
 
 def sequentialize(dir_path):
@@ -47,9 +48,9 @@ def sequentialize(dir_path):
     else:
         target_size = params["target_size"]
 
-    output_columns = np.array(
-        pd.read_csv(DATA_PATH / "output_columns.csv", index_col=0)
-    ).reshape(-1)
+    output_columns = np.array(pd.read_csv(OUTPUT_FEATURES_PATH, index_col=0)).reshape(
+        -1
+    )
 
     n_output_cols = len(output_columns)
 
@@ -65,9 +66,12 @@ def sequentialize(dir_path):
 
         # Split into sequences
         X, y = split_sequences(
-            data, window_size, target_size=target_size,
-            n_target_columns=n_output_cols, future_predict=future_predict,
-            overlap=overlap
+            data,
+            window_size,
+            target_size=target_size,
+            n_target_columns=n_output_cols,
+            future_predict=future_predict,
+            overlap=overlap,
         )
 
         if learning_method == "dnn" or learning_method in NON_DL_METHODS:

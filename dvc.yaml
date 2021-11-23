@@ -21,7 +21,7 @@ stages:
         - src/config.py
         outs:
         - assets/data/cleaned
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         params:
         - clean.target
         - clean.classification
@@ -35,12 +35,12 @@ stages:
         cmd: python3 src/featurize.py assets/data/cleaned/
         deps:
         - assets/data/cleaned
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         - src/featurize.py
         - src/config.py
         outs:
         - assets/data/featurized
-        - assets/data/input_columns.csv
+        - assets/features/input_columns.csv
         params:
         - featurize.features
         - featurize.add_rolling_features
@@ -66,7 +66,7 @@ stages:
         cmd: python3 src/scale.py assets/data/split/
         deps:
         - assets/data/split
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         - src/scale.py
         - src/config.py
         outs:
@@ -82,7 +82,7 @@ stages:
         cmd: python3 src/sequentialize.py assets/data/scaled/
         deps:
         - assets/data/scaled
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         - src/sequentialize.py
         - src/preprocess_utils.py
         - src/config.py
@@ -110,7 +110,7 @@ stages:
         cmd: python3 src/train.py assets/data/combined/train.npz
         deps:
         - assets/data/combined
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         - src/train.py
         - src/neural_networks.py
         - src/config.py
@@ -129,7 +129,7 @@ stages:
         cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz
         deps:
         - assets/data/combined/test.npz
-        - assets/data/output_columns.csv
+        - assets/features/output_columns.csv
         - assets/models/model.h5
         - src/evaluate.py
         - src/config.py

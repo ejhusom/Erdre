@@ -14,29 +14,32 @@ import os
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
+import yaml
 
-from config import *
-from profiling import *
 from clean import *
+from combine import *
+from config import *
+from evaluate import *
 from featurize import *
-from split import *
+from preprocess_utils import split_X_sequences
+from profiling import *
 from scale import *
 from sequentialize import *
-from combine import *
+from split import *
 from train import *
-from evaluate import *
-from preprocess_utils import split_X_sequences
+
 
 class VirtualSensor:
-
     def __init__(
         self,
         params_file=PARAMS_FILE_PATH,
         profile_file=PROFILE_JSON_PATH,
+        input_features_file=INPUT_FEATURES_PATH,
+        output_features_file=OUTPUT_FEATURES_PATH,
         input_scaler_file=INPUT_SCALER_PATH,
         output_scaler_file=OUTPUT_SCALER_PATH,
         model_file=MODELS_FILE_PATH,
-        verbose=True
+        verbose=True,
     ):
         """Initialize virtual sensor with the needed assets.
 
@@ -50,8 +53,16 @@ class VirtualSensor:
 
         """
 
-        self.params_file = params_file
+        if type(params_file) == dict:
+            yaml.dump(params_file, open("params.yaml", "w"),
+                    allow_unicode=True)
+            self.params_file = "params.yaml"
+        else:
+            self.params_file = params_file
+
         self.profile_file = profile_file
+        self.input_features_file = input_features_file
+        self.output_features_file = output_features_file
         self.input_scaler_file = input_scaler_file
         self.output_scaler_file = output_scaler_file
         self.model_file = model_file
@@ -61,14 +72,16 @@ class VirtualSensor:
         self.assets_files = [
             self.params_file,
             self.profile_file,
+            self.input_features_file,
+            self.output_features_file,
             self.input_scaler_file,
             self.output_scaler_file,
-            self.model_file
+            self.model_file,
         ]
 
-        self.check_assets_existence()
+        self._check_assets_existence()
 
-    def check_assets_existence(self):
+    def _check_assets_existence(self):
         """Check if the needed assets exists."""
 
         check_ok = True
@@ -78,17 +91,14 @@ class VirtualSensor:
                 print(f"File {path} not found.")
                 check_ok = False
 
-        if check_ok:
-            print("All assets found.")
-        else:
-            raise AssertionError("Assets missing.")
+        assert check_ok, "Assets missing."
 
-    def run_virtual_sensor(self, input_data_file):
+    def run_virtual_sensor(self, inference_df):
         """Run virtual sensor.
 
         Args:
             TODO: What input format here? Currently it takes a CSV-file.
-            input_data (): 
+            input_data ():
 
         """
 
@@ -101,11 +111,12 @@ class VirtualSensor:
         window_size = params["sequentialize"]["window_size"]
         overlap = params["sequentialize"]["overlap"]
 
-        df = clean(dir_path=input_data_file, inference=True)
-        df = featurize(inference=True, input_df=df)
+        self._check_features_existence(inference_df)
+
+        df = clean(inference_df=inference_df)
+        df = featurize(inference=True, inference_df=df)
 
         X = np.array(df)
-
 
         input_scaler = joblib.load(INPUT_SCALER_PATH)
         output_scaler = joblib.load(OUTPUT_SCALER_PATH)
@@ -127,12 +138,34 @@ class VirtualSensor:
         elif classification:
             y_pred = np.array((y_pred > 0.5), dtype=np.int)
 
-        plt.figure()
-        plt.plot(y_pred)
-        plt.show()
+        print(y_pred)
+        # plt.figure()
+        # plt.plot(y_pred)
+        # plt.show()
 
-            
-if __name__ == '__main__': 
+        return y_pred
+
+    def _check_features_existence(self, inference_df):
+        """Check that the DataFrame passed for inference contains the necessary
+        features required by the virtual sensor.
+
+        Args:
+            inference_df (DataFrame): DataFrame to perform inference on.
+
+        """
+
+        input_features = pd.read_csv(self.input_features_file)
+
+        for feature in input_features:
+            assert (
+                feature in inference_df.columns
+            ), f"Input data does not contain {feature}, which is required to run virtual sensor."
+
+
+if __name__ == "__main__":
+
+    # df = pd.read_csv("./assets/data/raw/cnc_without_target/02.csv")
+    df = pd.read_csv("./assets/data/raw/cnc_milling/02.csv")
 
     vs = VirtualSensor()
-    vs.run_virtual_sensor(input_data_file="./assets/data/raw/cnc_without_target/")
+    vs.run_virtual_sensor(inference_df=df)
