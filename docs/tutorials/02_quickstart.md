@@ -1,4 +1,4 @@
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Documentation - Home](docs/index.md)
 
 # Quickstart
 
