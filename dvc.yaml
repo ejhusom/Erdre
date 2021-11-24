@@ -1,11 +1,12 @@
 stages:
 
     profile:
-        cmd: python3 src/profile.py assets/data/raw/
+        cmd: python3 src/profiling.py assets/data/raw/
         deps:
         - assets/data/raw
-        - src/profile.py
+        - src/profiling.py
         - src/profile.yaml
+        - src/config.py
         outs:
         - assets/profile
         params:
@@ -15,26 +16,37 @@ stages:
         cmd: python3 src/clean.py assets/data/raw/
         deps:
         - assets/data/raw
-        - src/clean.py
         - assets/profile
+        - src/clean.py
+        - src/config.py
         outs:
         - assets/data/cleaned
+        - assets/features/output_columns.csv
         params:
         - clean.target
+        - clean.classification
+        - clean.onehot_encode_target
         - clean.combine_files
         - clean.percentage_zeros_threshold
         - clean.correlation_metric
-        - clean.correlation_threshold
+        - clean.input_max_correlation_threshold
 
     featurize:
         cmd: python3 src/featurize.py assets/data/cleaned/
         deps:
         - assets/data/cleaned
+        - assets/features/output_columns.csv
         - src/featurize.py
+        - src/config.py
         outs:
         - assets/data/featurized
+        - assets/features/input_columns.csv
         params:
         - featurize.features
+        - featurize.add_rolling_features
+        - featurize.rolling_window_size
+        - featurize.remove_features
+        - featurize.target_min_correlation_threshold
         - clean.target
 
     split:
@@ -42,20 +54,27 @@ stages:
         deps:
         - assets/data/featurized
         - src/split.py
+        - src/config.py
         outs:
         - assets/data/split
         params:
         - split.train_split
+        - split.shuffle_files
         - split.calibrate_split
 
     scale:
         cmd: python3 src/scale.py assets/data/split/
         deps:
         - assets/data/split
+        - assets/features/output_columns.csv
         - src/scale.py
+        - src/config.py
         outs:
         - assets/data/scaled
+        - assets/scalers/input_scaler.z
+        - assets/scalers/output_scaler.z
         params:
+        - clean.classification
         - scale.input
         - scale.output
 
@@ -63,19 +82,27 @@ stages:
         cmd: python3 src/sequentialize.py assets/data/scaled/
         deps:
         - assets/data/scaled
+        - assets/features/output_columns.csv
         - src/sequentialize.py
+        - src/preprocess_utils.py
+        - src/config.py
         outs:
         - assets/data/sequentialized
         params:
-        - sequentialize.hist_size
+        - clean.classification
+        - sequentialize.window_size
+        - sequentialize.overlap
         - sequentialize.target_size
-        - train.net
+        - sequentialize.shuffle_samples
+        - sequentialize.future_predict
+        - train.learning_method
 
     combine:
         cmd: python3 src/combine.py assets/data/sequentialized/
         deps:
         - assets/data/sequentialized
         - src/combine.py
+        - src/config.py
         outs:
         - assets/data/combined
 
@@ -83,24 +110,33 @@ stages:
         cmd: python3 src/train.py assets/data/combined/train.npz
         deps:
         - assets/data/combined
+        - assets/features/output_columns.csv
         - src/train.py
-        - src/model.py
+        - src/neural_networks.py
+        - src/config.py
         outs:
         - assets/models
         params:
-        - train.net
+        - clean.classification
+        - train.learning_method
         - train.n_epochs
         - train.batch_size
         - train.kernel_size
+        - train.early_stopping
+        - train.patience
 
     evaluate:
         cmd: python3 src/evaluate.py assets/models/model.h5 assets/data/combined/train.npz assets/data/combined/test.npz assets/data/combined/calibrate.npz
         deps:
         - assets/data/combined/test.npz
+        - assets/features/output_columns.csv
         - assets/models/model.h5
         - src/evaluate.py
+        - src/config.py
+        outs:
+        - assets/predictions/predictions.csv
+        - assets/predictions/true_values.csv
+        params:
+        - clean.classification
         metrics:
-        - assets/metrics/metrics.json:
-            cache: false
-        - assets/predictions/predictions.csv:
-            cache: false
+        - assets/metrics/metrics.json
