@@ -1,28 +1,8 @@
-# compiled files:
-build*
-*.o
-*.so
-*.a
-
 # data-files
 *.dat
 *.csv
-
-# doconce:
-.*_html_file_collection
-
-# eclipse files:
-*.cproject
-*.project
-
-# executables
-*.exe
-*.x
-
-# jekyll
-_site/
-.sass-cache
-.jekyll-metadata
+assets/data/raw
+!assets/data/raw/README.md
 
 # misc:
 .DS_Store
@@ -46,34 +26,26 @@ __pycache__
 .*~
 *.old
 tmp*
-temp*
 .#*
 \#*
-
-# tex files:
-*.log
-*.dvi
-*.aux
-*.blg
-*.idx
-*.nav
-*.out
-*.toc
-*.snm
-*.vrb
-
-# vim
 Session.vim
 
 # python venv
 env/
 venv/
 
-# project specific files
+# large files
+model_tuning/
+models/
+
+
+# project-specific files
 .dvc*
 dvc.lock
 assets/plots/
 assets/profile/
 assets/metrics/
-model_tuning/
-models/
+assets/scalers/
+assets/predictions/
+assets/features/
+virtual_sensors.json

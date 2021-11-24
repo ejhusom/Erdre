@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ERDRE - Inference</title>
+        <link href="{{ url_for('static', filename='style.css')}}" rel="stylesheet" type="text/css" title="Stylesheet">
+    </head>
+
+    <body>
+        <header>
+            {% include "header.html" %}
+        </header>
+
+        {% include "virtual_sensors_overview.html" %}
+
+        <div class="box createForm">
+            <!-- TODO: Dropdown of existing virtual sensors -->
+            <h3>Inference</h3>
+            <form action="infer" method="POST" enctype="multipart/form-data">
+                <p>Enter virtual sensor ID:</p>
+                <input type="text" name="id">
+                <p>Upload data file here:</p>
+                <input type="file" name="file"/>
+                <input type="submit" onclick="loading()"/>
+            </form>
+        </div>
+
+
+        <footer>
+        </footer>
+    </body>
+
+</html>
+
+

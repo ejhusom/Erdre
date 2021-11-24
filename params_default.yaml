@@ -1,0 +1,50 @@
+profile:
+    dataset: 
+
+clean:
+    target: 
+    classification: False
+    onehot_encode_target: False
+    combine_files: False
+    percentage_zeros_threshold: 1.0
+    correlation_metric: pearson
+    input_max_correlation_threshold: 1.0
+
+featurize:
+    features:
+        # - feature1
+        # - feature2
+    add_rolling_features: False
+    rolling_window_size: 100
+    remove_features:
+        # - feature1
+        # - feature2
+
+    target_min_correlation_threshold: 0.0
+
+split:
+    train_split: 0.5
+    shuffle_files: False
+    calibrate_split: 0.0
+
+scale:
+    input: minmax
+    output:
+
+sequentialize:
+    window_size: 10
+    overlap: 0
+    target_size: 1
+    shuffle_samples: False
+    future_predict: False
+
+train:
+    train: True
+    learning_method: cnn
+    n_epochs: 200
+    batch_size: 256
+    kernel_size: 3
+    early_stopping: True
+    patience: 40
+
+evaluate:
