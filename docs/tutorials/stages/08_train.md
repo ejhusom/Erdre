@@ -1,4 +1,4 @@
-[Documentation - Home](../index.md)
+[Documentation - Home](../../index.md)
 
 [Overview of pipeline](03_pipeline.md)
 
@@ -11,6 +11,6 @@
 ## Processing
 
 
-Previous stage: [combine](stages/07_combine.md)
+Previous stage: [combine](07_combine.md)
 
-Next stage: [evaluate](stages/09_evaluate.md)
+Next stage: [evaluate](09_evaluate.md)

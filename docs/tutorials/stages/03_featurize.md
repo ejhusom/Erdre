@@ -1,4 +1,4 @@
-[Documentation - Home](../index.md)
+[Documentation - Home](../../index.md)
 
 [Overview of pipeline](03_pipeline.md)
 
@@ -11,6 +11,6 @@
 ## Processing
 
 
-Previous stage: [clean](stages/02_clean.md)
+Previous stage: [clean](02_clean.md)
 
-Next stage: [split](stages/04_split.md)
+Next stage: [split](04_split.md)

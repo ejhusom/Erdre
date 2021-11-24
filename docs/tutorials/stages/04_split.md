@@ -1,4 +1,4 @@
-[Documentation - Home](../index.md)
+[Documentation - Home](../../index.md)
 
 [Overview of pipeline](03_pipeline.md)
 
@@ -8,6 +8,6 @@
 
 ## Processing
 
-Previous stage: [featurize](stages/03_featurize.md)
+Previous stage: [featurize](03_featurize.md)
 
-Next stage: [scale](stages/05_scale.md)
+Next stage: [scale](05_scale.md)

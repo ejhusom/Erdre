@@ -1,4 +1,4 @@
-[Documentation - Home](index.md)
+[Documentation - Home](../../index.md)
 
 [Overview of pipeline](03_pipeline.md)
 
@@ -10,4 +10,4 @@
 
 ## Processing
 
-Previous stage: [train](stages/08_train.md)
+Previous stage: [train](08_train.md)

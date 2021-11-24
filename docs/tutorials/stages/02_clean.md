@@ -62,6 +62,6 @@ During this stage, the following operations will be performed:
   `clean.classification` must be set to `True` in `params.yaml`, the target
   variable will be encoded to a number.
 
-Previous stage: [profile](stages/01_profile.md)
+Previous stage: [profile](01_profile.md)
 
-Next stage: [featurize](stages/03_featurize.md)
+Next stage: [featurize](03_featurize.md)
