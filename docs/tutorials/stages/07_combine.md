@@ -1,6 +1,6 @@
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Documentation - Home](../index.md)
 
-[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+[Overview of pipeline](03_pipeline.md)
 
 # Stage 7: combine
 
@@ -11,6 +11,6 @@
 ## Processing
 
 
-Previous stage: [sequentialize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/06_sequentialize.md)
+Previous stage: [sequentialize](stages/06_sequentialize.md)
 
-Next stage: [train](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/08_train.md)
+Next stage: [train](stages/08_train.md)

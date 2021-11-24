@@ -1,6 +1,6 @@
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Documentation - Home](index.md)
 
-[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+[Overview of pipeline](03_pipeline.md)
 
 # Stage 9: evaluate
 
@@ -10,4 +10,4 @@
 
 ## Processing
 
-Previous stage: [train](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/08_train.md)
+Previous stage: [train](stages/08_train.md)

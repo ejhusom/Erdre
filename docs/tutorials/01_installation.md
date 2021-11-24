@@ -1,4 +1,4 @@
-[Documentation - Home](../docs/index.md)
+[Documentation - Home](../index.md)
 
 ## 1. Installation
 

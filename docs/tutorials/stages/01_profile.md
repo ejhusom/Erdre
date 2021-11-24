@@ -1,6 +1,6 @@
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Documentation - Home](../index.md)
 
-[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+[Overview of pipeline](03_pipeline.md)
 
 # Stage 1: profile
 
@@ -33,8 +33,8 @@ profile:
 
 It the parameter is left empty, data files must be placed directly in
 `assets/data/raw/`. See
-[Quickstart](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/02_quickstart.md)
+[Quickstart](02_quickstart.md)
 for more info on how to add data to your project.
 
 
-Next stage: [clean](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/02_clean.md)
+Next stage: [clean](02_clean.md)

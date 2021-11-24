@@ -1,6 +1,6 @@
-[Documentation - Home](https://github.com/SINTEF-9012/Erdre/blob/master/docs/index.md)
+[Documentation - Home](../index.md)
 
-[Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+[Overview of pipeline](03_pipeline.md)
 
 # Stage 5: scale
 
@@ -11,6 +11,6 @@
 ## Processing
 
 
-Previous stage: [split](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/04_split.md)
+Previous stage: [split](stages/04_split.md)
 
-Next stage: [sequentialize](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/stages/06_sequentialize.md)
+Next stage: [sequentialize](stages/06_sequentialize.md)
