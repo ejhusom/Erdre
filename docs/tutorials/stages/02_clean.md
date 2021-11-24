@@ -1,4 +1,4 @@
-[Documentation - Home](../index.md)
+[Documentation - Home](../../index.md)
 
 [Overview of pipeline](03_pipeline.md)
 
