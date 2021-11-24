@@ -2,7 +2,7 @@
 
 Source code available at: [https://github.com/SINTEF-9012/Erdre](https://github.com/SINTEF-9012/Erdre).
 
-Main sections:
+## Main sections:
 
 1. [Installation](tutorials/01_installation.md)
 2. [Quickstart](tutorials/02_quickstart.md)
@@ -17,6 +17,8 @@ Main sections:
     8.  [train](tutorials/stages/08_train.md)
     9.  [evaluate](tutorials/stages/09_evaluate.md)
 
-[Demo video of running the Erdre pipeline](demo.html)
-[Demo video of running Erdre as a service](demo_service.html)
+## Demo videos
+
+- [Running the Erdre pipeline](demo.html)
+- [Running Erdre as a service](demo_service.html)
 
