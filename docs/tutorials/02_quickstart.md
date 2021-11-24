@@ -1,9 +1,9 @@
-[Documentation - Home](docs/index.md)
+[Documentation - Home](index.md)
 
 # Quickstart
 
 First, install Erdre and the requirements as specified here:
-[Installation](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/01_installation.md)
+[Installation](docs/tutorials/01_installation.md)
 
 To start using Erdre, follow the steps below.
 
@@ -140,4 +140,4 @@ folder `assets/plots/`, and show the following data:
 ![Example of sequence predictions.](../../img/prediction_sequences_example.png)
 
 
-Next: [Overview of pipeline](https://github.com/SINTEF-9012/Erdre/blob/master/docs/tutorials/03_pipeline.md)
+Next: [Overview of pipeline](tutorials/03_pipeline.md)
