@@ -15,4 +15,5 @@ Main sections:
     8.  [train](tutorials/stages/08_train.md)
     9.  [evaluate](tutorials/stages/09_evaluate.md)
 
-[Demo video](demo.html)
+[Demo video of running the Erdre pipeline](demo.html)
+[Demo video of running Erdre as a service](demo_service.html)
