@@ -1,9 +1,9 @@
-[Documentation - Home](index.md)
+[Documentation - Home](../index.md)
 
 # Quickstart
 
 First, install Erdre and the requirements as specified here:
-[Installation](docs/tutorials/01_installation.md)
+[Installation](01_installation.md)
 
 To start using Erdre, follow the steps below.
 
