@@ -1,6 +1,6 @@
 [Documentation - Home](../../index.md)
 
-[Overview of pipeline](03_pipeline.md)
+[Overview of pipeline](../03_pipeline.md)
 
 # Stage 1: profile
 
